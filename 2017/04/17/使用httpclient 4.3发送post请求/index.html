@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <title>使用httpclient 4.3发送post请求 | Qzz</title>
+
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <meta name="description" content="单一类型的参数示例：123456789HttpPost httpPost = new HttpPost(&quot;http://www.baidu.com&quot;);httpPost.setHeader(&quot;Accept-Language&quot;, &quot;zh-cn,zh;q=0.5&quot;);httpPost.setHeader(&quot;Accept-Charset&quot;, &quot;GBK,utf-8;q=0.7,*;q=0.7&quot;);http">
+<meta name="keywords">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用httpclient 4.3发送post请求">
+<meta property="og:url" content="http://qzz.life/2017/04/17/使用httpclient 4.3发送post请求/index.html">
+<meta property="og:site_name" content="Qzz">
+<meta property="og:description" content="单一类型的参数示例：123456789HttpPost httpPost = new HttpPost(&quot;http://www.baidu.com&quot;);httpPost.setHeader(&quot;Accept-Language&quot;, &quot;zh-cn,zh;q=0.5&quot;);httpPost.setHeader(&quot;Accept-Charset&quot;, &quot;GBK,utf-8;q=0.7,*;q=0.7&quot;);http">
+<meta property="og:updated_time" content="2017-04-17T15:07:38.325Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用httpclient 4.3发送post请求">
+<meta name="twitter:description" content="单一类型的参数示例：123456789HttpPost httpPost = new HttpPost(&quot;http://www.baidu.com&quot;);httpPost.setHeader(&quot;Accept-Language&quot;, &quot;zh-cn,zh;q=0.5&quot;);httpPost.setHeader(&quot;Accept-Charset&quot;, &quot;GBK,utf-8;q=0.7,*;q=0.7&quot;);http">
+  
+    <link rel="alternative" href="/atom.xml" title="Qzz" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+    
+  <meta content="{{ title }}" name="description">
+  <meta content="{{ title }}" name="keywords">
+  <meta content="{{ title }}" name="author">
+
+  <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|PT+Sans+Narrow|Source+Sans+Pro:200,300,400,600,700,900&amp;subset=all" rel="stylesheet" type="text/css">
+
+  <!-- Global styles START -->   
+  <link rel="stylesheet" href="/metronic/assets/plugins/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/metronic/assets/plugins/bootstrap/css/bootstrap.min.css">
+  <!-- Global styles END --> 
+   
+  <!-- Page level plugin styles START -->
+  <link rel="stylesheet" href="/metronic/assets/pages/css/animate.css">
+  <link rel="stylesheet" href="/metronic/assets/plugins/owl.carousel/assets/owl.carousel.css">
+  <!-- Page level plugin styles END -->
+
+  <!-- Theme styles START -->
+  <link rel="stylesheet" href="/metronic/assets/pages/css/components.css">
+  <link rel="stylesheet" href="/metronic/assets/pages/css/slider.css">
+  <link rel="stylesheet" href="/metronic/assets/corporate/css/style.css">
+  <link rel="stylesheet" href="/metronic/assets/pages/css/portfolio.css">
+  <link rel="stylesheet" href="/metronic/assets/corporate/css/style-responsive.css">
+  <link rel="stylesheet" href="/metronic/assets/corporate/css/themes/red.css">
+  <link rel="stylesheet" href="/css/theme-styles.css">
+  <!-- Theme styles END -->
+</head>
+
+<body class="corporate">
+  <!-- BEGIN TOP BAR -->
+<div class="pre-header">
+  <div class="container">
+    <div class="row">
+      <!-- BEGIN TOP BAR LEFT PART -->
+      <div class="col-md-6 col-sm-6 col-xs-9 additional-shop-info">
+	<ul class="list-unstyled list-inline">
+	  <li><i class="fa fa-phone"></i><span>716-472-4484</span></li>
+	  <li><i class="fa fa-envelope-o"></i><span>ptsteadman@gmail.com</span></li>
+	</ul>
+      </div>
+      <!-- END TOP BAR LEFT PART -->
+      <!-- BEGIN TOP BAR MENU -->
+      <div class="col-md-6 col-sm-6 col-xs-3 additional-nav">
+	<ul class="list-unstyled list-inline pull-right">
+	  <li><a href="/login">Log In</a></li>
+	</ul>
+      </div>
+      <!-- END TOP BAR MENU -->
+    </div>
+  </div>        
+</div>
+<!-- END TOP BAR -->
+<!-- BEGIN HEADER -->
+<div class="header">
+  <div class="container">
+    <!--<a class="site-logo" href="/" id="logo">Qzz</a>-->
+
+    <a class="site-logo" href="/">
+      <img src="/metronic/assets/corporate/img/logos/logo-corp-red.png" alt="Metronic FrontEnd">
+    </a>
+
+    <a href="javascript:void(0);" class="mobi-toggler"><i class="fa fa-bars"></i></a>
+
+    <!-- BEGIN NAVIGATION -->
+    <div class="header-navigation pull-right font-transform-inherit">
+      <ul>
+	
+	<li class="">
+	  <a  href="/">Home</a>
+	</li>
+	
+	<li class="">
+	  <a  href="/projects/">Projects</a>
+	</li>
+	
+	<li class="">
+	  <a  href="/archives/">Blog</a>
+	</li>
+	
+	<li class="">
+	  <a  href="/contact/">Contact</a>
+	</li>
+	
+	<li class="">
+	  <a  href="/about/">About</a>
+	</li>
+	
+	<!-- BEGIN TOP SEARCH -->
+	<li class="menu-search">
+	  <span class="sep"></span>
+	  <i class="fa fa-search search-btn"></i>
+	  <div class="search-box">
+	    <form action="#">
+	      <div class="input-group">
+		<input type="text" placeholder="Search" class="form-control st-default-search-input">
+		<span class="input-group-btn">
+		  <button class="btn btn-primary" type="submit">Search</button>
+		</span>
+	      </div>
+	    </form>
+	  </div> 
+	</li>
+	<!-- END TOP SEARCH -->
+      </ul>
+    </div>
+    <!-- END NAVIGATION -->
+  </div>
+</div>
+<!-- Header END -->
+
+  <div class="container">
+  <ul class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="/archives/">Blog</a></li>
+    <li class="active">Post</li>
+  </ul>
+  <section id="main">
+    
+    <h2 itemprop="name">
+      <a class="article-title" href="/2017/04/17/使用httpclient 4.3发送post请求/">使用httpclient 4.3发送post请求</a>
+    </h2>
+
+
+    <div class="row">
+<div class="col-md-9 col-sm-9 blog-posts">
+<article id="post-使用httpclient 4.3发送post请求" class="article article-type-post blog-item" itemscope itemprop="blogPost">
+  <div class="article-meta">
+  </div>
+  <div class="article-inner">
+    
+    
+    <header class="article-header">
+      <ul class="blog-info">
+	<li><i class="fa fa-user"></i> Anonymous</li>
+	<li><i class="fa fa-calendar"></i>
+	  <time datetime="2017-04-17T15:04:10.535Z" itemprop="datePublished">2017/04/17</time>
+
+	</li>
+	<li class="hidden-xs"><i class="fa fa-comments"></i>
+	  <a href="http://qzz.life/2017/04/17/使用httpclient 4.3发送post请求/#disqus_thread" class="article-comment-link">Comments</a>
+	</li>
+	<li class="hidden-xs"><i class="fa fa-tags"></i> 
+	  
+
+	</li>
+      </ul>
+      
+
+    </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="单一类型的参数"><a href="#单一类型的参数" class="headerlink" title="单一类型的参数"></a>单一类型的参数</h3><p>示例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">HttpPost httpPost = <span class="keyword">new</span> HttpPost(<span class="string">"http://www.baidu.com"</span>);</div><div class="line">httpPost.setHeader(<span class="string">"Accept-Language"</span>, <span class="string">"zh-cn,zh;q=0.5"</span>);</div><div class="line">httpPost.setHeader(<span class="string">"Accept-Charset"</span>, <span class="string">"GBK,utf-8;q=0.7,*;q=0.7"</span>);</div><div class="line">httpPost.setHeader(<span class="string">"Connection"</span>, <span class="string">"keep-alive"</span>);</div><div class="line">httpPost.addHeader(<span class="string">"Content-type"</span>, <span class="string">"application/json; charset=utf-8"</span>);</div><div class="line">httpPost.setHeader(<span class="string">"Accept"</span>, <span class="string">"application/json"</span>);</div><div class="line">httpPost.setEntity(<span class="keyword">new</span> StringEntity(jsonParam, APPLICATION_JSON));</div><div class="line">System.out.println(EntityUtils.toString(HttpClients.createDefault().execute(httpPost).getEntity()));<span class="comment">//打印响应结果</span></div></pre></td></tr></table></figure></p>
+<p>大致步骤：</p>
+<ol>
+<li>构造HttpPost实例，参数是请求地址</li>
+<li>添加一些基本的head，比如字符集之类的</li>
+<li>添加参数</li>
+</ol>
+<p>HttpClient 框架将请求参数封装在<code>HttpEntity</code> 接口中, 常用的有<code>StringEntity</code>、<code>UrlEncodedFormEntity</code>、<code>FileEntity</code>、<code>InputStreamEntity</code>等。</p>
+<h5 id="StringEntity"><a href="#StringEntity" class="headerlink" title="StringEntity"></a>StringEntity</h5><p>可以用来构造字符串类型的参数。内部使用了一个数组来保存数据。<br>比如构造一个表单<code>application/x-www-form-urlencoded</code>：”a=1&amp;b=2”。当然<code>UrlEncodedFormEntity</code>进一步做了封装，用来构造表单。再如发送json格式的参数，需要将json转成String。</p>
+<h5 id="UrlEncodedFormEntity"><a href="#UrlEncodedFormEntity" class="headerlink" title="UrlEncodedFormEntity"></a>UrlEncodedFormEntity</h5><p>继承自<code>StringEntity</code>。对<code>StringEntity</code> 做了进一步的封装，构造函数中使用集合来作为参数，避免了参数的拼接，并且设置了<code>Content-Type=application/x-www-form-urlencoded</code>.</p>
+<h5 id="FileEntity"><a href="#FileEntity" class="headerlink" title="FileEntity"></a>FileEntity</h5><p>将文件作为参数发送到服务端。<br>构造函数中使用一个file来接收本地文件。</p>
+<h5 id="InputStreamEntity"><a href="#InputStreamEntity" class="headerlink" title="InputStreamEntity"></a>InputStreamEntity</h5><p>将流作为参数发送到服务端。可以是文件流，以及byte array 等其他形式的流，只要服务端能解析即可。</p>
+<h3 id="多种类型的参数"><a href="#多种类型的参数" class="headerlink" title="多种类型的参数"></a>多种类型的参数</h3><p>如果你的参数中既有文件，又有普通的字符参数，上述方式就无法满足了。<br>这个时候需要使用<code>MultipartFormEntity</code>,但是无法直接使用，需要用到<code>MultipartEntityBuilder</code>来构建。  </p>
+<p>示例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">MultipartEntityBuilder multiEntity = MultipartEntityBuilder.create();</div><div class="line">URLConnection imgConn = <span class="keyword">new</span> URL(<span class="string">"http://www.baidu.com/test.jpg"</span>).openConnection();</div><div class="line">multiEntity.addPart(<span class="string">"image"</span>, <span class="keyword">new</span> InputStreamBody(imgConn.getInputStream(),<span class="string">"image"</span>));</div><div class="line">multiEntity.addPart(<span class="string">"face_image_type"</span>,<span class="keyword">new</span> StringBody(<span class="string">"raw_image"</span>, ContentType.TEXT_PLAIN));<span class="comment">//默认字符集不是utf-8，需要注意</span></div><div class="line">multiEntity.addPart(<span class="string">"idcard_name"</span>,<span class="keyword">new</span> StringBody(idCardName, ContentType.parse(<span class="string">"text/plain;charset=UTF-8"</span>)));</div><div class="line">httpPost.setEntity(multiEntity.build());<span class="comment">//调用build方法</span></div><div class="line">HttpResponse httpResponse = HttpClients.createDefault().execute(httpPost);</div></pre></td></tr></table></figure></p>
+<p>我这里添加了一个流参数用来上传文件，一个字符串参数。有时候我们上传的文件是来自网络的，那就需要使用流了。如果是使用本地文件，则可以使用<code>FileBody</code>。</p>
+
+      
+    </div>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/04/17/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Hello World
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+  <br>
+</article>
+
+
+
+
+</div>
+<div class="col-md-3 col-sm-3 blog-sidebar">
+  <!-- CATEGORIES START -->
+<h2 class="no-top-space">Categories</h2>
+
+<div class="widget-wrap">
+  <div class="widget">
+    <ul class="nav sidebar-categories margin-bottom-40">
+      
+	<li>
+	  <a href="/categories/NGINX/">NGINX (1)</a>
+	</li>
+      
+	<li>
+	  <a href="/categories/NET/">.NET (1)</a>
+	</li>
+      
+	<li>
+	  <a href="/categories/Hexo/">Hexo (2)</a>
+	</li>
+      
+	<li>
+	  <a href="/categories/Dynamics-NAV/">Dynamics NAV (2)</a>
+	</li>
+      
+	<li>
+	  <a href="/categories/Humor/">Humor (1)</a>
+	</li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<!-- CATEGORIES END -->
+
+<!-- BEGIN BLOG TAGS -->
+<div class="blog-tags margin-bottom-20">
+  <h2>Tags</h2>
+  
+  <div class="widget-wrap">
+    <div class="widget">
+      
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/"><i class='fa fa-tags'></i>C#</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Design/"><i class='fa fa-tags'></i>Design</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/How-To/"><i class='fa fa-tags'></i>How-To</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NAV/"><i class='fa fa-tags'></i>NAV</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Programming/"><i class='fa fa-tags'></i>Programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Resources/"><i class='fa fa-tags'></i>Resources</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Visual-Studio/"><i class='fa fa-tags'></i>Visual Studio</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Web-Development/"><i class='fa fa-tags'></i>Web Development</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Welcome/"><i class='fa fa-tags'></i>Welcome</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/employment/"><i class='fa fa-tags'></i>employment</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/funny/"><i class='fa fa-tags'></i>funny</a></li></ul>
+    </div>
+  </div>
+
+
+</div>
+<!-- END BLOG TAGS -->
+
+
+<!-- BEGIN FEATURED POSTS -->                            
+<h2>Featured Posts</h2>
+<div class="recent-news margin-bottom-10">
+  
+    
+  
+    
+  
+    
+      <div class="row margin-bottom-10">
+	<div class="col-md-4">
+	  <img src="https://s3.amazonaws.com/ptsteadman-images/nginx-proxy.png" class="img-responsive ">
+	</div>
+	<div class="col-md-8">
+	  <h3><a href="http://qzz.life/2015/04/01/2015-04-01-NGINX-Static-Locations/">Static NGINX Locations</a></h3>
+	</div>                        
+      </div>
+    
+  
+    
+      <div class="row margin-bottom-10">
+	<div class="col-md-4">
+	  <img src="https://s3.amazonaws.com/ptsteadman-images/vs.jpg" class="img-responsive ">
+	</div>
+	<div class="col-md-8">
+	  <h3><a href="http://qzz.life/2015/03/23/2015-03-23-Make-VS-Insert-Spaces/">Spaces for Newline Indents in VS</a></h3>
+	</div>                        
+      </div>
+    
+  
+    
+      <div class="row margin-bottom-10">
+	<div class="col-md-4">
+	  <img src="https://s3.amazonaws.com/ptsteadman-images/helloworld.jpg" class="img-responsive ">
+	</div>
+	<div class="col-md-8">
+	  <h3><a href="http://qzz.life/2014/02/23/2014-02-23-hello-world/">Welcome To Hexo</a></h3>
+	</div>                        
+      </div>
+    
+  
+    
+  
+    
+  
+    
+  
+    
+  
+</div>
+<!-- END FEATURED POSTS -->                            
+
+</div>
+</div>
+
+  </section>
+</div>
+
+    <!-- BEGIN PRE-FOOTER -->
+    <div class="pre-footer">
+      <div class="container">
+        <div class="row">
+          <!-- BEGIN BOTTOM ABOUT BLOCK -->
+          <div class="col-md-4 col-sm-6 pre-footer-col">
+            <h2>About Us</h2>
+            <p>Computer Lab is a software development and marketing company based in Brooklyn, New York. <br><br> Computer Lab was founded in 2015, and is focused on so on and so forth.</p>
+          </div>
+          <!-- END BOTTOM ABOUT BLOCK -->
+
+          <!-- BEGIN BOTTOM CONTACTS -->
+          <div class="col-md-4 col-sm-6 pre-footer-col">
+            <h2>Contact</h2>
+            <address class="margin-bottom-40">
+              140 Metropolitan Avenue<br>
+              5th Floor<br>
+              Brooklyn, NY 11249<br>
+              Phone: 716-472-4484<br>
+              Email: <a href="mailto:ptsteadman@gmail.com">ptsteadman@gmail.com</a><br>
+            </address>
+          </div>
+          <!-- END BOTTOM CONTACTS -->
+
+	
+          <!-- BEGIN TWITTER BLOCK --> 
+          <div class="col-md-4 col-sm-6 pre-footer-col">
+
+	  <a data-tweet-limit="1" class="twitter-timeline"
+	  href="https://twitter.com/computerlab_"
+	  data-widget-id="678830341331820544">Tweets by @computerlab_</a>
+
+	  <script>!function(d,s,id){var
+	  js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+          </div>
+          <!-- END TWITTER BLOCK -->
+	
+        </div>
+      </div>
+    </div>
+    <!-- END PRE-FOOTER -->
+
+    <!-- BEGIN FOOTER -->
+    <div class="footer">
+      <div class="container">
+        <div class="row">
+          <!-- BEGIN COPYRIGHT -->
+          <div class="col-md-6 col-sm-6 padding-top-10">
+                  &copy; 2017 Qzz<br>
+ <a href="javascript:;">Privacy Policy</a> | <a href="javascript:;">Terms of Service</a>
+          </div>
+          <!-- END COPYRIGHT -->
+	  <!-- BEGIN SOCIAL -->
+<div class="col-md-6 col-sm-6">
+  <ul class="social-footer list-unstyled list-inline pull-right">
+    
+      <li><a href="https://github.com/ptsteadman"><i class="fa fa-github"></i></a></li>
+    
+      <li><a href="https://twitter.com/ptsteadman"><i class="fa fa-twitter"></i></a></li>
+    
+      <li><a href="https://www.facebook.com/ptsteadman"><i class="fa fa-facebook"></i></a></li>
+    
+      <li><a href="/atom.xml"><i class="fa fa-rss"></i></a></li>
+    
+      <li><a href="https://linkedin.com/in/ptsteadman"><i class="fa fa-linkedin"></i></a></li>
+    
+      <li><a href="http://stackoverflow.com/users/2480493/patrick-steadman"><i class="fa fa-stackoverflow"></i></a></li>
+    
+  </ul>  
+</div>
+<!-- END SOCIAL -->
+
+        </div>
+      </div>
+    </div>
+    <!-- END FOOTER -->
+
+  <!-- BEGIN CORE PLUGINS (REQUIRED FOR ALL PAGES) -->
+<!--[if lt IE 9]>
+<script src="/metronic/assets/plugins/respond.min.js"></script>
+<![endif]--> 
+<script src="/metronic/assets/plugins/jquery.min.js"></script>
+<script src="/metronic/assets/plugins/jquery-migrate.min.js"></script>
+<script src="/metronic/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="/metronic/assets/corporate/scripts/back-to-top.js"></script>
+<script src="/metronic/assets/plugins/owl.carousel/owl.carousel.min.js"></script>
+<script src="/metronic/assets/corporate/scripts/layout.js"></script>
+<script src="/js/wow.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        Layout.init();    
+        Layout.initOWL();
+        Layout.initTwitter();
+        Layout.initFixHeaderWithPreHeader(); /* Switch On Header Fixing (only if you have pre-header) */
+        Layout.initNavScrolling(); 
+	new WOW().init();
+    });
+</script>
+<!-- END CORE PLUGINS -->
+
+<!-- BEGIN PAGE-SPECIFIC PLUGINS --> 
+
+
+
+
+
+
+
+<!-- END PAGE-SPECIFIC PLUGINS --> 
+
+<!-- BEGIN INTEGRATIONS -->
+
+
+
+
+
+<!-- END INTEGRATIONS -->
+
+</body>
+</html>

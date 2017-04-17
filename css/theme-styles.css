@@ -1,0 +1,314 @@
+/* General Overrides of Metronic */
+body {
+  width: 100%;
+}
+.article-entry pre,
+.article-entry .highlight {
+  background: #2d2d2d;
+  margin: 0 -20px;
+  padding: 15px 20px;
+  border-style: solid;
+  border-color: #ddd;
+  border-width: 1px 0;
+  overflow: auto;
+  color: #ccc;
+  line-height: 22.400000000000002px;
+}
+.article-entry .highlight .gutter pre,
+.article-entry .gist .gist-file .gist-data .line-numbers {
+  color: #666;
+  font-size: 0.85em;
+}
+.article-entry pre,
+.article-entry code {
+  font-family: "Source Code Pro", Consolas, Monaco, Menlo, Consolas, monospace;
+}
+.article-entry code {
+  background: #eee;
+  text-shadow: 0 1px #fff;
+  padding: 0 0.3em;
+}
+.article-entry pre code {
+  background: none;
+  text-shadow: none;
+  padding: 0;
+}
+.article-entry .highlight pre {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+.article-entry .highlight table {
+  margin: 0;
+  width: auto;
+}
+.article-entry .highlight td {
+  border: none;
+  padding: 0;
+}
+.article-entry .highlight figcaption {
+  font-size: 0.85em;
+  color: #999;
+  line-height: 1em;
+  margin-bottom: 1em;
+}
+.article-entry .highlight figcaption a {
+  float: right;
+}
+.article-entry .highlight .gutter pre {
+  text-align: right;
+  padding-right: 20px;
+}
+.article-entry .highlight .line {
+  height: 22.400000000000002px;
+}
+.article-entry .gist {
+  margin: 0 -20px;
+  border-style: solid;
+  border-color: #ddd;
+  border-width: 1px 0;
+  background: #2d2d2d;
+  padding: 15px 20px 15px 0;
+}
+.article-entry .gist .gist-file {
+  border: none;
+  font-family: "Source Code Pro", Consolas, Monaco, Menlo, Consolas, monospace;
+  margin: 0;
+}
+.article-entry .gist .gist-file .gist-data {
+  background: none;
+  border: none;
+}
+.article-entry .gist .gist-file .gist-data .line-numbers {
+  background: none;
+  border: none;
+  padding: 0 20px 0 0;
+}
+.article-entry .gist .gist-file .gist-data .line-data {
+  padding: 0 !important;
+}
+.article-entry .gist .gist-file .highlight {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.article-entry .gist .gist-file .gist-meta {
+  background: #2d2d2d;
+  color: #999;
+  font: 0.85em "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-shadow: 0 0;
+  padding: 0;
+  margin-top: 1em;
+  margin-left: 20px;
+}
+.article-entry .gist .gist-file .gist-meta a {
+  color: #258fb8;
+  font-weight: normal;
+}
+.article-entry .gist .gist-file .gist-meta a:hover {
+  text-decoration: underline;
+}
+pre .comment,
+pre .title {
+  color: #999;
+}
+pre .variable,
+pre .attribute,
+pre .tag,
+pre .regexp,
+pre .ruby .constant,
+pre .xml .tag .title,
+pre .xml .pi,
+pre .xml .doctype,
+pre .html .doctype,
+pre .css .id,
+pre .css .class,
+pre .css .pseudo {
+  color: #f2777a;
+}
+pre .number,
+pre .preprocessor,
+pre .built_in,
+pre .literal,
+pre .params,
+pre .constant {
+  color: #f99157;
+}
+pre .class,
+pre .ruby .class .title,
+pre .css .rules .attribute {
+  color: #9c9;
+}
+pre .string,
+pre .value,
+pre .inheritance,
+pre .header,
+pre .ruby .symbol,
+pre .xml .cdata {
+  color: #9c9;
+}
+pre .css .hexcolor {
+  color: #6cc;
+}
+pre .function,
+pre .python .decorator,
+pre .python .title,
+pre .ruby .function .title,
+pre .ruby .title .keyword,
+pre .perl .sub,
+pre .javascript .title,
+pre .coffeescript .title {
+  color: #69c;
+}
+pre .keyword,
+pre .javascript .function {
+  color: #c9c;
+}
+.content-page {
+  margin-right: 0px !important;
+}
+/* Paginator styles */
+.pagination > a,
+.pagination > span {
+  display: inline-block;
+  margin-left: 5px;
+  border-radius: 25px !important;
+  border: none;
+  color: #868c93;
+  padding: 6px 12px;
+  position: relative;
+  float: left;
+  margin-left: -12px;
+  margin-right: 17px;
+  line-height: 1.42857143;
+  text-decoration: none;
+  background-color: #fff;
+}
+.pagination > a:hover {
+  color: #23527c;
+  background-color: #eee;
+  border-color: #ddd;
+  z-index: 3;
+}
+.pagination > a:first-child,
+.pagination > a:last-child {
+  padding: 4px 12px 8px;
+}
+.pagination span {
+  z-index: 2;
+  color: #fff;
+  cursor: default;
+  background-color: #337ab7;
+  border-color: #337ab7;
+}
+#page-nav {
+  float: none !important;
+  margin-bottom: 20px !important;
+  margin-left: 5px;
+}
+/* Extra info topbar tweaks */
+@media (max-width: 480px) {
+  .pre-header .list-inline li {
+    margin-bottom: 2px;
+  }
+  .page-header-fixed .pre-header {
+    opacity: 0;
+  }
+}
+@media (max-width: 767px) {
+  .pre-header .pull-right {
+    float: right !important;
+  }
+}
+/* Menu tweak */
+@media (max-width: 1024px) {
+  .page-header-fixed .header-navigation {
+    height: auto !important;
+  }
+}
+/* Typography and Posts */
+p {
+  line-height: 1.5;
+}
+h4 {
+  line-height: 1.5 !important;
+}
+.article-entry p,
+.article-entry li {
+  text-align: inherit !important;
+  line-height: 1.75em !important;
+  font-size: 1.2em;
+  max-width: 42em;
+  color: #333;
+}
+.article-entry h1,
+h2,
+h3,
+h4,
+h5 {
+  margin-top: 20px;
+}
+.blog-item .blog-info {
+  margin-top: 10px !important;
+}
+.blog-item img {
+  width: 100%;
+  margin: 16px 0px;
+}
+.image-strip {
+  max-height: 300px;
+  overflow: hidden;
+}
+/* Index styles */
+.row-corporate {
+  height: 600px;
+  background-size: cover !important;
+  overflow: hidden;
+  height: 600px;
+}
+.flush-with-header {
+  margin-top: -23px;
+}
+.row-corporate img {
+  height: 500px;
+  margin-top: 100px;
+}
+.row-corporate-text-container {
+  height: 600px;
+}
+.bg-light-1 {
+  background: url("/metronic/assets/pages/img/frontend-slider/bg2_BK.jpg") no-repeat center;
+}
+.bg-light-2 {
+  background: url("/metronic/assets/pages/img/frontend-slider/bg4.jpg") no-repeat center;
+}
+/* Pseudo-element used to push text to center */
+.row-corporate-text-container:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -0.25em;
+}
+.row-corporate-text {
+  display: inline-block;
+  vertical-align: middle;
+  width: 99%;
+}
+/* Project Page Styles */
+.mix-info {
+  display: none;
+}
+.mix_all {
+  -webkit-transition: all 0.7s ease;
+  -moz-transition: all 0.7s ease;
+  -o-transition: all 0.7s ease;
+  transition: all 0.7s ease;
+}
+.mix_all img {
+  width: 100%;
+}
+.btn-primary {
+  color: #fff !important;
+  border: 1px solid #e94d1c !important;
+}
