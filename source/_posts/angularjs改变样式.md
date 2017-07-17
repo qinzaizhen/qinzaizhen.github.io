@@ -31,7 +31,7 @@ app.controller('myCtrl', function($scope) {
 
 **这种方式耦合性较高，将视图的变化放在了controller中**
 
-2.  字符串数组形式
+2. 字符串数组形式
 
 ```html
 <style>
