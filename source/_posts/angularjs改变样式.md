@@ -8,12 +8,12 @@ tags: [angularjs, 样式, class]
 
 ```html
 <style>
-    .play{
-        color:red;
-    }
-    .play2{
-        font-size:25px;
-    }
+	.play{
+		color:red;
+	}
+	.play2{
+		font-size:25px;
+	}
 </style>
 <div ng-app="myApp" ng-controller="myCtrl">
 <p class="{{class}}">我的play样式</p>
@@ -21,26 +21,27 @@ tags: [angularjs, 样式, class]
 <script>
 var app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope) {
-    $scope.class = 'play';
+	$scope.class = 'play';
 });
 </script>
 ```
 
 运行效果图
-{% qnimg 变量绑定.png title:变量绑定 alt:变量绑定 'class:class1 class2' %}
+
+![image](http://ooll8xqpq.bkt.clouddn.com/images/%E5%8F%98%E9%87%8F%E7%BB%91%E5%AE%9A.png)
 
 **这种方式耦合性较高，将视图的变化放在了controller中**
 
-2. 字符串数组形式
+2.  字符串数组形式
 
 ```html
 <style>
-    .play{
-        color:red;
-    }
-    .play2{
-        font-size:25px;
-    }
+	.play{
+		color:red;
+	}
+	.play2{
+		font-size:25px;
+	}
 </style>
 <div ng-app="myApp" ng-controller="myCtrl">
 <p ng-class="{true:'play',false:'play2'}[isplay]">我是字符串数组形式</p>
@@ -48,13 +49,14 @@ app.controller('myCtrl', function($scope) {
 <script>
 var app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope) {
-    $scope.isplay=true;
+	$scope.isplay=true;
 });
 </script>
 ```
 
 运行效果图
-{% qnimg 字符串数组形式.png title:字符串数组形式 alt:字符串数组形式 'class:class1 class2' %}
+
+![image](http://ooll8xqpq.bkt.clouddn.com/images/%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%95%B0%E7%BB%84%E5%BD%A2%E5%BC%8F.png)
 
 可以理解为
 ```javascript
@@ -77,12 +79,12 @@ $scope.isplay='play';
 
 ```html
 <style>
-    .play{
-        color:red;
-    }
-    .play2{
-        font-size:25px;
-    }
+	.play{
+		color:red;
+	}
+	.play2{
+		font-size:25px;
+	}
 </style>
 <div ng-app="myApp" ng-controller="myCtrl">
 
@@ -92,14 +94,22 @@ $scope.isplay='play';
 <script>
 var app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope) {
-    $scope.isplay=true;
-    $scope.isplay2 = true;
+	$scope.isplay=true;
+	$scope.isplay2 = true;
 });
 </script>
 ```
 运行效果图
-{% qnimg key-value形式.png title:key-value形式 alt:key-value形式 'class:class1 class2' %}
-前面的是样式的class，后面为表达式，为true时激活些样式。当isplay和isplay2都为true，元素将获得两种样式。
+
+![image](http://ooll8xqpq.bkt.clouddn.com/images/key-value%E5%BD%A2%E5%BC%8F.png)
+
+前面的是样式的class，后面为表达式，为true时激活些样式。当isplay和isplay2都为true，元素将获得两种样式。  
+按照常规理解应该是
+
+```html
+    {isplay:'play',isplay2:'play2'}
+```
+这样的写法才更容易让人理解吧？  
 **总结：** 
 1. 如果是二选一的情况下用第二种，尤其是简写形式。
 2. 复杂的样式用第三种。
