@@ -1,7 +1,7 @@
 ---
 title: dubbo学习1- 配置
 date: 2017-08-03 22:58:47
-tags: [dubbo，配置]
+tags: [dubbo,配置]
 ---
 ### XML配置
 dubbo通过spring的xml文件进行配置，可以方便地与spring进行集成。
@@ -228,7 +228,7 @@ reference.setUrl("dubbo://localhost:20880/com.xxx.XxxService");
 ```
 
 官方文档上说`ServiceConfig`，`ReferenceConfig`为重对象，内部封装了与注册中心的连接，以及与服务提供者的连接，需要缓存，否则会造成内存和连接泄露。这里有点儿疑问：
-1. 需要暴露多个服务的时候需要new 多个ServiceConfig实例，每个实例中者封装了与注册中心的连接。这个应该没毛病，每个服务可以使用不一样的注册中心。
+1. 需要暴露多个服务的时候需要new 多个ServiceConfig实例，每个实例中者封装了与注册中心的连接。这个应该没毛病，每个服务可以使用不一样的注册中心。个人觉得`ApplicationConfig`,`RegistryConfig`,`ProtocolConfig`这些实例应该单独实例化之后，再设置到`ServiceConfig`，`ReferenceConfig`中去比较好吧，因为`ApplicationConfig`这些只需要初始化一次之后，可以在多个`ServiceConfig`和`ReferenceConfig`中引用，不需要在每个`ServiceConfig`，`ReferenceConfig`配置的过程中初始化。
 2. 在什么样的情况下需要获取这些实例？一般服务暴露出去之后这个实例也就用不上了吧？在做系统集成的时候如果需要管理这些Service的话，应该是需要拿到这些配置对象的。
 
 [demo地址](https://github.com/qzzsunly/dubbodemo/blob/master/demo0)
