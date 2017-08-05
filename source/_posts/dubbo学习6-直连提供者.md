@@ -29,4 +29,9 @@ dubbo-resolve.properties文件中配置服务映射：
 life.qzz.dubbodemo.api.DemoService=dubbo://localhost:20880
 ```
 此配置优先级高于<dubbo:reference/>中的配置，2.0以上的版本会自动加载${user.home}/dubbo-resolve.properties文件，不需要配置。
+
+优先级关系：
+
+![image](http://ooll8xqpq.bkt.clouddn.com/dubbo-directly.jpg)
+
 **为了避免复杂化线上环境，不要在线上使用这个功能，只应在测试阶段使用。**
