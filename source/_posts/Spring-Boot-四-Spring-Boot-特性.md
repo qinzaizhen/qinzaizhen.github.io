@@ -475,6 +475,7 @@ public class OwnerProperties {
 }
 ```
 下面所有的属性都可以使用：
+
 属性名|解释
 --|--
 `person.firstName`|标准的驼峰形式
@@ -485,6 +486,7 @@ public class OwnerProperties {
 > 注解的`prefix`值必须是短横线隔开的形式，如：小写并且以`-`分隔。这里如果只有`person`就没有必要隔开了。
 
 <h6>松散绑定规则</h6>
+
 属性来源|简单值|List值
 --|--|--
 Properties文件|驼峰形式，短横线隔开，下划线符号|用`[]`的标准list形式或者逗号隔开的值
@@ -543,24 +545,120 @@ public class FooProperties {
 
 #### @ConfigurationProperties 与 @Value对比
 `@Value`是核心容器的一个功能，不提供`@ConfigurationProperties `类似的类型安全的功能。下面的表格总结了两个注解支持的功能。
+
 功能|@ConfigurationProperties|@Value
 --|--|--
 不严格绑定|支持|不支持
 元数据支持|支持|不支持
 SpEL 表达式|不支持|支持
+
 如果为自己的组件定义了一些配置键值，建议将他们放在一个POJO对象中，并且用`@ConfigurationProperties`注解。同时要注意由于`@Value`不支持松散绑定，因此当需要提供环境变量的值时最好不用`@Value`。
 
 最后，虽然可以用`@Value`编写`SpEL`表达式，但这些从应用程序属性文件中的表达式不会处理。
 
 ## Profiles
 Spring Profile提供了一种隔离部分应用配置的方式，同时使它只在某种确定的环境中可用。任何`@Component`或`@Configuration`可以标记`@Profile`注解来限制它们被加载。
+
+```java
+@Configuration
+@Profile("production")
+public class ProductionConfiguration {
+
+    // ...
+
+}
+```
+在Spring常规的方式中，可以使用`spring.profile.active` `Environment`属性来指定激活哪个profile。可以在任何常规方式中指定这个属性，比如可以在`application.properties`文件中指定：
+
+```
+spring.profiles.active=dev,hsqldb
+```
+
+或者在控制台指定：`--spring.profiles.active=dev,hsqldb`。
+
 ### 增加激活的profile
+`spring.profiles.active`属性跟其他属性一样遵循相同的顺序规则，最高优先级的将会生效。意思是可以指定在`application.properties`文件中指定激活的profile，然后在控制台中替换掉它。
+
+有时增加激活的profile而不是替换掉它们将会对特定profile属性非常有用。`spring.profiles.include`属性可以用来无条件地增加激活的profile。`SpringApplication`入口也拥胡一个API来设置附加的profile（如在那些通过`spring.profiles.active`属性设置的profile之上）：`setAdditionalProfiles()`方法。
+
+例如：当一个应用通过`--spring.profiles.active=prod`开关来运行时，`proddb`和`prodmq` profile也会被激活：
+```yaml
+---
+my.property: fromyamlfile
+---
+spring.profiles: prod
+spring.profiles.include:
+  - proddb
+  - prodmq
+```
+
+> 记住一点：`spring.profiles`属性可以定义在YAML文档中，用来决定什么时候这个特殊的文档被包含在配置中。更多查看[ Change configuration depending on the environment](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#howto-change-configuration-depending-on-the-environment)。
+
 ### 以编程方式设置profile
+在应用启动之前可以通过调用`SpringApplication.setAdditionalProfiles()`方法以编程的方式来设置激活的profile。用Spring `ConfigurableEnvironment`接口也可以激活profile。
+
 ### 特定Profile配置文件
+`application.properties`（或`application.yml`）和通过`@ConfigurationProperties`引用的文件中的特定profile变量都会被加载。详细查看[Section 24.4, “Profile-specific properties”](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-external-config-profile-specific-properties)
+
 ## 日志
+Spring Boot 内部使用 [Commons Log](http://commons.apache.org/logging)记录日志，但是放开了日志实现。为[Java Util Logging](http://docs.oracle.com/javase/7/docs/api/java/util/logging/package-summary.html)，[Log4J2](http://logging.apache.org/log4j/2.x/)和[Logback](http://logback.qos.ch/)提供了默认的配置。每个logger都预先配置了输出到控制台和选择输出到文件。
+
+如果使用了"Starters"，默认会使用Logback来记录日志。还包括适当的Logback路由，以确保使用Java Util Logging、Commons Logging、Log4J或SLF4J的依赖库都能正常工作。
+
+> Java 有很多日志框架可选。不要对上面的选择很困惑。一般不需要改变日志的依赖，并且Spring Boot 默认就会工作地很好。
+
 ### 日志格式
+Spring Boot默认的日志输出格式类似下面这种：
+```txt
+2014-03-05 10:57:51.112  INFO 45469 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/7.0.52
+2014-03-05 10:57:51.253  INFO 45469 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2014-03-05 10:57:51.253  INFO 45469 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1358 ms
+2014-03-05 10:57:51.698  INFO 45469 --- [ost-startStop-1] o.s.b.c.e.ServletRegistrationBean        : Mapping servlet: 'dispatcherServlet' to [/]
+2014-03-05 10:57:51.702  INFO 45469 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+```
+输出了以下内容：
+
+- 日期和时间：毫秒级精度，容易排序
+- 日志级别-`ERROR`,`WARN`,`INFO`,`DEBUG`或`TRACE`
+- 进程ID
+- 用一个`---`分隔符来区分真正的日志内容起始
+- 线程名称- 用方括号包裹起来（在控制台输出时有可能被截断）
+- 日志记录器名称-这个通常是类名称（通常是短小的）
+- 日志内容
+
+> Logback 没有`FATAL`这个级别（映射到ERROR）。
+
 ### 控制台输出
+默认地的日志配置会将日志打印到控制台。默认会记录`ERROR`,`WARN`和`INFO`级别的日志。可以在启动的时候通过`--debug`来开启"debug"模式。
+```shell
+$ java -jar myapp.jar --debug
+```
+
+> 也可以在`application.properties`文件指定`debug=true`。
+
+当debug模式启用时，选择的核心日志记录器（嵌入式容器，Hibernate和Spring Boot）将会记录更多更多信息。启用debug模式并不会配置应用程序以`DEBUG`级别来记录所有消息。
+
+可以选择通过`--trace`标记（或者`application.properties`文件中`trace=true`）来启用"trace"模式。这将为选择的核心日志记录器（嵌入式容器，Hibernate schema生成和整个的Spring框架）启用trace日志记录。
+
 #### 彩色编码输出
+如果终端支持ANSI，将会以彩色输出来帮助阅读。可以设置`spring.output.ansi.enabled`为一个受支持的值来覆盖自动探测。
+
+使用`%clr`转换词来配置彩色编码。在它最简单的形式中，转换器将以日志级别来为输出涂色。比如：
+```
+%clr(%5p)
+```
+
+日志级别对应的颜色如下：
+
+级别|颜色
+--|--
+`FATAL`|Red
+`ERROR`|Red
+`WARN`|Yellow
+`INFO`|Green
+`DEBUG`|Green
+`TRACE`|Green
+
 ### 文件输出
 ### 日志级别
 ### 自定义日志配置
