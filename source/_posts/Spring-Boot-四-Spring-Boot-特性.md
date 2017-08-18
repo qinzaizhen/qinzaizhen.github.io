@@ -659,9 +659,63 @@ $ java -jar myapp.jar --debug
 `DEBUG`|Green
 `TRACE`|Green
 
+或者，可以指定应该使用的颜色或样式，以便将其作为转换的选项。例如，将文字的颜色变为黄色：
+```
+%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){yellow}
+```
+支持下面的颜色和样式：
+- `blue`
+- `cyan`
+- `faint`
+- `green`
+- `magenta`
+- `red`
+- `yellow`
+
 ### 文件输出
+Spring Boot 默认只会记录到控制台而不会记录到文件。如果还想记录到文件中需要设置`logging.file`或者`logging.path`属性值（例如在`application.properties`中）。
+
+下面的表格指出了`logging.*`属性值是如何一起工作的：
+<caption>日志属性</caption>
+
+`logging.file`|`logging.path`|示例|描述
+--|--|--
+（无）|（无）| |只在控制台记录日志
+指定文件|（无）|`my.log`|记录到指定的日志文件。名称可以是一个绝对路径或者相对于现在的目录的路径
+（无）|指定目录|`/var/log`|记录日志到指定目录中`spring.log`文件中。名称可以是绝对路径或者是相对现在目录的路径
+
+当日志文件达到10MB 时将会被自动切分，并且同控制台输出一样，默认会将`ERROR`,`WARN`和`INFO`级别的日志记录下来。
+
+> 日志系统在应用的生命周期中初始化的时机比较早，因此不会发现通过`@propertySource`注解加载的文件中的这些日志属性。
+
+> 日志属性与实际的日志实现相独立的。因此特定的配置属性（例如针对Logback的`logback.configurationFile`）不归Spring Boot管理。
+
 ### 日志级别
+所有支持的日志系统都可以通过使用`logger.level.*=LEVEL`在Spring 环境（例如`application.properties`）中设置日志级别，这里的`LEVEL`是`TRACE`,`DEBUG`,`INFO`,`WARN`,`ERROR`,`FATAL`,`OFF`中其中之一。`root`记录器可以通过`logging.level.root`来配置。例如`application.properties`：
+
+```properties
+logging.level.root=WARN
+logging.level.org.springframework.web=DEBUG
+logging.level.org.hibernate=ERROR
+```
+
+> Spring Boot默认会重新映射Thymeleaf `INFO`日志到`DEBUG`级别。这个有助于减少标准日志输出的干扰。想要知道如何在自己的配置中应用重新映射可以查看[`LevelRemappingAppender`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot/src/main/java/org/springframework/boot/logging/logback/LevelRemappingAppender.java)了解更多细节。
+
 ### 自定义日志配置
+在classpath中加入适当的依赖包就可以激活不同的日志系统，并且root classpath中提供一个配置文件来进行深度自定义，或者在Spring的`Environment`中指定`logging.config`属性。
+
+可以通过`org.springframework.boot.logging.LoggingSystem`系统属性来强制Spring Boot使用常规的日志系统。这个值应该是实现了`LoggingSystem`接口的类的全名称。也可以使用`none`值来完全禁用掉Spring Boot的日志配置。
+
+> 由于日志系统在`ApplicationContext`创建之前实例化，不可能通过Spring `@Configuration`文件中的`@PropertySources`来控制日志系统。系统属性和常规的Spring Boot扩展配置文件可以正常工作。
+
+根据日志系统的不同下面的配置文件将会被加载：
+
+日志系统|自定义
+--|--
+Logback|`logback-spring.xml`,`logback-spring.groovy`,`logback.xml`或`logback.groovy`
+Log4j2|`log4j2-spring.xml`或`log4j2.xml`
+JDK(Java Util Logging)|`logging.properties`
+
 ### Logback扩展
 #### 特定Profile配置
 #### 环境属性
