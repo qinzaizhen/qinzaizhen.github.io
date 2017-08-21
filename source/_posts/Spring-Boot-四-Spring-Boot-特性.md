@@ -676,7 +676,7 @@ $ java -jar myapp.jar --debug
 Spring Boot 默认只会记录到控制台而不会记录到文件。如果还想记录到文件中需要设置`logging.file`或者`logging.path`属性值（例如在`application.properties`中）。
 
 下面的表格指出了`logging.*`属性值是如何一起工作的：
-<caption>日志属性</caption>
+日志属性
 
 `logging.file`|`logging.path`|示例|描述
 --|--|--
@@ -716,16 +716,194 @@ Logback|`logback-spring.xml`,`logback-spring.groovy`,`logback.xml`或`logback.gr
 Log4j2|`log4j2-spring.xml`或`log4j2.xml`
 JDK(Java Util Logging)|`logging.properties`
 
+> 建议尽可能使用`-spring`变体日志配置文件（比如`logback-spring.xml`）而不是`logback.xml`。如果使用标准的配置位置，Spring无法完全控制日志初始化。
+
+> 这里有一些关于Java Util Logging 已知的类加载问题，当使用“可执行jar包” 的时候可能引起问题。建议尽可能避免使用它。
+
+为了帮助自定义，下面是一些其他的从Spring `Environment`变量转换为系统属性的属性：
+
+Spring Environment|系统属性|注释
+--|--|--
+`logging.exception-conversion-word`|`LOG_EXCEPTION_CONVERSION_WORD`|当出现异常时使用的转换词
+`logging.file`|`LOG_FILE`|如果定义了会用在默认的日志配置中
+`logging.path`|`LOG_PATH`|如果定义了会用在默认的日志配置中
+`logging.pattern.console`|`CONSOLE_LOG_PATTERN`|用在控制台中的日志格式（stdout）。（只支持默认的logback设置）
+`logging.pattern.file`|`FILE_LOG_PATTERN`|日志文件中的日志格式（如果`LOG_FILE`启用了）。（只支持默认的logback设置）
+`logging.pattern.level`|`LOG_LEVEL_PATTERN`|渲染日志级别的格式（默认为`%5p`）。（只支持默认的logback设置）
+`PID`|`PID`|当前进程的ID（如果可能，并且还没有被定义为操作系统环境变量）
+
+所有支持的日志系统都可以在解析配置文件时参考系统属性。可以在`spring-boot.jar`的默认配置中找到例子。（类似的路径`spring-boot-2.0.0.BUILD-SNAPSHOT.jar\org\springframework\boot\logging\logback\defaults.xml`）
+
+> 如果想在日志属性中使用placeholder，可以使用[Spring Boot 的语法](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-external-config-placeholders-in-properties)而不是底层框架的语法。尤其是使用Logback时，需要使用`:`作为属性名和默认值之间的分隔符，而不是`:-`。
+
+> 可以通过覆盖`LOG_LEVEL_PATTERN`（或`logging.pattern.level`）来添加MDC和其他专门的内容到日志行中。例如如果使用`logging.pattern.level=user:%X{user} %5p`，然后如果user存在的话默认的日志格式将会包含一个MDC user 实体，例如：
+```
+2015-09-30 12:30:04.031 user:juergen INFO 22174 --- [  nio-8080-exec-0] demo.Controller
+Handling authenticated request
+```
+
 ### Logback扩展
+Spring Boot包含许多对Logback的扩展，可以帮助高级配置。可以在`logback-spring.xml`文件中使用这些扩展。
+
+> 不能在标准的`logback.xml`文件中使用扩展，因为它加载的时机太早。要么使用`logback-spring.xml`或者定义`logging.config`属性。
+
+> 这些扩展不能与Logback的[配置扫描](http://logback.qos.ch/manual/configuration.html#autoScan)一起使用。如果尝试这么做，修改配置文件会引起下面的类似的问题：
+```
+ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProperty], current ElementPath is [[configuration][springProperty]]
+ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProfile], current ElementPath is [[configuration][springProfile]]
+```
+
 #### 特定Profile配置
+`<springProfile>`标签可以通过激活Spring profile来选择性地包含或排除配置块。Profile块在`<configuration>`元素中w任意位置都受支持。使用`name`属性来指定哪个profile 接受这个配置。通过逗号分隔的列表可以指定多个profile。
+
+```xml
+<springProfile name="staging">
+    <!-- configuration to be enabled when the "staging" profile is active -->
+</springProfile>
+
+<springProfile name="dev, staging">
+    <!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
+</springProfile>
+
+<springProfile name="!production">
+    <!-- configuration to be enabled when the "production" profile is not active -->
+</springProfile>
+```
+
 #### 环境属性
+`<pringProperty>`标签可以从Spring环境中获得属性，以便在Logback中使用。如果你想在logback的配置中访问`application.properties`文件中的值这个功能会非常有用。这个标签的工作方式和Logback的标准`<property>`标签类似，但不是指定一个直接的值，你指定了属性的来源（从`Environment`中）。如果需要将属性存储在`local`范围以外的地方，那么可以使用scope属性。如果需要一个后备值以防这个属性没有在`Environment`中指定，可以使用`defaultValue`属性。
+```xml
+<springProperty scope="context" name="fluentHost" source="myapp.fluentd.host"
+        defaultValue="localhost"/>
+<appender name="FLUENT" class="ch.qos.logback.more.appenders.DataFluentAppender">
+    <remoteHost>${fluentHost}</remoteHost>
+    ...
+</appender>
+```
+
+> `source`值必须通过使用短横线形式（`my.property-name`）。但是添加到`Environment`中的属性值可以使用松散绑定的规则。
+
 ## 开发web应用
+Spring Boot非常适合用来开发web应用。通过嵌入的Tomcat，Jetty，Undertow或者Netty，可以轻松地创建一个自包含的HTTP服务器。大多数web应用可以通过使用`spring-boot-starter-web`模块来建立和快速启动。也可以选择通过`spring-boot-starter-webflux`模块来创建响应式web应用。
+
+如果还没有开发过Spring Boot web应用于，可以跟着[快速开始](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#getting-started-first-application)章节中的例子学习。
+
 ### Spring Web MVC 框架
+Spring WEB MVC 框架（经常简称为'Spring MVC'）是一个富"model view controller" web框架。Spring MVC 让你创建特殊的`@Controller`和`@RestController` bean 来处理到来的HTTP请求。controller中的方法通过`@RequestMapping`注解映射到HTTP。
+
+下面是一个典型的产生JSON数据的`@RestController`例子：
+```java
+@RestController
+@RequestMapping(value="/users")
+public class MyRestController {
+
+    @RequestMapping(value="/{user}", method=RequestMethod.GET)
+    public User getUser(@PathVariable Long user) {
+        // ...
+    }
+
+    @RequestMapping(value="/{user}/customers", method=RequestMethod.GET)
+    List<Customer> getUserCustomers(@PathVariable Long user) {
+        // ...
+    }
+
+    @RequestMapping(value="/{user}", method=RequestMethod.DELETE)
+    public User deleteUser(@PathVariable Long user) {
+        // ...
+    }
+
+}
+
+```
+
+Spring MVC 是Spring Framework核心的一部分，[查看详情](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/web.html#mvc)。这里有一些关于[Spring MVC的指导](http://spring.io/guides)。
+
 #### Spring MVC自动配置
+Spring Boot为Spring MVC提供了自动配置功能，可以和大多数应用工作地很好。
+
+Spring Boot自动配置在默认的基础上添加了以下功能：
+- 包括`ContentNegotiatingViewResolver`和`BeanNameViewResoler` bean。
+- 支持服务静态资源，包括支持WebJars。
+- 自动注册`Converter`,`GenericConverter`,`Formatter` bean。
+- `HttpMessageConverter`支持。
+- 自动注册`MessageCodesResolver`。
+- 静态`index.html`支持。
+- 自定义`Favicon`支持。
+- 自动使用`ConfigurableWebBindingInitializer` bean。
+
+如果想要保持Spring Boot MVC的功能，并且只想要添加额外的MVC 配置（interceptor, formatter, view controller等等），可以添加自己的类型为`WebMvcConfigurer`的`@Configuration`类，但是**不要**加`@EnableWebMvc`。如果希望提供自定义的`RequestMappingHandlerMapping`，`RequestMappingHandlerAdapter`或者`ExceptionHandlerExceptionResolver`实例,可以声明一个`WebMvcRegistrationsAdapter`实例，并且提供这些组件。
+
+如果想要完全控制Spring MVC，可以添加自己的`@Configuration`类，并以`@EnableWebMvc`注解。
+
 #### HttpMessageConverter
+Spring MVC 使用`HttpMessageConverter`接口来转换HTTP请求和响应。包括了一些合理的开箱即用的默认功能，例如Object可以自动转换为JSON（使用Jackson库）或者XML（如果可用的话使用Jackson XML扩展，否则使用JAXB）。String 默认使`用UTF-8`编码。
+
+如果需要添加或者自定义converter可以使用Spring Boot 的`HttpMessageConverters`类：
+```java
+import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.context.annotation.*;
+import org.springframework.http.converter.*;
+
+@Configuration
+public class MyConfiguration {
+
+    @Bean
+    public HttpMessageConverters customConverters() {
+        HttpMessageConverter<?> additional = ...
+        HttpMessageConverter<?> another = ...
+        return new HttpMessageConverters(additional, another);
+    }
+
+}
+```
+任何传递给context的`HttpMessageConverter` bean 都会添加到converter列表中。也可以通过这种方式覆盖缺省的converter。
+
 #### 自定义JSON序列化和反序列化
+如果使用Jackson来序列化和反序列化JSON数据，可能想要编写自己的`JsonSerializer`和`JsonDeserializer`类。自定义serializer通常通过一个模块注册到Jackson，但是Spring Boot提供了一替代的`@jsoncomponent`注解，它使直接注册Spring bean变得更加容易。
+
+可以直接在`JsonSerializer`或者`JsonDeserializer`实现类上使用`@JsonComponent`。也可以在包含内部serializers/deserializers类的类上使用。例如：
+```java
+import java.io.*;
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.databind.*;
+import org.springframework.boot.jackson.*;
+
+@JsonComponent
+public class Example {
+
+    public static class Serializer extends JsonSerializer<SomeObject> {
+        // ...
+    }
+
+    public static class Deserializer extends JsonDeserializer<SomeObject> {
+        // ...
+    }
+
+}
+```
+`ApplicationContext`中所有的`@JsonComponent` bean都将会自动注册到Jackson，并且由于`@JsonComponent`由`@Component`元注解注解，常规的组件扫描规则也将适用于这些组件。
+
+Spring Boot也提供了[`JsonObjectSerializer`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot/src/main/java/org/springframework/boot/jackson/JsonObjectSerializer.java)和[`JsonObjectDeserializer`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot/src/main/java/org/springframework/boot/jackson/JsonObjectDeserializer.java)基类，它们在序列化对象时为标准的Jackson版本提供了有用的替代方法。
+
 #### MessageCodesResolver
+Spring MVC有一个用于生成错误代码的策略，用于从绑定错误中呈现错误消息：`MessageCodesResolver`。如果设置了`spring.mvc.message-codes-resolver.format`属性`PREFIX_ERROR_CODE`或者`POSTFIX-ERROR_CODE`（可以查看`DefaultMessageCodesResolver.Format`枚举），Spring Boot会为你创建一个。
+
 #### 静态内容
+Spring Boot默认会在classpath中的`/static`(或`/public`或`/resources`或`/META-INF/resources`)目录提供静态服务，或者从`ServlectContext`的根目录。它使用Spring MVC中的`ResourceHttpRequestHandler`因此可以通过添加自己的`WebMvcConfigurer`并且重载`addResourceHandlers`方法来修改它的行为。
+
+在独立的web应用程序中，也启用了来自容器的默认servlet，并充当备用服务器，如果Spring决定不处理它，则从`ServletContext`的根中提供内容。大多数情况下，这种情况不会发生（除非修改了默认的MVC配置）因为Spring会一直可以通过`DispatcherServlet`来处理请求。
+
+resource默认映射到`/**`，但是可以通过`spring.mvc.static-path-pattern`来调整。例如重定向所有的resource到`/resources/**`可以向下面这样：
+```
+spring.mvc.static-path-pattern=/resources/**
+```
+也可以通过`spring.resources.static-locations`（通过一个目录列表替换掉默认值）来自定义静态resource位置。如果这么做默认的欢迎页面侦测将会切换到自定义的位置，因此如果启动时在定义的位置中有任意的`index.html`，它将会是应用的主页。
+
+除了上面的标准静态resource位置之外，[Webjar内容](http://www.webjars.org/)是一个特殊的例子。任何`/webjars/**`路径的资源都将从jar文件中得到服务，如果它们被打包成webjar格式。
+
+> 如果应用会被打包成jar，不要使用`src/main/webapp`目录。尽管这个目录是一个公用的标准，但是它仅仅是在打包成war的时候生效，并且在生成jar时它会被大多数构建工具默默地忽略掉。
+
+Spring Boot 也支持Spring MVC提供的高级resource处理功能，允许使用诸如缓存破坏静态资源或使用版本不可知的webjar的url。
 #### 自定义Favicon
 #### ConfigurableWebBindingInitializer
 #### 模板引擎
