@@ -903,26 +903,326 @@ spring.mvc.static-path-pattern=/resources/**
 
 > 如果应用会被打包成jar，不要使用`src/main/webapp`目录。尽管这个目录是一个公用的标准，但是它仅仅是在打包成war的时候生效，并且在生成jar时它会被大多数构建工具默默地忽略掉。
 
-Spring Boot 也支持Spring MVC提供的高级resource处理功能，允许使用诸如缓存破坏静态资源或使用版本不可知的webjar的url。
+Spring Boot 也支持Spring MVC提供的高级resource处理功能，允许使用诸如静态资源缓存破坏或使用Webjar的版本无关url。
+
+要使用Webjar的版本无关url，添加`webjars-locator`依赖就可以了。然后申明Webjar，以jQuery举例，`“/webjars/jquery/dist/jquery.min.js”`会变成`“/webjars/jquery/x.y.z/dist/jquery.min.js”`，这里的`x.y.z`就是Webjar版本。
+
+> 如果使用的是JBoss，需要声明`sebjars-locator-jboss-vfs`依赖代替`webjars-locator`，否则所有的Webjars会解析为`404`。
+
+要使用缓存破坏，下面的配置将会为所有静态resource配置一个缓存破坏策略，有效地添加了一个hash值到URL中，例如`<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`：
+```
+spring.resources.chain.strategy.content.enabled=true
+spring.resources.chain.strategy.content.paths=/**
+```
+
+> 自动配置了在运行时对Thymeleaf和FreeMarker模板中的资源链接重新编写，这得益于`ResourceUrlEncodingFilter`。当使用JSP时应该手动声明这个filter。其他的模板引擎目前还不能自动支持，但是可以使用自定义模板宏/helper，以及使用[`ResourceUrlProvider`](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/javadoc-api/org/springframework/web/servlet/resource/ResourceUrlProvider.html)。
+
+当动态加载resource时，如JavaScript模块加载器，重命名文件不是一个选项。这也是为什么其他的策略依旧支持并且可以相互组合。“fixed” 策略将会在URL中添加一个静态的版本号，无需修改文件名：
+```
+spring.resources.chain.strategy.content.enabled=true
+spring.resources.chain.strategy.content.paths=/**
+spring.resources.chain.strategy.fixed.enabled=true
+spring.resources.chain.strategy.fixed.paths=/js/lib/
+spring.resources.chain.strategy.fixed.version=v12
+```
+在上面的配置中，JavaScript加载位于`"/js/lib/"`的模块时将会使用"fixed" 版本策略`"/v12/js/lib/mymodule.js"`，然而其他的resource将仍然使用`<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`。
+
+可以查看[`ResourceProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ResourceProperties.java)了解更多支持的选项
+
+> 这个功能在这个专用的[博客](https://spring.io/blog/2014/07/24/spring-framework-4-1-handling-static-web-resources)和Spring Framework的[文档](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/web.html#mvc-config-static-resources)上有完整的说明。
+
 #### 自定义Favicon
+Spring Boot在配置的静态内容位置和classpath根目录（按此顺序）中查找`favicon.ico`。如果找到了，将自动作为应用的favicon。
+
 #### ConfigurableWebBindingInitializer
+Spring MVC使用`WebBindingInitializer`来为特殊请求初始化一个`WebDataBinder`。如果创建了自己的`ConfigurableWebBindingInitializer` `@Bean`，Spring Boot将自动配置Spring MVC使用它。
+
 #### 模板引擎
+跟REST服务一样，也可以使用Spring MVC来提供动态HTML内容。Spring MVC 支持一系列包括模板技术，包括Thymeleaf，FreeMarker和JSP。许多其他的模板引擎也发布了他们自己的Spring MVC集成方案。
+
+Spring Boot包括针对以下模板引擎的自动配置功能：
+- [FreeMarker](http://freemarker.org/docs/)
+- [Groovy](http://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine)
+- [Thymeleaf](http://www.thymeleaf.org/)
+- [Mustache](http://mustache.github.io/)
+
+> 有可能的话应该尽量避免使用JSP ，在使用嵌入式servlet容器时有一些[已知的限制](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-jsp-limitations)。
+
+当你在使用其中一种模板引擎并使用默认配置时，将会从`src/main/resources/templates`目录中自动发现模板。
+
+> IntelliJ IDEA根据运行应用程序的方式不同classpath排序不一样。在IDE中通过main方法启动应用和使用Maven和Gradle或者打包的jar来运行会导致不同的顺序。这会导致Spring Boot在classpath中查找模板失败。如果你碰到了这个问题，可以在IDE中重新对classpath排序，将模块的class和resource放在首位。或者可以配置模板前缀来查找classpath中的每个模板目录：`classpath*:/templates/`。
+
 #### 错误处理
+Spring Boot提供了一个默认的`/error`映射，以一种合理的方式处理所有错误，并且作为一个全局的错误页面注册到servlet容器中。对于机器客户端，它将生成一个JSON响应，其中包括错误的详细信息、HTTP状态和异常消息。对于浏览器客户端有一个“whitelabel”错误视图，它以HTML格式（或者添加一个`View`解析到`error`来自定义）呈现相同的数据。要完全替换掉默认的行为，可以实现`ErrorController`然后注册一个这种类型的bean定义，或者只需添加类型ErrorAttributes的bean，就可以使用现有的机制，但可以替换内容。
+
+> `BasicErrorController`可以用作自定义`ErrorController`的基类。当你需要添加一个handler来处理新的content type（默认专门处理`text/html`并为其他所有内容提供一个后路）时会非常有用。要达到这个目的只需要继承`BasicErrorController`然后添加一个拥有`produces`属性的`@RequestMapping`的公共方法，然后创建一个这个类型的bean。
+
+也可以定义一个`@ControllerAdvice`为特定的controller或者异常类型返回自定义的JSON内容。
+```java
+@ControllerAdvice(basePackageClasses = FooController.class)
+public class FooControllerAdvice extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(YourException.class)
+    @ResponseBody
+    ResponseEntity<?> handleControllerException(HttpServletRequest request, Throwable ex) {
+        HttpStatus status = getStatus(request);
+        return new ResponseEntity<>(new CustomErrorType(status.value(), ex.getMessage()), status);
+    }
+
+    private HttpStatus getStatus(HttpServletRequest request) {
+        Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
+        if (statusCode == null) {
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return HttpStatus.valueOf(statusCode);
+    }
+
+}
+```
+在上面的例子中，如果一个与`FooController`在同一个包中的Controller抛出`YourException`，那么将使用一个CustomerErrorType  POJO的json，而不是ErrorAttributes。
+
+##### 自定义错误页面
+如果要为给定的状态码显示自定义的HTML错误页面，可以在`/error`文件夹中添加一个文件。错误页面可以是静态HTML（例如在何意静态resource目录下添加的文件）或使用模板。文件名应该是确定的状态码或者一系列。
+
+例如，将`404`映射到一个静态文件，文件夹结构应该像下面这样：
+```
+src/
+ +- main/
+     +- java/
+     |   + <source code>
+     +- resources/
+         +- public/
+             +- error/
+             |   +- 404.html
+             +- <other public assets>
+```
+要映射所有`5xx`的错误，并且使用FreeMarker模板，目录应该是下面这样：
+```
+src/
+ +- main/
+     +- java/
+     |   + <source code>
+     +- resources/
+         +- templates/
+             +- error/
+             |   +- 5xx.ftl
+             +- <other templates>
+```
+
+更复杂的映射可以添加实现了`ErrorViewResolver`接口的bean。
+```java
+public class MyErrorViewResolver implements ErrorViewResolver {
+
+    @Override
+    public ModelAndView resolveErrorView(HttpServletRequest request,
+            HttpStatus status, Map<String, Object> model) {
+        // Use the request or status to optionally return a ModelAndView
+        return ...
+    }
+
+}
+```
+
+也可以使用常规的Spring MVC特性比如[`@ExceptonHandler`](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/web.html#mvc-exceptionhandlers)方法和[`@ControllerAdvice`](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/web.html#mvc-ann-controller-advice)。`ErrorController`会处理任何未处理的异常。
+
+##### 在Spring MVC之外映射错误页面
+对那些没有使用Spring MVC的应用，可以使用`ErrorPageRegister`接口来直接注册`ErrorPages`。这个抽象概念直接与底层的嵌入式servlet容器一起工作即使没有Spring MVC `DispatcherServlet`。
+
+```java
+@Bean
+public ErrorPageRegistrar errorPageRegistrar(){
+    return new MyErrorPageRegistrar();
+}
+
+// ...
+
+private static class MyErrorPageRegistrar implements ErrorPageRegistrar {
+
+    @Override
+    public void registerErrorPages(ErrorPageRegistry registry) {
+        registry.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
+    }
+
+}
+```
+
+注意：如果注册的`ErrorPage`的路径被一个`Filter`处理而结束了（比如和一些非Spring的web框架一样，比如Jersey和Wicket），然后这个`Filter`必须得明确地注册为`ERROR` dispatcher。比如：
+```java
+@Bean
+public FilterRegistrationBean myFilter() {
+    FilterRegistrationBean registration = new FilterRegistrationBean();
+    registration.setFilter(new MyFilter());
+    ...
+    registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
+    return registration;
+}
+```
+
+(默认`FilterRegistrationBean` 不包含`ERROR` dispatcher类型)。
+
+##### WebSphere 应用服务器中错误处理
+当部署到一个servlet容器时，Spring Boot使用它的错误页面过滤器来转发请求到适当的错误页面，并携带错误码。如果response还没有提交，这个请求只能转发到正确的错误页面。WebSphere 8.0或者以上版本默认会根据正确完成servlet的service方法来提交response。应该设置`com.ibm.ws.webcontainer.invokeFlushAfterService`为`false`来禁止这个行为。
+
 #### Spring HATEOAS
+如果正在开发的RESTful API 使用多媒体，Spring Boot 为Spring HATEOAS提供了自动配置，能够与大多数应用一起工作。自动配置替换了使用`@EnableHypermediaSupport`的必要性并且注册了一些bean使构建多媒体应用变得简单，这些bean包括一个`LinkDiscoverers`(为了应用端支持)和一个为了正确整理response到需要的表现形式而配置的`ObjectMapper`。这个`ObjectMapper`将基于`spring.jackson.*`属性或者可能存在的`Jackson2ObjectMapperBuilder` bean 进行自定义。
+
+可以通过使用`@EnableHypermediaSupport`来控制Spring HATEOAS的配置。要注意的是这将会禁用上面提到的`ObjectMapper`自定义。
+
 #### CORS支持
+[跨域资源共享](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing)是一被大多数浏览器实现的W3C标准，它允许你以一种灵活的方式来指定哪种类型的跨域请求是被授权的，代替使用一些不安全和不强大的方式比如IFRAME 和JSONP。
+
+从4.2开始，Spring MVC[跨域支持](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/web.html#cors)开箱即用。在Spring Boot应用中与`@CrossOrigin`注解一起使用[controller方法CORS配置](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/web.html#controller-method-cors-configuration)不需要使用任何特定的配置。可以通过注册拥有一个自定义的`addCorsMappings(CorsRegistry)`的WebMvcConfigurer` bean 来定义[全局的CORS配置](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/web.html#global-cors-configuration)：
+```java
+@Configuration
+public class MyConfiguration {
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/api/**");
+            }
+        };
+    }
+}
+```
+
 ### Spring WebFlux框架
 #### Spring WebFlux自动配置
 #### HttpMessageReaders 和 HttpMessageWriters HTTP编码
 #### 静态内容
 #### 模板引擎
 ### JAX-RS 和Jersey
+如果你更喜欢REST端点的jax-rs编程模型，可以使用一个可用的实现来代替Spring MVC。Jersey 1.x和 Apache CXF在将他们的`Servlet`和`Filter`作为`@Bean`注册到应用上下文中的情况下就已经工作的很好了。Jersey 2.x有一些本地Spring支持，所以我们也在Spring Boot 中通过一个starter 提供了自动配置支持。
+
+开始开发Jersey 2.x只需要添加`spring-boot-starter-jersey`依赖然后写一个`ResourceConfig`类型的`@Bean`并在这里注册所有的端点就可以了：
+```java
+@Component
+public class JerseyConfig extends ResourceConfig {
+
+    public JerseyConfig() {
+        register(Endpoint.class);
+    }
+
+}
+```
+Jersey对扫描可执行档案的支持是相当有限的。例如在运行一个可执行的war包时它不能扫描`WEB-INF/classes`目录的包中发现的endpoint。为了避免这个限制，不应该使用`packages`方法并且endpoint应该像上面一样通过`register`方法单独注册。
+
+也可以注册任意数量的实现`ResourceConfigCustomizer`接口的bean来进行更高级的自定义。
+
+所有注册的endpoint都应该有`@Component`和HTTP resource注解（如`@GET`）,例如：
+```java
+@Component
+@Path("/hello")
+public class Endpoint {
+
+    @GET
+    public String message() {
+        return "Hello";
+    }
+
+}
+```
+由于`Endpoint`是一个Spring `@Component`，因此它的生命周期由Spring来管理，并且你可以`@Autowired` 依赖并且通过`@Value`注入外部的配置。Jersey servlet默认会注册并映射到`/*`。可以通过添加`@ApplicationPath`到`ResourceConfig`修改这个映射。
+
+Jersey默认将会作为`@ServletRegistrationBean`类型的`@Bean`中的一个Servlet，这个`@ServletRegistrationBean`名称为`jerseyServletRegistration`。默认情况下这个servlet会延迟初始化，但是你可以通过`spring.jersey.servlet.load-on-startup`来自定义。可以创建一个自己的相同名称的bean来禁用或者覆盖这个bean。也可以使用一个Filter通过设置`spring.jersey.type=filter`来代替这个Servlet（在这种情况下，要替换或覆盖的@Bean是`jerseyFilterRegistration`）。这个servlet有个`@Order`注解，可以通过`spring.jersey.filter.order`来设置。注册Servlet和Filter可以给定初始化参数，使用`spring.jersey.init.*`来指定一个属性map。
+
+这里有一个[Jersey例子](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-jersey)可以看到如何设置。还有一个[Jersey 1.x 例子](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-jersey1)。注意在Jersey 1.x例子中spring-boot maven插件配置了不打包某些Jersey的jar，这样他们可以被JAX-RS的实现扫描到（因为这个例子要求在Filter注册中对它们进行扫描）。如果你有任何JAX-RS resource打包成了内部jar时，可能也需要这么做。
+
 ### 嵌入式servlet容器支持
+Spring Boot 支持嵌入式Tomcat，Jetty，Undertow服务器。大多数开发者只需要使用对应的"Starter"来获取完整配置的实例。嵌入式服务器默认会在`8080`端口监听HTTP请求。
+
+> 如果你选择在CentOS上使用Tomcat则要注意，默认情况下会使用一个临时目录来存储编绎的JSP和上传的文件等。当你的应用程序运行导致失败时，该目录有可能被`tmpwatch`删除。要避免这样你可能想要自定义`tmpwatch`配置，这样`tomcat.*`目录不会删除，或者配置`server.tomcat.basedir`这样的话嵌入式Tomcat会使用不同的目录。
+
 #### Servlet，Filter和listerner
+当使用嵌入式servlet容器时既可以使用Spring Bean又可以扫描Servlet组件来注册Servlet，Filter和来自servlet规范的所有listener（例如`HttpSessionListener`）。
+
 #### Servlet上下文初始化
+任何一个Spring bean的的`Servlet`，`Filter`或者Serlvet`*Listener`的实例都将在嵌入式容器中注册。如果想从`application.properties`中引用一个值，这将非常方便。
+
+默认情况下如果context只包含一个Servlet，它将会映射到`/`。在有多个Servlet Bean的情况下，bean的名称将会作为path的前缀。Filter会映射到`/*`。如果基于约定的映射不足够灵活,可以使用`ServletRegistrationBean`,`FilterRegistrationBean`和`ServletListenerRegistrationBean`类来完全控制。
+
 #### ServletWebServerApplicationContext
+嵌入式servlet容器不会直接执行Servlet 3.0以上的`javax.servlet.ServletContainerInitializer`接口，或者是Spring的`org.springframework.web.WebApplicationInitializer`接口。这是一个刻意的设计，目的是为了减少在war中运行的第三方库会破坏Spring Boot应用程序的风险。
+
+如果你需要在Spring Boot应用中执行servlet上下文初始化，需要注册一个实现了`org.springframework.boot.web.servlet.ServletContextInitializer`接口的bean。唯一的`onStartup`方法提供了访问`ServletContext`的能力，并且可以在必要的情况下轻松地用来作为已知`WebApplicationInitializer`的桥接器。
+
+##### 扫描Servlet，Filter和lisenter
+当使用嵌入式容器时，可以使用`@ServletComponentScan`来启用对注解了`@WebServlet`，`@WebFilter`和`@WebListener`类进行自动注册。
+
+> `@ServletComponentScan`在独立容器中时没有效果，在这里将会使用容器的自有发现机制。
+
+#### ServletWebServerApplicatonContext
+Spring Boot为嵌入式容器支持使用了一个新的`ApplicationContext`类型。`ServletWebServerApplicationContext`是一个专门的`WebApplicationContext`类型，通过搜索一个单独的`ServletWebServerFactory` bean来引导自己。通常是一个`TomcatServletWebServerFactory`，`JettyServletWebServerFactory`或者是`UndertowServletWebServerFactory`将被自动配置。
+
+> 通常不需要感知这些实现类。大多数应用会自动配置并且将为你创建合适的`ApplicationContext`和`ServletWebServerFactory`。
+
 #### 自定义嵌入式servlet容器
+可以通过使用Spring `Environment`属性来配置常见的servlet容器设置。通常你将在`application.properties`文件中定义这些属性。
+
+常见的服务器设置包括：
+- 网络设置：侦听HTTP请求的端口（`server.port`），接口地址绑定到`server.address`等等。
+- Session设置：session是否执久化（`server.session.persistence`），session超时时间（`server.session.timeout`），session数据的位置（`server.session.store-dir`）和session-cookie配置（`server.session.cookie.*`）。
+- 错误管理：错误页面的位置（`server.error.path`）等。
+- [SSL](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#howto-configure-ssl)
+- [HTTP压缩](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#how-to-enable-http-response-compression)
+
+Spring Boot尽可能多地暴露通用设置，但这并不总是可行的。对于那些情况下，专用的命名空间提供特定服务器的自定义（查看`server.tomcat`和`server.undertow`）。例如可以使用嵌入式servlet容器的特定功能配置[访问日志](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#howto-configure-accesslogs)。
+
+> 查看[`ServerProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java)类获取详细清单。
+
+##### 编程式自定义
+如果需要通过编程来自定义嵌入式servlet容器，可以注册一个实现了`WebServerFactoryCustomizer` 接口的Spring bean。`WebServerFactoryCustomizer`提供了访问`ConfigurableServletWebServerFactory`的方法，`ConfigurableServletWebServerFactory`包含了大量定制setter方法。在Tomcat，Jetty和Undertow中存在专门的变量。
+```java
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.stereotype.Component;
+
+@Component
+public class CustomizationBean implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
+
+    @Override
+    public void customize(ConfigurableServletWebServerFactory server) {
+        server.setPort(9000);
+    }
+
+}
+```
+##### 直接自定义ConfigurableServletWebServerFactory 
+如果上面的自定义方式太局限，可以注册自己的`TomcatServletWebServerFactory`，`JettyServletWebServerFactory`，`UndertowServletWebServerFactory` bean。
+```java
+@Bean
+public ConfigurableServletWebServerFactory webServerFactory() {
+    TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+    factory.setPort(9000);
+    factory.setSessionTimeout(10, TimeUnit.MINUTES);
+    factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html"));
+    return factory;
+}
+```
+set方法提供了许多配置选项。如果你需要做一些更独特的事情，还提供了几个受保护的方法“钩子”。更多详情请查看源代码文档。
+
 #### JSP限制
+当使用嵌入式servlet容器（并且被打包成可执行包）运行Spring Boot应用时，对JSP的支持有一些限制。
+- 对于Tomcat，如果使用war包，它就可以工作，即可执行的war将工作，并且也可以部署到一个标准容器(不限于，但包括Tomcat）。一个可执行的jar不能工作，因为在Tomcat中有一个硬编码的文件模式。
+- 对于Jetty，如果使用war包，它就可以工作，即可执行的war将工作，并且也可以部署到一个标准容器。
+- Undertow不支持JSP。
+- 创建自定义的`error.jsp`页面不会覆盖默认的[错误处理](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-error-handling)视图，而是应该使用自定义错误页面。
+
+这里有一个[JSP例子](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-web-jsp)可以看到如何设置。
+
 ## 安全
+如果在classpath中发现了Spring Security，那么web应用所有的HTTP端点会默认使用"basic"认证。可以添加`@EnableGlobalMethodSecurity`来添加方法级别的安全。更多信息可以查看[Spring Security Reference](http://docs.spring.io/spring-security/site/docs/5.0.0.BUILD-SNAPSHOT/reference/htmlsingle#jc-method)。
+
+默认的`AuthenticationManager`有一个单独的用户（“user” 用户名和随机密码，密码在应用程序启动时打印在INFO级别）
+```
+Using default security password: 78fa095d-3f4c-48b1-ad50-e24c31d5cf35
+```
+
+> 如果你调整了日志配置，确保`org.springframework.boot.autoconfigure.security`类型设置为`INFO`级别，否则默认密码不会打印。
+
+可以通过提供`security.user.password`属性来修改密码。这个和其他有用的属性通过`SecurityProperties`（属性前缀为"security"）扩展。
 ###  OAuth2
 #### 授权服务器
 #### 资源服务器
@@ -932,11 +1232,115 @@ Spring Boot 也支持Spring MVC提供的高级resource处理功能，允许使�
 #### 单点登录
 ### Actuator 安全
 ## SQL数据库
-### 定义数据源
+Spring Framework对SQL数据库提供了大量支持。从使用`JdbcTemplate`直接的JDBC访问到完全的“对象关系映射”技术如Hibernate。Spring Data提供了额外的功能级别，直接从接口创建`Repository`实现，并使用约定从方法名称生成查询。
+
+### 配置数据源
+Java的`javax.sql.DataSource`接口提供了与数据库连接工作的标准方法。传统上，数据源使用`URL`和一些凭证来建立数据库连接。
+
+> 还可以查看[“如何操作”](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#howto-configure-a-datasource)的部分，以获得更高级的示例，尤其是要对数据源的配置进行完全控制。
+
 #### 嵌入式数据库支持
+使用内存中嵌入式数据库开发应用程序通常很方便。明显地内存数据库不提供持久化；你需要当应用程序启动时填充数据库，并准备在应用程序结束时抛出数据。
+
+> 这里有[如何初始化数据库](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#howto-database-initialization)。
+
+Spring Boot可以自动配置嵌入式[H2](http://www.h2database.com/)，[HSQL](http://hsqldb.org/)和[Derby](http://db.apache.org/derby/)数据库。不需要提供任何连接URL，只需要简单地包含想要使用的嵌入式数据库的构建依赖。
+
+> 如果在测试用例中使用这个功能，你可能注意到了整个测试用命重用了相同的数据库，而不管使用了多少个应用上下文。如果你想确保每个上下文使用独立的嵌入式数据库，你应该设置`spring.datasource.generate-unique-name`为`true`。
+
+例如典型的POM依赖是：
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.hsqldb</groupId>
+    <artifactId>hsqldb</artifactId>
+    <scope>runtime</scope>
+</dependency>
+```
+> 需要对spring jdbc的依赖，以便自动配置嵌入式数据库。在这个例子中它通过`spring-boot-starter-data-jpa`来传递这个依赖。
+
+> 如果出于某种原因，你确实为嵌入式数据库配置了连接URL，那么应该注意确保数据库的自动关闭是禁用的。如果你正在使用H2，你应该使用`DB_CLOSE_ON_EXIT=FALSE`来禁用。如果使用HSQLDB，应该确保没有使用`shutdown=true`。禁用数据库的自动关闭功能可以让Spring Boot在数据库关闭时进行控制，从而确保在不再需要访问数据库时发生这种情况。
+
 #### 连接生产库
+还可以使用`DataSource`池自动配置生产数据库连接。下面是选择具体实现的算法：
+- 我们更喜欢HikariCP因为它的性能和并发性，所以如果它可用，我们总是选择它。
+- 否则如果Tomcat`DataSource`连接池可用，就会使用它。
+- HikariCP 和Tomcat`DataSource`连接池都不可用并且 Commons DBCP2可用则使用它。
+
+如果你使用`spring-boot-starter-jdbc`或者`spring-boot-starter-data-jpa` "starter" 则会自动依赖`HikariCP`。
+
+> 可以通过设置`spring.datasource.type`属性来完全绕开这个算法并且指定连接池。如果你在Tomcat容器中运行你的应用程序，那么这一点尤为重要，因为默认提供了`tomcat-jdbc`。
+
+> 可以手动配置额外的连接池。如果你定义了自己的`DataSource` bean，则不会发生自动配置。
+
+`spring.datasource.*`中的扩展配置属性可以控制数据源配置。例如，你可以在`application.properties`中声明以下块：
+```
+spring.datasource.url=jdbc:mysql://localhost/test
+spring.datasource.username=dbuser
+spring.datasource.password=dbpass
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+```
+
+> 你至少应该使用`spring.datasource.url`属性来指定url或者Sprig Boot 会尝试自动配置一个嵌入式数据库。
+
+> 你通常不需要指定`driver-class-name`，因为对于大多数数据库Spring boot 可以从url中推断出来。
+
+> 对于创建`DataSource`池，我们需要能够验证一个有效的`Driver`类是否可用，所以我们在做任何事情之前都要检查它。例如，如果你设了`spring.datasource.driver-class-name=com.mysql.jdbc`,那么这个类就必须是可加载的。
+
+更多受支持的选项，请参见[`DataSourceProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jdbc/DataSourceProperties.java)。这些是标准的选项，不管实际是什么实现都可以工作。也可以通过它们各自的前缀（`spring.datasource.hikari.*`,`spring.datasource.tomcat.*`，和`spring.datasource.dbcp2.*`）微调特定实现设置。请参阅你正在使用的连接池实现的文档获取更多细节。
+
+例如如果你正在使用[Tomcat连接池](http://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html#Common_Attributes)，可以自定义许多额外的设置：
+```
+# Number of ms to wait before throwing an exception if no connection is available.
+spring.datasource.tomcat.max-wait=10000
+
+# Maximum number of active connections that can be allocated from this pool at the same time.
+spring.datasource.tomcat.max-active=50
+
+# Validate the connection before borrowing it from the pool.
+spring.datasource.tomcat.test-on-borrow=true
+```
+
 #### 连接JNDI数据库
+如果你正在将Spring Boot应用程序部署到应用程序服务器，那么你可能需要使用应用程序服务器的内置特性来配置和管理数据源，并使用JNDI访问它。
+
+`spring.datasource.jndi-name`属性可以用作`spring.datasource.url`,`spring.datasource.username`和`spring.datasource.password`属性的另一种选择从特定的JNDI位置访问`DataSource`。例如下面`applicaion.properties`中的块展示了如何访问JBoss定义的`DataSource`：
+```
+spring.datasource.jndi-name=java:jboss/datasources/customers
+```
+
 ### 使用JdbcTemplate
+Spring 的`JdbcTemplate`和`NamedParameterJdbcTemplate`类是自动配置的并且可以直接`@Autowire`他们到你自己的bean中：
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MyBean {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public MyBean(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    // ...
+
+}
+
+```
+你可以通过`spring.jdbc.template.*`来自定义template的一些属性：
+```
+spring.jdbc.template.max-rows=500
+```
+
+> NamedParameterJdbcTemplate在背后重用相同的JdbcTemplate实例。如果定义了多个`JdbcTemplate`并且不存在主要的候选者，不会自动配置`NamedParameterJdbcTemplate`。
+
 ### JPA和Spring Data
 #### 实体类
 #### Spring Data JPA仓库
