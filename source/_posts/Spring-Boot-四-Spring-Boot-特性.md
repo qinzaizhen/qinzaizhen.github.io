@@ -938,7 +938,7 @@ Spring Boot在配置的静态内容位置和classpath根目录（按此顺序）
 Spring MVC使用`WebBindingInitializer`来为特殊请求初始化一个`WebDataBinder`。如果创建了自己的`ConfigurableWebBindingInitializer` `@Bean`，Spring Boot将自动配置Spring MVC使用它。
 
 #### 模板引擎
-跟REST服务一样，也可以使用Spring MVC来提供动态HTML内容。Spring MVC 支持一系列包括模板技术，包括Thymeleaf，FreeMarker和JSP。许多其他的模板引擎也发布了他们自己的Spring MVC集成方案。
+跟REST服务一样，也可以使用Spring MVC来提供动态HTML内容。Spring MVC 支持一系列模板技术，包括Thymeleaf，FreeMarker和JSP。许多其他的模板引擎也发布了他们自己的Spring MVC集成方案。
 
 Spring Boot包括针对以下模板引擎的自动配置功能：
 - [FreeMarker](http://freemarker.org/docs/)
@@ -1342,10 +1342,107 @@ spring.jdbc.template.max-rows=500
 > NamedParameterJdbcTemplate在背后重用相同的JdbcTemplate实例。如果定义了多个`JdbcTemplate`并且不存在主要的候选者，不会自动配置`NamedParameterJdbcTemplate`。
 
 ### JPA和Spring Data
+Java Persistence API 是一种允许你映射对象到关系型数据的技术。`spring-boot-starter-data-jpa` POM提供了一种快速开始的方式。它提供了下面关键的依赖：
+- Hibernate - 最流行的JPA实现之一
+- Spring Data JPA - 使实现基于JPA的repositories变得容易
+- Spring ORM - Spring Framework的核心ORM支持
+
+> 在这里不涉及到太多JPA和Spring Data细节。可以访问[Accessing Data with JPA](http://spring.io/guides/gs/accessing-data-jpa/)指南和阅读[Spring Data JPA](http://spring.io/guides/gs/accessing-data-jpa/)和[Hibernate ](http://hibernate.org/orm/documentation/)文档。
+
 #### 实体类
+传统上，JPA “Entity”的类是在`persistence.xml`文件中指定的。在Spring Boot 中这个文件不是必需的，而是使用“Entity Scanning”。默认情况下在主配置类（某个注解了`@EnableAutoConfiguration` 或`@SpringBootApplication`的类）下面的所有包都会被搜索到。
+
+任何注解了`@Entity`,`@Embeddable`或`@MappedSuperclass`的类都是被考虑的对象。一个典型的实体类应该是这样的：
+```java
+package com.example.myapp.domain;
+
+import java.io.Serializable;
+import javax.persistence.*;
+
+@Entity
+public class City implements Serializable {
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String state;
+
+    // ... additional members, often include @OneToMany mappings
+
+    protected City() {
+        // no-args constructor required by JPA spec
+        // this one is protected since it shouldn't be used directly
+    }
+
+    public City(String name, String state) {
+        this.name = name;
+        this.country = country;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getState() {
+        return this.state;
+    }
+
+    // ... etc
+
+}
+
+```
+
+> 可以使用`@EntityScan`注解来自定义扫描位置。更多查看[Section 78.4, “Separate @Entity definitions from Spring configuration” ](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#howto-separate-entity-definitions-from-spring-configuration)
+
 #### Spring Data JPA仓库
+Spring Data JPA repository是你可以定义来访问数据的接口。JPA查询会从你的方法名自动创建查询。例如，`CityRepository`接口可能声明了`findAllByState(String state)`方法来根据给定状态查找所有的城市。
+
+对于更复杂的查询你可以使用Spring Data的`Query`注解来注解你的方法。
+
+Spring Data repository通常继承自`Repository`或者`CrudRepository`接口。如果使用自动配置，将会从包含主配置类（注解了`@EnableAutoConfiguration`或`@SpringBooApplication`的类）的包中往下查找repository。
+
+这里有一个典型的Spring Data repository：
+```java
+package com.example.myapp.domain;
+
+import org.springframework.data.domain.*;
+import org.springframework.data.repository.*;
+
+public interface CityRepository extends Repository<City, Long> {
+
+    Page<City> findAll(Pageable pageable);
+
+    City findByNameAndCountryAllIgnoringCase(String name, String country);
+
+}
+```
+
+> 我们仅仅触及Spring Data JPA的表面。可以查看[文档](http://projects.spring.io/spring-data-jpa/)获取完整的细节。
+
+
 #### 创建和删除JPA数据库
+默认情况下，JPA数据库**只**在使用嵌入式数据库（H2,HSQL或Derby）时才会自动创建。你也可以使用`spring.jpa.*`属性明确地配置JPA`。例如可以在`application.properties`中添加下面的配置来创建和删除表。
+```
+spring.jpa.hibernate.ddl-auto=create-drop
+```
+
+> Hibernate自有内部属性名称是`hibernate.hbm2ddl.auto`（如果你能记住它更好）。你可以和其他Hibernate原生属性一样设置它，使用`spring.jpa.properties.*`（这个前缀在添加到entity manager之前被剥离出来）。例如：
+```
+spring.jpa.properties.hibernate.globally_quoted_identifiers=true
+```
+传给Hibernate entity manager的是`hiberbate.globally_quoted_identifiers`。
+
+默认情况下DDL执行（或验证）推迟到`ApplicationContext`启动之后。还有一个`spring.jpa.generate-ddl`标志，但是在Hibernate autoconfig启用的情况下不会使用因为`ddl-auto`设置更细粒度。
+
 #### 在View中打开EntityManager
+如果正在运行一个web应用，Spring Boot默认会注册`OpenEntityManageerInViewInterceptor`来应用“Open EntityManager in View” 模式，例如来在web视图允许延迟加载。如果你不想要这种行为，你应用在`applicaiont.properties`中设置`spring.jpa.open-in-view`来`false`。
+
 ### 使用H2的web控制台
 #### 修改H2控制台的路径
 #### 加密H2的控制台
@@ -1355,7 +1452,35 @@ spring.jdbc.template.max-rows=500
 #### jOOQ SQL方言
 #### 自定义jOOQ
 ## NoSQL
-### 连接到Redis
+Spring Data提供额外的项目来帮助你访问一些NoSQL技术，包括[MongoDB](http://projects.spring.io/spring-data-mongodb/)，[Neo4J](http://projects.spring.io/spring-data-neo4j/)，[Elasticsearch](https://github.com/spring-projects/spring-data-elasticsearch/)，[Solr](http://projects.spring.io/spring-data-solr/)，[Redis](http://projects.spring.io/spring-data-redis/)，[Gemfire](http://projects.spring.io/spring-data-gemfire/)，[Cassandra](http://projects.spring.io/spring-data-cassandra/)，[Couchbase](http://projects.spring.io/spring-data-couchbase/)和[LDAP](http://projects.spring.io/spring-data-ldap/)。Spring Boot 对Redis，MongoDB，Neo4j，Elastcisearch，Solr，Cassandra，Couchbase和LDAP提供了自动配置；你可以使用其他项目，但是你需要自己配置它们。
+
+### Redis
+Redis 是一个缓存，消息代理和功能丰富的键值存储。Spring Boot为[Jedis](https://github.com/xetorthio/jedis/) 和[Lettuce](https://github.com/mp911de/lettuce/) 客户端库提供基本的自动配置并由Spring Data Redis在它们之上提供抽象。
+
+默认有一个`spring-boot-starter-data-redis` “Starter” 以方便的方式收集依赖并且默认使用 [Jedis](https://github.com/xetorthio/jedis/)。如果你正在构建一个响应式应用程序，那么`spring-stardata-data-redis-reactive` “Starter” 将会让你继续前进。
+
+#### 连接到Redis
+你可以像任何其他Spring Bean一样注入自动配置的`RedisConnectionFactory`，`StringRedisTemplate`或者`RedisTemplate` 实例。默认情况下这些实例会尝试使用`localhost:6379`来连接到Redis 服务器。
+```java 
+@Component
+public class MyBean {
+
+    private StringRedisTemplate template;
+
+    @Autowired
+    public MyBean(StringRedisTemplate template) {
+        this.template = template;
+    }
+
+    // ...
+
+}
+```
+
+> 你也可以注册任意数量的实现`JedisClientConfigurationBuilderCustomizer` 的bean 来实现更高级的定制。如果你正在使用Lettuce，可以使用`LettuceClientConfigurationBuilderCustomizer`。
+
+如果你在任何自己的自动配置类型上加了`@Bean`，它会替代默认的（除了在RedisTemplate的情况下，排除是基于bean名称“redisTemplate”而不是其类型）。如果commons-pool2在classpath中，则默认情况下你将获得一个连接池工厂。
+
 ### MongoDB
 #### 连接到MongoDB数据库
 #### MongoTemplate
@@ -1387,3 +1512,452 @@ spring.jdbc.template.max-rows=500
 #### 嵌入式内存LDAP服务器
 ### InfluxDB
 #### 连接到InfluxDB
+
+## 缓存
+Spring Framework为透明地向应用程序添加缓存提供了支持。在其核心，抽象层将缓存应用于方法，从而减少基于缓存中可用信息的执行数量。缓存逻辑是透明地应用的，不会对调用程序产生任何干扰。只要通过@Enablecaching注解启用了缓存支持，Spring Boot就会自动配置缓存基础结构。
+
+> 查看Spring Framework文件[相关章节](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/integration.html#cache)获取更多信息。
+
+简而言之，将缓存添加到服务的操作中就像向其方法添加相关注释一样简单:
+```java
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.stereotype.Component;
+
+@Component
+public class MathService {
+
+    @Cacheable("piDecimals")
+    public int computePiDecimal(int i) {
+        // ...
+    }
+
+}
+```
+此示例演示如何在可能代价高昂的操作中使用缓存。在调用`computePiDecimal`之前，抽象层会在`piDecimals`缓存中查找匹配参数`i`的实体。如果找到了，缓存中的内容会立即返回给调用方，并且不会调用这个方法。否则这个方法会被调用并且在返回值之前会更新缓存。
+
+> 也可以明确地使用标准的JSR-107（JCache）注解（比如`@CacheResult`）。我们强烈建议你不要把它们混在一起。
+
+如果没有添加具体的缓存库，Spring Boot将会自动配置一个简单的实现，它使用内存中的并发Map。当需要缓存时（如上面例子中的`piDecimals`），这个provider将为你即时创建它。简单的提供者并不推荐用于生产，但是对于入门并确保您了解这些特性是非常好的。当你已经决定要使用的缓存提供程序时，请一定要阅读它的文档，以确定如何配置你的应用程序使用的缓存。实际上，所有的提供者都要求你显式地配置应用程序中使用的每个缓存。有些提供了自定义spring.cache.cache-names属性定义的默认缓存的方法。
+
+> 也可以透明地[更新](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/integration.html#cache-annotations-put)或从缓存中[删除](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/integration.html#cache-annotations-evict)数据。
+
+> 如果你使用的缓存基础设施不是基于接口的，那么确保启用了`@EnableCaching`的`proxyTargetClass`属性。
+
+### 支持的缓存实现
+缓存抽象层没有提供实际的存储，依赖于`org.springframework.cache.Cache`和`org.springframework.cache.CacheManager`接口实现。
+
+如果你没有定义`CacheManager`类型的或名为`cacheResolver`（查看`CachingConfigurer`）的`CacheResolver` bean，Spring Boot尝试加载下面的实现（按此顺序）：
+
+- [Generic](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-caching-provider-generic)
+- [JCache（JSR-107）](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-caching-provider-jcache)（EhCache 3，Hazelcast，Infinispan，etc）
+- [EhCache 2.x](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-caching-provider-ehcache2)
+- [Hazelcast](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-caching-provider-hazelcast)
+- [Infinispan](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-caching-provider-infinispan)
+- [Couchbase](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-caching-provider-couchbase)
+- [Redis](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-caching-provider-redis)
+- [Caffeine](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-caching-provider-caffeine)
+- [Simple](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-caching-provider-simple)
+
+> 也可以使用`spring.cache.type`属性强制使用缓存实现。如果您需要在某些环境中[完全禁用缓存](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-caching-provider-none)(例如测试)，那么可以使用该属性。
+
+> 使用`spring-boot-starter-cache` “Starter”来快速添加基本的缓存依赖，这个starter引入了`spring-context-support`:如果是手动添加的依赖，为了使用JCache，EhCache 2.x或Guava支持，你必须得包含`spring-context-support`。
+
+如果Spring Boot自动配置了`CacheManager`，可以通过暴露一个实现了`CacheManagerCustomizer`接口的bean在`CacheManager`完全初始化之前进一步优化它的配置。下面的代码设置了一个标志，表示null值应该被传递到底层的map。
+```java
+@Bean
+public CacheManagerCustomizer<ConcurrentMapCacheManager> cacheManagerCustomizer() {
+    return new CacheManagerCustomizer<ConcurrentMapCacheManager>() {
+        @Override
+        public void customize(ConcurrentMapCacheManager cacheManager) {
+            cacheManager.setAllowNullValues(false);
+        }
+    };
+}
+```
+
+> 在上面的例子中，预计会自动配置一个`ConcurrentMapCacheManager`。如果不是这种情况(你提供了自己的配置，或者是自动配置了不同的缓存实现)，则不会调用customizer了。你可以提供很多个customizer并且可以使用常规的`@Order`或者`Ordered`来排序。
+
+#### 通用
+如果上下文中定义了不止一个`org.springframework.cache.Cache` bean，则使用通用缓存。`CacheManager`包装所有创建的这个类型的bean。
+
+#### JCache（JSR-107）
+JCache是通过类路径中存在`javax.cache.spi.CachingProvider`来加载的，`spring-boot-starter-cache` "starter" 提供了`JCacheCacheManager`。有很多兼容的库并且Spring Boot 提供了对Ehcache 3、Hazelcast和Infinispan的依赖管理。还可以添加任何其他兼容的库。
+
+有可能会出现有多个提供者的情况，在这种情况下必须明确指定提供者。即使JSR-107标准没有强制定义配置文件的位置，但是Spring Boot尽最大可能来适应具体实现。
+```properties
+# Only necessary if more than one provider is present
+spring.cache.jcache.provider=com.acme.MyCachingProvider
+spring.cache.jcache.config=classpath:acme.xml
+```
+
+> 由于缓存库有可能提供本地实现和JSR-107支持，Spring Boot将会优先选择JSR-107支持，因此如果你切换到不同的JSR-107实现，Spring Boot还是可以支持相同的功能。
+
+> Spring Boot 对[Hazelcast有一个通用的实现](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-hazelcast)。如果有一个单独的`HazelcastInstance`可用，它会自动地为`CacheManager`重用，除非指定`spring.cache.jcache.config`属性。
+
+还有一些方式来自定义底层的`javax.cache.cacheManager`:
+- 缓存可以在启动的时候通过`spring.cache.cache-names`属性来创建。如果定义了自已的`javax.cache.configuration.Configuration` bean ，将会用它来自定义它们。
+- CacheManager引用调用`org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer` bean 来进行完全定制。
+
+> 如果定义了一个标准的`javax.cache.CacheManager` bean，它会自动被抽象层期望的`org.springframework.cache.CacheManager`实现包装。不进行进一步的定制。
+
+#### EhCache 2.x
+如果在classpath的根目录上找到了`ehcache.xml`文件，那么将会使用EhCache 2.x。如果是EhCache 2.x，`spring-boot-starter-cache` "Starter"提供的`EhCacheCacheManager`和它提供的这个文件用来启动缓存管理器。也可以使用这种方式来提供可选的配置文件：
+```
+spring.cache.ehcache.config=classpath:config/another-config.xml
+```
+
+#### Hazelcast
+#### Infinispan
+#### Couchbase
+#### Redis
+如果Redis可用并且配置了，`RedisCacheManager`将会自动配置。还可以使用`spring.cache.cache-names`属性在启动时创建额外的缓存。
+
+> 在缺省情况下，添加了一个key的前缀，以防止如果两个单独的缓存使用相同的密钥，Redis将会有重叠的key，并可能会返回无效值的情况。如果你创建了自己的`RedisCacheManager`，我们强烈建议保持开启这个设置。
+
+#### Caffeine
+#### Simple
+如果没有发现其他的提供者，将会配置一个使用`ConcurrentHashMap`作为缓存存储的简单实现。如果应用没有提供缓存库，这将是默认配置。缓存默认是实时创建的，但是你可以使用`cache-names`属性限制可用的缓存列表。例如，如果你只想要`foo`和`bar`缓存：
+```
+spring.cache.cache-names=foo,bar
+```
+如果你这样做，你的应用程序使用一个未列出的缓存那么当需要缓存时，它会在运行时失败，但在启动时不会。如果你使用未声明的缓存，这与“真实”缓存提供者的行为方式类似。
+
+#### None
+当你的配置中出现了@EnableCache时，也可以预期适当的缓存配置。如果在某些环境中需要禁用缓存，那么强制缓存类型为`none`，以使用无操作实现:
+```
+spring.cache.type=none
+```
+
+## 消息
+Spring Framework 提供了集成消息系统的扩展支持：从简单地使用JMS API `JmsTemplate` 到完整的接收异步消息的架构。Spring AMQP为“Advanced Message Queuing Protocol”提供了一个类似的特性集并且Spring Boot也为`RabbitTemplate`和RabbitMQ提供配置自动配置选项。在Spring WebSocket中还原生支持STOMP的消息传递，Spring Boot通过starter和少量的自动配置支持这一点。Spring Boot 也支持Apache Kafka。
+
+### JMS
+`javax.jms.ConnectionFactory`接口提供了创建与JMS代理进行交互的`javax.jms.Connection`的标准方法。尽管Spring需要一个`ConnectionFactory`来与JMS一起工作，但是你通常不需要直接使用它并且可以依赖更高层次的消息抽象层（查看[Spring Framework的文档](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/integration.html#jms)获取更多细节）。Spring Boot 也自动配置必要的组件来发送与接收消息。
+
+#### ActiveMQ 
+当Spring Boot在classpath中发现ActiveMQ时，也会配置一个`ConnectionFactory`。如果提供了代理，将启动一个嵌入式代理并且自动配置它（只要没有通过配置指定代理URL）。
+
+> 如果你使用了`spring-boot-starter-activemq`，则提供连接或嵌入ActiveMQ实例的必要依赖项，以及与JMS集成的Spring基础设施。
+
+ActiveMQ配置由`spring.activemq.*`中的外部配置属性控制。例如，你可以在`application.properties`中声明下面的语句：
+```properties
+spring.activemq.broker-url=tcp://192.168.1.210:9876
+spring.activemq.user=admin
+spring.activemq.password=secret
+```
+你还可以通过添加`org.apache.activemq:activemq-pool`的依赖来使用JMS资源池，并相应地配置`PooledConnectionFactory`：
+```properties
+spring.activemq.pool.enabled=true
+spring.activemq.pool.max-connections=50
+```
+
+查看[`ActiveMQProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jms/activemq/ActiveMQProperties.java)获取更多地的支持属性。
+
+默认情况下，如果不存在destination ，ActiveMQ会创建一个，因此，destination 是根据它们提供的名称来解析的。
+
+#### Artemis 
+如果Spring Boot 在classpath中发现了Artemis，则会自动配置`ConnectionFactory`。如果代理存在，则将自动启动并配置嵌入式代理(除非模式属性已显式设置)。支持的模式有:`embedded`（显式地指出需要使用嵌入式代理，并且在代理在类路径中不可用时导致错误）和`native`使用`netty`传输协议来连接代理。当配置后者时，Spring Boot 配置一个`ConnectionFactory`，使用默认设置连接到在本地机器上运行的代理。
+
+> 如果你使用了`spring-boot-starter-artemis`，将会提供连接已经存在的Artemis实例的必要依赖，以及与JMS集成的Spring基础组件。添加`org.apache.activemq:artemis-jms-server`到你的应用中允许你使用`embedded`模式。
+
+Artemis的配置是由在spring.artemis.*的外部配置属性控制的。例如，你可以在`application.properties`中声明以下代码：
+```properties
+spring.artemis.mode=native
+spring.artemis.host=192.168.1.210
+spring.artemis.port=9876
+spring.artemis.user=admin
+spring.artemis.password=secret
+```
+
+在嵌入代理时，你可以选择是否启用持久性，以及应该提供的destination列表。可以将它们指定为以逗号分隔的列表，以使用默认选项创建它们；或者你可以定义`org.apache.activemq.artemis.jms.server.config.JMSQueueConfiguration`或`org.apache.activemq.artemis.jms.server.config.TopicConfiguration`类型的bean(s)，分别用于高级队列和主题配置。
+
+查看[`ArtemisProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jms/artemis/ArtemisProperties.java) 获取更多支持的属性。
+
+任何JNDI查找都不涉及到，destination都是根据它们的名称来解析的，或者在"Artemis "的配置中使用“name”属性，或者通过配置提供的名称。
+
+#### 使用JNDI ConnectionFactory
+如果你在应用程序服务器中运行你的应用程序，Spring Boot将尝试使用JNDI来定位一个JMS `ConnectionFactory`。默认会检查`java:/JmsXA`和`java:/XAConnectionFactory`。你可以使用`spring.jms.jndi-name`属性来指定其他的位置：
+```
+spring.jms.jndi-name=java:/MyConnectionFactory
+```
+
+#### 发送消息
+Spring的`JmsTemplate`是自动配置的并且你可以直接注入到你的bean中：
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MyBean {
+
+    private final JmsTemplate jmsTemplate;
+
+    @Autowired
+    public MyBean(JmsTemplate jmsTemplate) {
+        this.jmsTemplate = jmsTemplate;
+    }
+
+    // ...
+
+}
+```
+> `JmsMessagingTemplate`也可以以类似的方式注入。如果定义了`DestinationResolver`或`MessageConverter` bean，它们将自动关联到自动配置的`JmsTemplate`。
+
+#### 接收消息
+当JMS 基础组件存在时，任何bean都可以用 @JmsListener 注解来创建监听器端点。如果没有定义`JmsListenerContainerFactory` bean，会自动配置一个默认的。如果定义了`DestinationResolver`或`MessageConverter` bean，那么它们将自动与缺省工厂相关联。
+
+默认的工厂默认是事务性的。如果你在一个`JtaTransactionManager`存在的基础结构中运行，那么默认情况下，它将与监听器容器相关联。如果不是的话，`sessionTransacted`标志将会启用。在后一种情况下，你可以将本地数据存储事务与传入消息的处理关联起来，方法是在listener方法(或其委托方法)上添加`@Transactional`。这将确保在本地事务完成后传入消息被确认。这还包括在相同JMS会话中执行的响应消息发送。
+
+下面的组件在`someQueue`上创建了一个监听端点：
+```java
+@Component
+public class MyBean {
+
+    @JmsListener(destination = "someQueue")
+    public void processMessage(String content) {
+        // ...
+    }
+
+}
+```
+
+> 查看[`@EnableJms`文档](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/javadoc-api/org/springframework/jms/annotation/EnableJms.html)查看更多细节。
+
+如果你需要创建更多的`JmsListenerContainerFactory`实例或者你想要覆盖默认的，Spring Boot提供了`DefaultJmsListenerContainerFactoryConfigurer`来实例化`DefaultJmsListenerContainerFactory`并且与自动配置的使用相同的设置。
+
+例如，下面的内容展示了另一个使用特定`MessageConverter`的工厂:
+```java
+@Configuration
+static class JmsConfiguration {
+
+    @Bean
+    public DefaultJmsListenerContainerFactory myFactory(
+            DefaultJmsListenerContainerFactoryConfigurer configurer) {
+        DefaultJmsListenerContainerFactory factory =
+                new DefaultJmsListenerContainerFactory();
+        configurer.configure(factory, connectionFactory());
+        factory.setMessageConverter(myMessageConverter());
+        return factory;
+    }
+
+}
+```
+然后可以在任何`@JmsListener`注解的方法中使用：
+```java
+@Component
+public class MyBean {
+
+    @JmsListener(destination = "someQueue", containerFactory="myFactory")
+    public void processMessage(String content) {
+        // ...
+    }
+
+}
+```
+
+### AMQP
+高级消息队列协议(AMQP)是面向消息中间件的一种平台无关的、线级协议(?)。Spring AMQP 项目Spring的核心概念应用到基于AMQP的消息解决方案的开发。Spring Boot提供了多种便利，可以通过RabbitMQ与AMQP进行合作，包括`spring-boot-starter-amqp` “Starter”。
+
+#### RabbitMQ 
+RabbitMQ是一种基于AMQP协议的轻量级的、可靠的、可伸缩的、可移植的消息代理。Spring使用RabbitMQ来使用AMQP协议进行通信。
+RabbitMQ配置由`spring.rabbitmq.*`中的外部配置属性控制。例如，可以在`application.properties`中声明以下代码：
+```properties
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=admin
+spring.rabbitmq.password=secret
+```
+请参阅[`RabbitProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/amqp/RabbitProperties.java)获得更多受支持的选项。
+
+> 查看[理解AMQP，RabbitMQ使用的协议](http://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/)了解更多细节
+
+#### 发送消息
+Spring的 `AmqpTemplate` 和 `AmqpAdmin` 是自动配置的,你可以自动装配他们到自己的 bean：
+```java
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MyBean {
+
+    private final AmqpAdmin amqpAdmin;
+    private final AmqpTemplate amqpTemplate;
+
+    @Autowired
+    public MyBean(AmqpAdmin amqpAdmin, AmqpTemplate amqpTemplate) {
+        this.amqpAdmin = amqpAdmin;
+        this.amqpTemplate = amqpTemplate;
+    }
+
+    // ...
+
+}
+```
+
+> `RabbitMessagingTemplate`可以以类似的方式注入。如果定义了`MessageConverter`  bean，那么它将自动与自动配置的`AmqpTemplate`相关联。
+
+任何`org.springframework.amqp.core.Queue`定义为bean的队列将在必要时自动用于在RabbitMQ实例上声明一个对应的队列。
+
+你可以启用`AmqpTemplate`上的重试来重试操作，例如在丢失代理连接的事件中。默认情况下，重试是禁用的。
+
+#### 接收消息
+当Rabbit组件存在时，任何bean都可以用`@RabbitListener`注解来创建一个监听器端点。如果没有定义`RabbitListenerContainerFactory`,默认自动配置`SimpleRabbitListenerContainerFactory`,并且你可以使用`spring.rabbitmq.listener.type`属性切换到一个直接的容器。如果定义了`MessageConverter`或`MessageRecoverer` bean，那么它们将自动与缺省工厂相关联。
+
+下面的组件在`someQueue`队列上创建一个监听器端点:
+```java
+@Component
+public class MyBean {
+
+    @RabbitListener(queues = "someQueue")
+    public void processMessage(String content) {
+        // ...
+    }
+
+}
+```
+
+> 请查看[`@EnableRabbit`的Javadoc](http://docs.spring.io/spring-amqp/docs/current/api/org/springframework/amqp/rabbit/annotation/EnableRabbit.html)以获得更多详细信息。
+
+如果你需要创建多个`RabbitListenerContainerFactory`实例或者你想覆盖默认的,Spring Boot提供了`SimpleRabbitListenerContainerFactoryConfigurer`和`DirectRabbitListenerContainerFactoryConfigurer`,你可以用它来初始化一个`SimpleRabbitListenerContainerFactory`和`DirectRabbitListenerContainerFactory`,并且与自动配置的使用相同的设置。
+
+> 不管选择哪种容器类型，这两个bean都是由自动配置公开的。
+
+例如，下面的内容展示了另一个使用特定`MessageConverter`的工厂:
+```java
+@Configuration
+static class RabbitConfiguration {
+
+    @Bean
+    public SimpleRabbitListenerContainerFactory myFactory(
+            SimpleRabbitListenerContainerFactoryConfigurer configurer) {
+        SimpleRabbitListenerContainerFactory factory =
+                new SimpleRabbitListenerContainerFactory();
+        configurer.configure(factory, connectionFactory);
+        factory.setMessageConverter(myMessageConverter());
+        return factory;
+    }
+
+}
+```
+然后你可以在任何 @RabbitListener 注解的方法中使用：
+```java
+@Component
+public class MyBean {
+
+    @RabbitListener(queues = "someQueue", containerFactory="myFactory")
+    public void processMessage(String content) {
+        // ...
+    }
+
+}
+```
+
+你可以启用重试来处理监听器抛出异常的情况。默认情况下使用`RejectAndDontRequeueRecoverer`但是你可以定义一个自己的`MessageRecoverer`。当重试耗尽时，消息将被拒绝，并且被丢弃或者如果代理配置了交换，则消息将路由到死信交换。默认情况下，重试是禁用的。
+
+> **如果没启用重试，侦听器抛出异常，默认情况下，将为无限重试分发。你可以通过两种方式来修改该行为;将`defaultRequeueRejected`属性设置为`false`，并尝试零重新交付;或者,抛出`AmqpRejectAndDontRequeueException`表示该消息应该被拒绝。这是在启用重试并且达到了最大的交付尝试时所使用的机制**
+
+### Apache Kafka
+通过提供`spring-kafka`项目的自动配置来支持[`Apache Kafka`](http://kafka.apache.org/)。
+
+Kafka 的配置由`spring.kafka.*`的外部配置属性控制。例如，你可以在`application.properties`中声明以下部分:
+```properties
+spring.kafka.bootstrap-servers=localhost:9092
+spring.kafka.consumer.group-id=myGroup
+```
+更多受支持的选项，请参见[`KafkaProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/kafka/KafkaProperties.java)。
+
+#### 发送消息
+Spring的`KafkaTemplate`是自动配置的，你可以直接在你自己的bean中注入它们:
+```java
+@Component
+public class MyBean {
+
+	private final KafkaTemplate kafkaTemplate;
+
+	@Autowired
+	public MyBean(KafkaTemplate kafkaTemplate) {
+		this.kafkaTemplate = kafkaTemplate;
+	}
+
+	// ...
+
+}
+```
+
+
+#### 接收消息
+当Apache Kafka基础组件存在时，任何bean都可以用@卡夫卡式的注解来创建一个监听器端点。如果没有定义`KafkaListenerContainerFactory`,会自动配置一个默认的，并且key定义在`spring.kafka.listener.*`中。
+
+以下组件在`someTopic`主题上创建一个监听器端点：
+```java
+@Component
+public class MyBean {
+
+    @KafkaListener(topics = "someTopic")
+    public void processMessage(String content) {
+        // ...
+    }
+
+}
+```
+
+#### 额外的Kafka属性
+自动配置支持的属性在[附录A，通用应用程序属性](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#common-application-properties)中可以查看。请注意，这些属性大部分(连字符或驼峰形式)都直接映射到Apache Kafka的点状属性，请参阅Apache Kafka文档以获得详细信息。
+
+这些属性的前几项都适用于生产者和消费者，但如果希望使用不同的值，则可以在生产者或消费者级别指定。Apache Kafka指定了具有重要性的属性：HIGH，MEDIUM和LOW。Spring Boot自动配置支持所有HIGH重要性的属性，一些选择的MEDIUM和LOW，以及任何没有默认值的属性。
+
+Kafka 所支持的属性中只有一个子集可以通过`KafkaProperties`类来获得。如果你希望配置没有直接支持的生产者或消费者的附加属性，请使用以下内容:
+```
+spring.kafka.properties.foo.bar=baz
+spring.kafka.consumer.properties.fiz.buz=qux
+# 这里应该是.吧？
+spring,kafka.producer.properties.baz.qux=fiz 
+```
+
+这设置了普通的`foo.bar` Kafka 属性为`baz`(适用于生产者和消费者)，消费者`fiz.buz`属性为`qux`和生产者`baz.qux`属性为`fiz`。
+
+> **以这种方式设置的属性将覆盖Spring Boot 显式支持的任何配置项。**
+
+## 使用“RestTemplate” 调用REST 服务
+如果需要在应用程序中调用远程REST服务，那么可以使用Spring Framework的`RestTemplate`类。由于`RestTemplate`实例通常需要在被使用之前进行定制，所以Spring Boot 不提供任何单独的自动配置的`RestTemplate` bean。但是，它可以自动配置一个`RestTemplateBuilder`，当需要时可以使用它创建`RestTemplate`实例。自动配置的`RestTemplateBuilder`将确保将合理的`HttpMessageConverters`应用于`RestTemplate`实例。
+
+下面是一个典型的例子:
+```java
+@Service
+public class MyService {
+
+    private final RestTemplate restTemplate;
+
+    public MyBean(RestTemplateBuilder restTemplateBuilder) {
+        this.restTemplate = restTemplateBuilder.build();
+    }
+
+    public Details someRestCall(String name) {
+        return this.restTemplate.getForObject("/{name}/details", Details.class, name);
+    }
+
+}
+```
+
+> `RestTemplateBuilder`包含许多有用的方法，这些方法可用于快速配置`RestTemplate`。例如，要添加基本的身份验证支持，你可以使用`builder.basicAuthorization("user", "password").build()`。
+
+### 定制RestTemplate
+## 使用“WebClient” 调用REST 服务
+### 定制WebClient
+## 校验
+## 邮件发送
+## JTA 分布式事务
+### 使用Atomikos 事务管理器
+### 使用Bitronix 事务管理器
+### 使用Narayana 事务管理器
+### 使用Java EE管理的事务管理器
+### 混合XA和非XA JMS连接
+### 支持另一个嵌入式事务管理器
+## Hazelcast
+## Quartz Scheduler
+## Spring Integration
+## Spring Session
+## JMX监视和管理
