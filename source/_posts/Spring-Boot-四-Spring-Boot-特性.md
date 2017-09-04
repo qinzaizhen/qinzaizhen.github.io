@@ -1945,12 +1945,82 @@ public class MyService {
 > `RestTemplateBuilder`包含许多有用的方法，这些方法可用于快速配置`RestTemplate`。例如，要添加基本的身份验证支持，你可以使用`builder.basicAuthorization("user", "password").build()`。
 
 ### 定制RestTemplate
+`RestTemplate`定制主要有三种方法，这取决于你希望定制的范围有多大。
+
+要使任何定制的范围尽可能窄，只需插入自动配置的`RestTemplateBuilder`，然后根据需要调用它的方法就行了。每个方法调用都返回一个新的`RestTemplateBuilder`实例，因此定制只会影响该构建器的使用。为了在应用层面定制，可以使用额外的定制化定制一个`RestTemplateCustomizer` bean。所有这些bean都将自动注册到自动配置的`RestTemplateBuilder`中，并将应用于使用它构建的任何模板。
+
+下面是一个定制化器的例子，它配置了除192.168.0.5之外的所有主机使用代理:
+```java
+static class ProxyCustomizer implements RestTemplateCustomizer {
+
+    @Override
+    public void customize(RestTemplate restTemplate) {
+        HttpHost proxy = new HttpHost("proxy.example.com");
+        HttpClient httpClient = HttpClientBuilder.create()
+                .setRoutePlanner(new DefaultProxyRoutePlanner(proxy) {
+
+                    @Override
+                    public HttpHost determineProxy(HttpHost target,
+                            HttpRequest request, HttpContext context)
+                                    throws HttpException {
+                        if (target.getHostName().equals("192.168.0.5")) {
+                            return null;
+                        }
+                        return super.determineProxy(target, request, context);
+                    }
+
+                }).build();
+        restTemplate.setRequestFactory(
+                new HttpComponentsClientHttpRequestFactory(httpClient));
+    }
+
+}
+```
+最后，最极端的(也是很少使用的)选择是创建你自己的`RestTemplateBuilder` bean。这将关闭`RestTemplateBuilder`的自动配置，并防止使用任何`RestTemplateCustomizer` bean。
+
 ## 使用“WebClient” 调用REST 服务
 ### 定制WebClient
 ## 校验
+只要在类路径上发现JSR-303的实现(例如Hibernate validator)就会自动启用Bean校验1.1支持的方法校验特性。这允许在bean方法的参数和/或返回值上使用`javax.valication`约束注解。有这些注解的方法的目标类需要在类级别上用`@Validated`注解进行注解，因为内联约束注解需要搜索它们的方法。
+
+例如，以下服务触发第一个参数的验证，确保它的大小在8到10之间：
+```java
+@Service
+@Validated
+public class MyBean {
+
+    public Archive findByCodeAndAuthor(@Size(min = 8, max = 10) String code,
+            Author author) {
+        ...
+    }
+
+}
+```
+
 ## 邮件发送
+Spring框架为使用`JavaMailSender`接口发送电子邮件提供了一种简单的抽象，Spring Boot 为它提供了自动配置以及启动模块。
+
+> 查看[参考文档](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/integration.html#mail)以了解如何使用`JavaMailSender`的详细说明
+
+如果spring.mail.host和相关的库(如spring-boot-starter-mail所定义的)可用，如果不存在，就会创建一个默认的JavaMailSender。sender可以通过`spring.mail`命名空间中的配置项进一步定制，查看[`MailProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/mail/MailProperties.java)以获得更多细节。
+
+特别是，某些默认的超时值是无限的，你可能想要更改它，以避免被无响应的邮件服务器阻塞线程：
+```
+spring.mail.properties.mail.smtp.connectiontimeout=5000
+spring.mail.properties.mail.smtp.timeout=3000
+spring.mail.properties.mail.smtp.writetimeout=5000
+```
+
 ## JTA 分布式事务
+Spring Boot通过使用Atomikos或Bitronix嵌入式事务管理器来支持跨多个XA资源的分布式JTA事务。在部署到合适的Java EE应用服务器时，JTA事务也得到了支持。当检测到JTA环境时，将使用Spring的`JtaTransactionManager`来管理事务。将对自动配置的JMS、数据源和JPA bean进行升级，以支持XA事务。你可以使用诸如`@Transactional`之类的标准Spring 方式来参与分布式事务。如果你在一个JTA环境中，并且仍然希望使用本地事务，那么你可以设置`spring.jta.enabled`属性设置为`false`来禁用JTA自动配置。
+
 ### 使用Atomikos 事务管理器
+Atomikos是一个流行的开源事务管理器，可以嵌入到Spring Boot应用程序中。你可以使用`spring-boot-starter-jta-atomikos` Starter来获取适当的Atomikos库。Spring Boot将自动配置Atomikos，并确保将适当的`depends-on`设置应用到你的Spring bean上，以正确的启动和关闭顺序。
+
+在缺省情况下，Atomikos事务日志将被写入到应用程序主目录(应用程序jar文件所在的目录)的`transaction-logs`目录中。你可以通过在`application.properties`文件中设置一个`spring.jta.log-dir`属性来定制这个目录。`spring.jta.atomikos.properties`开始的属性也可以用来定制于Atomikos `UserTransactionServiceImp`。请参阅[`AtomikosProperties` Javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/jta/atomikos/AtomikosProperties.html)以获得完整的详细信息。
+
+> 为了确保多个事务管理器能够安全地协调相同的资源管理器，每个Atomikos实例必须配置一个惟一的ID，默认情况下，这个ID是Atomikos正在运行的机器的IP地址。为了确保产品的唯一性，你应该为应用程序的每个实例配置`spring.jta.transaction-manager-id`属性使用不同的值。
+
 ### 使用Bitronix 事务管理器
 ### 使用Narayana 事务管理器
 ### 使用Java EE管理的事务管理器
@@ -1958,6 +2028,78 @@ public class MyService {
 ### 支持另一个嵌入式事务管理器
 ## Hazelcast
 ## Quartz Scheduler
+Spring引导为使用Quartz调度器提供了几项便利，包括`spring-boot-starter-quartz` 'Starter'。如果可以使用Quartz，则将自动配置一个`Scheduler`(通过`SchedulerFactoryBean`抽象层)。
+
+以下类型的bean将被自动获取并与`Scheduler`关联:
+- `JobDetail`:定义了一个特定的Job。`JobDetail`实例可以通过`JobBuilder `API轻松构建。
+- `Calendar`
+- `Trigger`:定义特定job何时触发。
+
+默认情况下，将使用一个内存中的`JobStore`。但是，如果你的应用程序中有`DataSource ` bean和配置了`spring.quartz.job-store-type`属性，则可以配置一个基于jdbc的存储:
+```
+spring.quartz.job-store-type=jdbc
+```
+当使用jdbc存储时,可以在启动时初始化相关表:
+```
+spring.quartz.jdbc.initialize-schema = true
+```
+
+> 默认情况下会检测到数据库，并使用Quartz库提供的标准脚本进行初始化。还可以使用`spring.quartz.jdbc.schema`属性提供自定义脚本。
+
+Quartz调度器的配置可以使用Quartz 配置属性(参见`spring.quartz.properties.*`)和允许编程式定制`SchedulerFactoryBean`的`SchedulerFactoryBeanCustomizer` bean。
+
+Job可以定义set方法来注入数据映射属性。常规bean也可以以类似的方式注入:
+```java
+public class SampleJob extends QuartzJobBean {
+
+    private MyService myService;
+    private String name;
+
+    // Inject "MyService" bean
+    public void setMyService(MyService myService) { ... }
+
+    // Inject the "name" job data property
+    public void setName(String name) { ... }
+
+    @Override
+    protected void executeInternal(JobExecutionContext context)
+            throws JobExecutionException {
+        ...
+    }
+
+}
+```
+
 ## Spring Integration
+Spring Boot为使用Spring Integration提供了一些方便，包括`spring-boot-starter-integration`'Starter'。Spring Integration为消息传递提供了抽象，还提供了HTTP、TCP等其他传输协议。如果你的类路径上有Spring Integration，它将通过`@EnableIntegration`注解进行初始化。
+
+Spring Boot还将配置一些由附加的Spring Integration模块所触发的特性。如果“spring-integration-jmx”也在类路径上，消息处理统计信息将在JMX上发布。如果“spring-integration-jdbc”可用，则可以在启动时创建默认的数据库表:
+```
+spring.integration.jdbc.initializer.enabled=true
+```
+查看[`IntegrationAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/integration/IntegrationAutoConfiguration.java) 和[`IntegrationProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/integration/IntegrationProperties.java)类了解更多的细节。
+
 ## Spring Session
+Spring Boot为许多存储提供了Spring Session 自动配置:
+- JDBC
+- Redis
+- Hazelcast
+- HashMap
+
+如果可以使用Spring Session ，那么你必须选择你希望使用的`StoreType`来存储会话。例如，使用JDBC作为后端存储，您可以将应用程序配置为如下:
+```
+spring.session.store-type=jdbc
+```
+
+> 你可以通过将`store-type`设置为`none`来禁用Spring Session。
+
+每种存储都有特定的附加设置。例如，可以为jdbc存储定制表的名称:
+```
+spring.session.jdbc.table-name=SESSIONS
+```
+
 ## JMX监视和管理
+Java管理扩展(JMX)提供了一种监视和管理应用程序的标准机制。在默认情况下，Spring Boot将创建一个bean id为‘mbeanServer’的`MBeanServer`，并公开任何使用Spring JMX注解注解的bean(`@ManagedResource`、`@ManagedAttribute`、`@ManagedOperation`)。
+
+有关更多详细信息，请参阅[`JmxAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jmx/JmxAutoConfiguration.java)类。
+
