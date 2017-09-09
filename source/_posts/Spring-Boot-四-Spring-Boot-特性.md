@@ -3,11 +3,110 @@ title: Spring Boot 四-Spring Boot 特性
 date: 2017-08-15 21:13:56
 tags: [Spring Boot,特性]
 ---
+本节将深入介绍Spring Boot的细节。在这里，你可以了解你想要使用和定制的关键特性。如果还没有，你可能需要阅读第2部分，“[开始](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#getting-started)”和第3部分，“[使用Spring引导](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#using-boot)”部分，这样你就可以很好地了解基础知识。
+
 ## SpringApplication
+`SpringApplication`类提供了一种方便的方法来引导一个从`main()`方法启动的Spring应用程序。在许多情况下，你可以将其委托给静态`SpringApplication.run`方法:
+```java
+public static void main(String[] args) {
+    SpringApplication.run(MySpringConfiguration.class, args);
+}
+```
+
+当你的应用程序启动时，你应该会看到类似的东西:
+```
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::   v2.0.0.BUILD-SNAPSHOT
+
+2013-07-31 00:08:16.117  INFO 56603 --- [           main] o.s.b.s.app.SampleApplication            : Starting SampleApplication v0.1.0 on mycomputer with PID 56603 (/apps/myapp.jar started by pwebb)
+2013-07-31 00:08:16.166  INFO 56603 --- [           main] ationConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@6e5a8246: startup date [Wed Jul 31 00:08:16 PDT 2013]; root of context hierarchy
+2014-03-04 13:09:54.912  INFO 41370 --- [           main] .t.TomcatServletWebServerFactory : Server initialized with port: 8080
+2014-03-04 13:09:56.501  INFO 41370 --- [           main] o.s.b.s.app.SampleApplication            : Started SampleApplication in 2.992 seconds (JVM running for 3.658)
+```
+
+默认`INFO`日志信息将显示出来，包括启动应用程序的用户等相关的启动细节。
+
 ### 启动失败
+如果你的应用程序无法启动，注册的`FailureAnalyzers`就有机会提供一个专门的错误消息和一个具体的操作来解决这个问题。例如，如果你在端口8080上启动一个web应用程序，并且该端口已经在使用，你应该会看到类似的东西:
+```
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Embedded servlet container failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+```
+
+> Spring Boot提供了无数的`FailureAnalyzer`实现，并且你可以[很容易地添加自己](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#howto-failure-analyzer)的实现。
+
+如果没有失败分析程序能够处理这个异常，你仍然可以显示完整的自动配置报告，以更好地理解出错的地方。所以你需要启用[`debug`属性](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-external-config)或为`org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer`启用`DEBUG`日志记录。
+
+例如，如果你正在使用`java-jar`运行你的应用程序，你可以启用以下的`debug`属性:
+```
+$ java -jar myproject-0.0.1-SNAPSHOT.jar --debug
+```
+
 ### 自定义Banner
+在启动时打印的banner可以通过添加一个`banner.txt`文件到类路径或者通过设置`banner.location`指向该文件的位置来改变。如果这个文件有不同寻常的编码，你可以设置`banner.charset`(默认为`UTF-8`)。除了文本文件之外，你还可以添加一个`banner.gif`,`banner.jpg`或`banner.png`图像文件到类路径，或者设置一个`banner.image.location`属性。图像将被转换成ASCII字符，并在任何文本banner上打印。
+
+在你的banner.txt文件中你可以使用以下占位符:
+
+变量|描述
+--|--
+`${application.version}`|在`MANIFEST.MF`中声明的应用程序的版本号。例如，`Implementation-Version: 1.0`被打印为`1.0`。
+`${application.formatted-version}`|在`MANIFEST.MF`中声明的应用程序的格式化版本号(用括号括起来，用v作前缀)。例如`(v1.0)`。
+`${spring-boot.version}`|你正在使用的Spring Boot版本。例如`2.0.0.BUILD-SNAPSHOT`。
+`${spring-boot.formatted-version}`|你正在使用的Spring Boot版本格式化输出形式（用括号括起来，用v作前缀）。例如`(v2.0.0.BUILD-SNAPSHOT)`。
+`${Ansi.NAME}` (or `${AnsiColor.NAME}`, `${AnsiBackground.NAME}`, `${AnsiStyle.NAME}`)|`NAME`是ANSI转义码的名字。有关详细信息,请参阅[`AnsiPropertySource`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot/src/main/java/org/springframework/boot/ansi/AnsiPropertySource.java)。
+`${application.title}`|在`MANIFEST.MF`中声明的应用程序的标题。例如，`Implementation-Title: MyApp`被打印为`MyApp`。
+
+
+> `SpringApplication.setBanner(…)`方法可以用来以编程方式生成一个banner 。使用`org.springframework.boot.Banner`接口，并实现您自己的`printBanner()`方法。
+
+你还可以使用`spring.main.banner-mode`属性，以确定是否必须在`System.out`（`console`）打印banner，使用已配置的日志记录器(`log`)或根本不打印(`off`)。
+
+打印的banner将以`springBootBanner`的名字注册为一个单例bean。
+
+> YAML映射`off`为`false`，因此如果你想禁用应用程序中的banner，请确保添加引号。
+> ```yaml
+> spring:
+>    main:
+>       banner-mode: "off"
+> ```
+
+
 ### 自定义SpringApplication
+如果`SpringApplication`默认值不符合你的胃口，你可以创建一个本地实例并自定义它。例如，关闭banner:
+```java
+public static void main(String[] args) {
+    SpringApplication app = new SpringApplication(MySpringConfiguration.class);
+    app.setBannerMode(Banner.Mode.OFF);
+    app.run(args);
+}
+```
+
+> 传递给`SpringApplication`的构造函数参数是spring bean 的配置源。在大多数情况下，这些都是对`@Configuration`类的引用，但是它们也可以是对XML配置的引用，或者是对应该被扫描的包的引用。
+
+还可以使用`application.properties`文件配置`SpringApplication`。请参阅[第24章，扩展配置](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-external-config)以获得详细信息。
+
+关于配置选项的完整列表，请参阅[`SpringApplication` Javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/SpringApplication.html)。
+
 ### 流式builder API
+如果你需要构建一个`ApplicationContext`层次结构(具有父/子关系的多个上下文)，或者您更喜欢使用“流式的”构建器API，那么您可以使用`SpringApplicationBuilder`。
+
+`SpringApplicationBuilder`允许你将多个方法调用链接在一起，并包含允许你创建层次结构的`parent`和`child`方法。
+
+例如：
 ```java
 new SpringApplicationBuilder()
         .sources(Parent.class)
@@ -15,14 +114,106 @@ new SpringApplicationBuilder()
         .bannerMode(Banner.Mode.OFF)
         .run(args);
 ```
-**Web 组件必须在子上下文中，并且父子上下文将使用相同的环境变量`Environment`**
+
+> 在创建`ApplicationContext`层次结构时，会有一些限制，例如，Web组件必须包含在子上下文中，并且父子上下文将使用相同的环境变量`Environment`。请参阅[`SpringApplicationBuilder` Javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/builder/SpringApplicationBuilder.html)来获得完整的详细信息。
 
 ### 事件和监听器
+除了通常的Spring Framework 事件，如 [`ContextRefreshedEvent`](http://docs.spring.io/spring/docs/5.0.0.BUILD-SNAPSHOT/javadoc-api/org/springframework/context/event/ContextRefreshedEvent.html)，一个`SpringApplication`会发送一些额外的应用事件。
+
+> 有些事件实际上是在创建`ApplicationContext`之前触发的，因此你不能将这些监听器注册为一个`@Bean`。你可以通过`SpringApplication.addListeners(…)`或`SpringApplicationBuilder.listeners(…)`方法来注册。如果你希望这些侦听器能自动注册，不管应用程序是如何创建的，可以添加一个`META-INF/spring.factories`文件到项目中并使用`org.springframework.context.ApplicationListener` key来引用它们。
+```
+org.springframework.context.ApplicationListener=com.example.project.MyListener
+```
+
+应用事件按照以下顺序发送:
+1. 一个`ApplicationStartingEvent`是在开始运行时发送的，但是在任何处理之前，除了监听器和初始化器的注册。
+2. 在上下文中使用的`Environment`已知但在创建上下文之前，将发送`ApplicationEnvironmentPreparedEvent`。
+3. 一个`ApplicationPreparedEvent`是在刷新启动之前发送的，但是在bean定义被加载之后。
+4. 一个`ApplicationReadyEvent`是在刷新之后发送的，并且已经处理了任何相关的回调，以表明应用程序已经准备好处理请求。
+5. 如果在启动时出现异常，就会发送`ApplicationFailedEvent`。
+
+> 通常不需要使用应用程序事件，但是知道它们的存在可以做到得心应手。在内部，Spring Boot使用事件来处理各种任务。
+
 ### Web 环境
+`SpringApplication`将尝试为你创建合适的`ApplicationContext`。默认情况下,将使用一个`AnnotationConfigApplicationContext`或`AnnotationConfigServletWebServerApplicationContext `,这取决于你是否正在开发一个web应用程序。
+
+用于确定“web environment”的算法相当简单(基于是否存在几个类)。如果需要覆盖缺省值，可以使用`setWebEnvironment(boolean webEnvironment)`。
+
+也可以完全控制将通过调用`setApplicationContextClass（...）`使用的`ApplicationContext`类型。
+
+> 在JUnit测试中使用`SpringApplication`时，通常需要调用`setWebEnvironment(false)`。
+
 ### 访问应用参数
+如果需要访问传递给`SpringApplication.run（...）`的应用程序参数，则可以注入`org.springframework.boot.ApplicationArguments` bean。 `ApplicationArguments`接口提供对原始`String []`参数以及解析过的`option`和`non-option`参数的访问：
+```java
+import org.springframework.boot.*
+import org.springframework.beans.factory.annotation.*
+import org.springframework.stereotype.*
+
+@Component
+public class MyBean {
+
+    @Autowired
+    public MyBean(ApplicationArguments args) {
+        boolean debug = args.containsOption("debug");
+        List<String> files = args.getNonOptionArgs();
+        // if run with "--debug logfile.txt" debug=true, files=["logfile.txt"]
+    }
+
+}
+```
+
+> Spring Boot还将向Spring `Environment`注册一个`CommandLinePropertySource`。 这允许你也可以使用`@Value`注解注入单个应用参数。
+
 ### 使用ApplicationRunner，CommandLineRunner
+当你需要在`SpringApplication`启动时运行一些特定的代码，你可以实现`ApplicationRunner`或`CommandLineRunner`接口。 这两个接口都以相同的方式工作，并提供一个单独的`run`方法，并在`SpringApplication.run（...）`完成之前调用。
+
+`CommandLineRunner`接口提供对应用程序参数的访问，并将参数作为一个简单的字符串数组，而`ApplicationRunner`使用上述的`ApplicationArguments`接口。
+```java
+import org.springframework.boot.*
+import org.springframework.stereotype.*
+
+@Component
+public class MyBean implements CommandLineRunner {
+
+    public void run(String... args) {
+        // Do something...
+    }
+
+}
+```
+如果几个`CommandLineRunner`或`ApplicationRunner` bean 必须在一个特定的顺序被调用,你可以额外实现`org.springframework.core.Ordered`接口，也可以使用`org.springframework.core.annotation.Order`注解。
+
 ### 应用退出
+每个`SpringApplication`将在JVM上注册一个关闭钩子，以确保`ApplicationContext`在退出时优雅地关闭。所有标准的Spring生命周期回调(例如`DisposableBean `，或者`@PreDestroy`)都可以使用。
+
+此外,如果希望在`SpringApplication.exit()`被调用时返回特定的退出代码,bean 可以实现`org.springframework.boot.ExitCodeGenerator`接口。这个退出代码可以传递给`System.exit()`以作为状态代码返回它。
+```java
+@SpringBootApplication
+public class ExitCodeApplication {
+
+	@Bean
+	public ExitCodeGenerator exitCodeGenerator() {
+		return () -> 42;
+	}
+
+	public static void main(String[] args) {
+		System.exit(SpringApplication
+				.exit(SpringApplication.run(ExitCodeApplication.class, args)));
+	}
+
+}
+```
+
+此外，异常类可以实现`ExitCodeGenerator`接口。 遇到这样的异常时，Spring Boot将返回由它实现的`getExitCode（）`方法提供的退出码。
+
 ### 管理员功能
+可以通过指定`spring.application.admin.enabled`属性来为应用程序启用与管理相关的功能。 这会在`MBeanServer`平台上暴露[`SpringApplicationAdminMXBean`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot/src/main/java/org/springframework/boot/admin/SpringApplicationAdminMXBean.java)。 你可以使用此功能远程管理你的Spring Boot应用程序。 这对于任何服务包装器实现也是有用的。
+
+> 如果你想知道应用程序在哪个HTTP端口上运行，请使用`local.server.port` key来获取该属性。
+
+> 启用此功能时请小心，因为MBean公开了关闭应用程序的方法。
+
 ## 扩展配置
 Spring Boot 允许扩展配置，因此我们的应用可以在不同的环境中运行。可以使用properties文件，YAML文件，环境变量和命令行参数来扩展配置。属性值可以通过`@Value`注解直接注入到bean中，通过Spring环境变量`Environment`来访问或者通过`@ConfigurationProperties`注解绑定到结构化对象中。
 
