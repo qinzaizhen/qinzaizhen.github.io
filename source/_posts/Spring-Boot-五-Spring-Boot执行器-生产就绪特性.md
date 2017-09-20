@@ -566,23 +566,174 @@ public class MyService {
 ```
 > 你可以使用任何字符串作为一个指标名，但是你应该遵循所选择的store/graphing技术的指导。[Matt Aimonetti的博客上](http://matt.aimonetti.net/posts/2013/06/26/practical-guide-to-graphite-monitoring/)有一些关于`Graphite`的好指导。
 
-
 ### 添加自己公开的指标
+要添加每次调用指标端点时计算的额外指标，只需注册额外的`PublicMetrics`实现bean。默认情况下，所有这些bean都是由端点收集的。你可以通过定义自己的`MetricsEndpoint`来更改。
+
 ### 指标输出，导出和聚合
+Spring Boot 提供了一些称为`Exporter`的标记接口的实现，可用于将内存缓冲区中的指标读数复制到可以分析和显示的位置。事实上,如果你提供实现`MetricWriter`接口(或用于简单使用情况的`GaugeWriter`)并使用`@ExportMetricWriter`标记的`@Bean`,那么它将自动连接到一个`Exporter`和每5秒更新一次指标(通过`spring.metrics.export.delay-millis`配置)。此外，你定义和标记为`@ExportMetricReader`的任何一个`MetricReader`的值由缺省导出器导出。
+
+> 如果在你的应用程序中启用调度(`@EnableScheduling`)并且在自己的计划任务开始时运行集成测试时，这个特性将是一个问题。你可以通过设置`spring.metrics.export.enabled`为`false`来禁用此行为。
+
+默认导出器是一个`MetricCopyExporter`，它尝试通过不复制自上次调用以来没有更改的值来优化自身（可以使用`spring.metrics.export.send-latest`关闭优化）。还要注意，Dropwizard `MetricRegistry` 不支持时间戳，因此如果你使用Dropwizard指标（所有指标将在每个刻度上复制），则优化将不可用。
+
+导出触发器(`delay-millis`, `includes`, `excludes` 和`send-latest`)的默认值可以通过`spring.metrics.export.*`设置。特定`MetricWriters`的值可以通过`spring.metrics.export.triggers.<name>.*`，其中`<name>`是一个bean的名称（或匹配bean名称的模式）。
+
+> 如果你关闭默认的`MetricRepository`(例如使用Dropwizard指标)，那么将会禁用自动导出指标。你可以重获相同的功能，即声明一个属于你自己的`MetricReader`类型，并声明它为`@ExportMetricReader`。 
+
 #### 示例：导出到Redis
+如果你提供一个类型为`RedisMetricRepository`的`@Bean`，并将其标记为`ExportMetricWriter`，则会将指标导出到Redis缓存以进行聚合。`RedisMetricRepository`有两个重要的参：`prefix`和`key`（传入其构造函数）。最好使用应用程序实例唯一的前缀（例如，使用随机值，也可以使用应用程序的逻辑名称使其可以与同一应用程序的其他实例相关联）。“key”用于保存所有指标名称的全局索引，因此它应该是“全局”惟一的，无论对你的系统意味着什么(例如，如果有不同的键，相同系统的两个实例可以共享一个Redis缓存)。
+
+例如：
+```java
+@Bean
+@ExportMetricWriter
+MetricWriter metricWriter(MetricExportProperties export) {
+    return new RedisMetricRepository(connectionFactory,
+        export.getRedis().getPrefix(), export.getRedis().getKey());
+}
+```
+
+*application.properties*
+```
+spring.metrics.export.redis.prefix= metrics.mysystem.${spring.application.name:application}.${random.value:0000}
+spring.metrics.export.redis.key=keys.metrics.mysystem
+```
+前缀是使用应用名称和id结尾构造的，因此可以很容易地使用它来标识具有相同逻辑名称的一组进程。
+
+> 设置`key`和`prefix`是很重要的。key 用于所有仓库操作，并且可以由多个仓库共享。如果多个存储库共享一个key (比如在需要聚合的情况下)，那么通常有一个只读的“master”仓库，它有一个简短但可识别的前缀(比如“metrics.mysystem”)，以及许多只写前缀的仓库，这些前缀都是从主前缀开始的(比如上面例子中的`metrics.mysystem.*`)。从这样的“主”仓库中读取所有键是很有效的，但是使用较长的前缀(例如，使用一个写库)来读取一个子集的效率是很低的。
+
+> 上面的例子使用了`MetricExportProperties`来注入和提取key和prefix。这是由Spring Boot提供的，配置有合理的缺省值。没有什么可以阻止你使用你自己的值，只要它们遵循建议。
+
 #### 示例：导出到Open TSDB
 #### 示例：导出到Statsd
 #### 示例：导出到JMX
+如果你提供一个使用`@ExportMetricWriter`的`JmxMetricWriter`类型的`@Bean`，则将指标导出为本地服务器的MBean（`MBeanExporter`由Spring Boot JMX自动配置提供，只要它已打开）。然后可以使用任何连接JMX的工具（例如JConsole或JVisualVM）来检查，绘制图表，提醒等等。
+
+例如：
+```java
+@Bean
+@ExportMetricWriter
+MetricWriter metricWriter(MBeanExporter exporter) {
+    return new JmxMetricWriter(exporter);
+}
+```
+每个指标都导出为单独的MBean。`ObjectNamingStrategy`给出了`ObjectNames`的格式，可以将其注入到`JmxMetricWriter`中(缺省情况下，可以将指标名和前两个周期分隔的部分分隔开，从而使指标可以在JVisualVM或JConsole中分组)。
+
 ### 从多个来源聚合指标
+你可以使用`AggregateMetricReader`来合并来自不同物理源的指标。相同逻辑指标的源只需要用一个周期分隔的前缀来发布它们，并且reader将聚合(通过截断指标名称，并删除前缀)它们。counter 会相加，并且其他的（即gauge）将取其最新值。
+
+如果多个应用程序实例从中央(例如Redis)仓库获取并显示结果时，这将是非常有用的。特别推荐结合`MetricReaderPublicMetrics`连接“/metrics”端点的结果。
+
+例如：
+```java
+@Autowired
+private MetricExportProperties export;
+
+@Bean
+public PublicMetrics metricsAggregate() {
+    return new MetricReaderPublicMetrics(aggregatesMetricReader());
+}
+
+private MetricReader globalMetricsForAggregation() {
+    return new RedisMetricRepository(this.connectionFactory,
+        this.export.getRedis().getAggregatePrefix(), this.export.getRedis().getKey());
+}
+
+private MetricReader aggregatesMetricReader() {
+    AggregateMetricReader repository = new AggregateMetricReader(
+        globalMetricsForAggregation());
+    return repository;
+}
+```
+
+> 上面的例子中使用了`MetricExportProperties`来注入和提取key 和prefix 。这是通过Spring Boot提供的，并且默认设置是合理的。他们在`MetricExportAutoConfiguration`中进行设置。
+
+> 上面的`@MetricReaders`不是`@Beans`，也没有标记`@ExportMetricReader`，因为他们只是收集和分析来自其他仓库的数据，并且不希望导出他们的值。
+
 ### Dropwizard指标
+当你声明对`io.dropwizard.metrics:metrics-core`的依赖时，将创建一个默认的`MetricRegistry` Spring bean;如果需要定制，还可以注册自己的`@Bean` 实例。
+用户[Dropwizard “指标” 库](https://dropwizard.github.io/metrics/)的用户会发现Spring  Boot 指标自动发布到`com.codahale.metrics.MetricRegistry`。来自`MetricRegistry `的指标也会通过`/metrics`端点自动暴露出来。
+
+当使用Dropwizard指标时，默认的`CounterService`和`GaugeService`将被替换为`DropwizardMetricServices`，它是`MetricRegistry`的包装器（因此你可以`@Autowired`其中一个服务并正常使用它）。你还可以通过使用适当的类型(例如`timer.*`，针对gauge的`histogram.*`，针对counter的`meter.*`）预先确定你的指标名称来创建“特殊”的Dropwizard 指标。
+
 ### 消息通道集成
+如果存在一个名为`metricsChannel`的`MessageChannel` bean，那么将创建一个将指标写入该通道的`MetricWriter`。发送到该通道的每个消息都将包含一个[`Delta`](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/actuate/metrics/writer/Delta.html)或[`Metric`](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/actuate/metrics/Metric.html)有效负载，并有一个`metricName`头。writer自动地连接到一个导出器(对于所有的writer)，所以所有的指标都将出现在通道上，并且订阅者可以采取额外的分析或操作(由你来提供所需要的通道和订阅者)。
+
 ## 审计
+Spring Boot Actuator具有灵活的审计框架，一旦使用了Spring  Security（默认情况下是“认证成功”，“失败”和“拒绝访问”异常），就会发布事件。这对于做报告来说非常有用，也可以实现身份验证失败时的锁定策略。要自定义发布的安全事件，你可以提供自己的`AbstractAuthenticationAuditListener`和`AbstractAuthorizationAuditListener`的实现。
+
+你还可以选择为你自己的业务事件使用审计服务。要这样做可以将现有`AuditEventRepository`注入自己的组件然后直接使用,或者你以简单地通过Spring `ApplicationEventPublisher`(使用`ApplicationEventPublisherAware`)发布`AuditApplicationEvent`。
+
 ## 追踪
+为所有HTTP请求自动启用跟踪。你可以查看`trace`端点并获得关于最后100个请求的基本信息:
+```
+[{
+    "timestamp": 1394343677415,
+    "info": {
+        "method": "GET",
+        "path": "/trace",
+        "headers": {
+            "request": {
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Connection": "keep-alive",
+                "Accept-Encoding": "gzip, deflate",
+                "User-Agent": "Mozilla/5.0 Gecko/Firefox",
+                "Accept-Language": "en-US,en;q=0.5",
+                "Cookie": "_ga=GA1.1.827067509.1390890128; ..."
+                "Authorization": "Basic ...",
+                "Host": "localhost:8080"
+            },
+            "response": {
+                "Strict-Transport-Security": "max-age=31536000 ; includeSubDomains",
+                "X-Application-Context": "application:8080",
+                "Content-Type": "application/json;charset=UTF-8",
+                "status": "200"
+            }
+        }
+    }
+},{
+    "timestamp": 1394343684465,
+    ...
+}]
+```
+以下是默认情况下的跟踪:
+
+名称|描述
+--|--
+Request Headers|request头
+Response Headers|response头
+Cookies|request头中的`Cookie`和response头中的`Set-Cookie`
+Errors|错误属性（若有的话）
+消耗的时间|请求服务的毫秒时间
+
 ### 自定义追踪
+如果需要跟踪其他事件，可以将`TraceRepository`注入到Spring bean中。`add`方法接受一个单一的`Map`，该`Map`将转换为JSON并被记录下来。
+
+默认情况下，将使用一个`InMemoryTraceRepository`来存储最后的100个事件。如果需要扩展容量，你可以定义自己的`InMemoryTraceRepository` bean实例。如果需要，还可以创建自己的`TraceRepository`实现。
+
 ## 进程监控
+在Spring Boot Actuator 中，你可以找到几个类用来创建对进程监控有用的文件:
+- `ApplicationPidFileWriter`创建一个包含应用程序PID的文件(默认情况下在应用程序目录中, 文件名称`application.pid`)。
+- `EmbeddedServerPortFileWriter`创建一个文件(或多个文件)包含嵌入式服务器的端口(默认情况下在应用程序目录,文件名为`application.port`)。
+
+这些writer在默认情况下不会被激活，但是你可以用下面的方法来启用它们。
+
 ### 扩展配置
+在`META-INF/spring.factories`文件可以激活写`PID`文件的监听器。例如:
+```
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.system.ApplicationPidFileWriter,\
+org.springframework.boot.actuate.system.EmbeddedServerPortFileWriter
+```
+
 ### 编程方式
+你也可以通过调用`SpringApplication.addListeners(…)`方法并传入适当的`Writer`对象的方式来激活一个监听器。该方法还允许你通过`Writer`的构造函数来定制文件名和路径。
+
 ### 禁用扩展的Cloud Foundry actuator 支持
+
 ### Cloud Foundry自签署证书
 ### 自定义安全配置
 ## 延伸阅读
+如果你想要探索本章中讨论的一些概念，你可以看看actuator   [示例程序](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples)。你也可能想要了解一些图形化工具，比如[Graphite](http://graphite.wikidot.com/)。
+
+否则，你可以继续阅读有关“[部署选项](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#deployment)”的信息，或者提前深入了解一些有关Spring Boot的[构建工具插件](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#build-tool-plugins)的信息。 
