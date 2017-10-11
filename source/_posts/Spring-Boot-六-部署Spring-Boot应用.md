@@ -1,7 +1,7 @@
 ---
 title: Spring Boot 六 - 部署Spring Boot应用
 date: 2017-10-09 18:16:54
-tags:
+tags: [Spring Boot, 部署, 云]
 ---
 
 在部署应用时，Spring Boot 灵活的打包选项提供了大量的选择。你可以轻松地将Spring Boot 应用部署到各种云平台、容器镜像(例如Docker)或虚拟/真实机器上。
@@ -309,6 +309,41 @@ $ systemctl enable myapp.service
 对于在写入jar*后*需要定制的脚本项目，你可以使用环境变量或[配置文件](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#deployment-script-customization-conf-file)。
 
 默认脚本支持以下环境属性：
+
+变量|描述
+--|--
+`MODE`|操作模式。默认取决于构建jar的方式，但是通常为`auto`(**这意味着它会尝试猜测它是否是初始化脚本，通过检查它是否是`init.d`目录中的符号链接**)。你可以明确地设置它为`service`，这样就可以使用`stop|start|status|restart`命令，或者如果你仅仅想要在后台运行脚本可以设置为`run`。
+`USE_START_STOP_DAEMON`|如果`start-stop-daemon`命令可用时，它应该用来控制进程。默认为`true`。
+`PID_FOLDER`|pid 文件夹的根名称（默认为`/var/run`）。
+`LOG_FOLDER`|放置日志文件的目录名称（默认为`/var/log`）。
+`CONF_FOLDER`|读取.conf文件的文件夹名称（默认与jar-file相同的文件夹）。
+`LOG_FILENAME`|`LOG_FOLDER`中的日志文件名称（默认为`<appname>.log`）。
+`APP_NAME`|应用的名称。如果jar从符号链接运行，这个脚本将会猜测应用的名称，如果不是符号链接，或者你想要明确设置应用的名称，这个将会非常有用。
+`RUN_ARGS`|传递给程序（Spring Boot 应用）的参数。
+`JAVA_HOME`|默认通过使用`PATH`来发现`java`可执行程序，但是如果在`$JAVA_HOME/bin/java`有一个可执行文件，你可以明确地设置它。
+`JAVA_OPTS`|传递给JVM启动时的选项。
+`JARFILE`|在使用脚本来启动不是实际内嵌的jar时，指定jar文件的明确路径。
+`DEBUG`|当不为空时将设置shell进程的`-x`标志，可以很容易地查看脚本的逻辑。
+`STOP_WAIT_TIME`|在停止应用时在强制退出之前等待的时间秒数（默认为`60`）。
+
+> `PID_FOLDER`,`LOG_FOLDER`和`LOG_FILENAME`变量只在`init.d`服务时可用。`systemd`时使用'service'脚本来使用等价的自定义变量。查看[更多细节](http://www.freedesktop.org/software/systemd/man/systemd.service.html)。
+
+除了`JARFILE` 和 `APP_NAME`，上面的设置可用使用一个`.conf`文件。这个文件在jar文件的相同目录并且有相同的名称，但是后缀为`.conf`而不是`.jar`。例如，名为`/var/myapp/myapp.jar`的jar将会使用名为`/var/myapp/myapp.conf`的配置文件。
+
+myapp.conf：
+```
+JAVA_OPTS=-Xmx1024M
+LOG_FOLDER=/custom/log/folder
+```
+
+> 如果你不想它与jar在同一个目录，你可以使用`CONF_FOLDER`环境变量来自定义配置文件的位置。
+
+阅读[保护init.d服务的指南](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#deployment-initd-service-securing)来学习适当地保护配置文件。
+
 ### 微软Windows服务
+Spring Boot 应用使用`winsw`来作为Windows服务启动。
+
+单独维护Spring Boot核心的示例将逐步介绍如何为Spring Boot应用程序创建Windows服务。
 ## 延伸阅读
+
 
