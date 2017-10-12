@@ -343,7 +343,9 @@ LOG_FOLDER=/custom/log/folder
 ### 微软Windows服务
 Spring Boot 应用使用`winsw`来作为Windows服务启动。
 
-单独维护Spring Boot核心的示例将逐步介绍如何为Spring Boot应用程序创建Windows服务。
+有个[单独维护](https://github.com/snicoll-scratches/spring-boot-daemon)的示例逐步介绍了如何为Spring Boot 应用程序创建Windows服务。
+
 ## 延伸阅读
+查看[Cloud Foundry](http://www.cloudfoundry.com/)，[Heroku](https://www.heroku.com/)，[OpenShift](https://www.openshift.com/)和[Boxfuse](https://boxfuse.com/)网站，了解有关PaaS可提供的各种功能的更多信息。这些只是四个最受欢迎的Java PaaS提供商，因为Spring Boot 非常适合基于云的部署，你可以自由考虑其他提供商。
 
-
+下一节将介绍[Spring Boot CLI](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#cli); 或者你可以前往阅读关于[构建工具插件](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#build-tool-plugins)。
