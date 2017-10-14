@@ -108,15 +108,160 @@ Spring Boot通过允许你指定不带group或version的依赖关系来扩展Gro
 #### 默认导入语句
 为了减少Groovy代码的大小，将自动包含多个`import`语句。 请注意上述示例如何引用`@Component`，`@RestController`和`@RequestMapping`，而不需要使用完全限定名称或`import`语句。
 
-> 许多Spring注解将在不使用`import`语句的情况下工作。 尝试运行应用程序以查看在添加导入之前失败的内容。
+> 许多Spring注解将在不使用`import`语句的情况下工作。尝试运行应用程序以查看在添加导入之前失败的内容。
 
 #### 自动的main方法
+不是相当于Java应用，在你的`Groovy`脚本中你不需要包含一个`public static void main(String[] args)`方法。在你的编绎后的代码之上会自动创建一个`SpringApplication`,它们充当了`source`。
+
 #### 自定义依赖管理
+默认情况下，CLI在解析`@Grab`依赖关系时使用在`spring-boot-dependencies`中声明的依赖关系管理。可以使用`@DependencyManagementBom`注解来配置附加依赖关系管理，这将覆盖默认依赖关系管理。 注解的值应指定一个或多个Maven BOM的坐标（`groupId：artifactId：version`）。
+
+例如，以下声明：
+```
+@DependencyManagementBom("com.example.custom-bom:1.0.0")
+```
+将在Maven仓库中`com/example/custom-versions/1.0.0/`下获取`custom-bom-1.0.0.pom`。
+
+当指定了多个BOM时，它们按照它们被声明的顺序应用。 例如：
+```
+@DependencyManagementBom(["com.example.custom-bom:1.0.0",
+        "com.example.another-bom:1.0.0"])
+```
+表示`another-bom`中的依赖关系管理将覆盖`custom-bom`中的依赖关系管理。
+
+你可以在可以使用`@Grab`的任何地方使用`@DependencyManagementBom`，但是为了确保依赖关系管理的顺序一致，你最多只能在应用程序中使用`@DependencyManagementBom`。 一个有用的依赖关系源（即Spring Boot的依赖关系管理的超集）就是[Spring IO Platform](http://platform.spring.io/)。`@DependencyManagementBom（ 'io.spring.platform:platform-bom:1.1.2.RELEASE'）`。
+
 ### 具有多个源文件的应用
+你可以使用所有接受文件输入命令的“shell globbing”。 这允许你轻松地使用单个目录中的多个文件，例如
+```
+$ spring run *.groovy
+```
+
 ### 打包应用
+你可以使用`jar`命令将应用程序打包成一个独立的可执行jar文件。 例如：
+```
+$ spring jar my-app.jar *.groovy
+```
+生成的jar将包含通过编译应用程序和所有应用程序的依赖关系生成的类，以便可以使用`java -jar`来运行。jar文件还将包含应用程序类路径中的内容。 你可以使用`--include`和`--exclude`（两者都以逗号分隔，并且两者接受值“+”和“ - ”的前缀来表示它们应该从默认值中删除）来添加显式路径。默认包含
+```
+public/**, resources/**, static/**, templates/**, META-INF/**, *
+```
+默认排除
+```
+.*, repository/**, build/**, target/**, **/*.jar, **/*.groovy
+```
+有关更多信息，请参阅`spring help jar`的输出信息。
+
 ### 初始化新项目
+`init`命令允许你使用[start.spring.io](https://start.spring.io/)创建一个新的项目，而不需要离开shell。 例如：
+```
+$ spring init --dependencies=web,data-jpa my-project
+Using service at https://start.spring.io
+Project extracted to '/Users/developer/example/my-project'
+```
+这将使用`spring-boot-starter-web`和`spring-boot-starter-data-jpa`创建一个基于Maven的项目的`my-project`目录。你可以使用`--list`标志列出这个服务的功能。
+```
+$ spring init --list
+=======================================
+Capabilities of https://start.spring.io
+=======================================
+
+Available dependencies:
+-----------------------
+actuator - Actuator: Production ready features to help you monitor and manage your application
+...
+web - Web: Support for full-stack web development, including Tomcat and spring-webmvc
+websocket - Websocket: Support for WebSocket development
+ws - WS: Support for Spring Web Services
+
+Available project types:
+------------------------
+gradle-build -  Gradle Config [format:build, build:gradle]
+gradle-project -  Gradle Project [format:project, build:gradle]
+maven-build -  Maven POM [format:build, build:maven]
+maven-project -  Maven Project [format:project, build:maven] (default)
+
+...
+```
+`init`命令支持许多选项，请查看`help`输出信息以了解更多详细信息。例如，以下命令使用Java 8和`war`包创建一个gradle项目：
+```
+$ spring init --build=gradle --java-version=1.8 --dependencies=websocket --packaging=war sample-app.zip
+Using service at https://start.spring.io
+Content saved to 'sample-app.zip'
+```
+
 ### 使用嵌入式脚本
+Spring Boot包括BASH和zsh shell的命令行完成（提示功能）脚本。 如果你不使用任何一个shell（也许你是Windows用户），则可以使用`shell`命令启动集成的shell。
+```
+$ spring shell
+Spring Boot (v2.0.0.BUILD-SNAPSHOT)
+Hit TAB to complete. Type \'help' and hit RETURN for help, and \'exit' to quit.
+```
+在嵌入式shell中可以直接运行其他命令：
+```
+$ version
+Spring CLI v2.0.0.BUILD-SNAPSHOT
+```
+嵌入式shell支持ANSI颜色输出以及`tab`完成。如果需要运行本地命令，可以使用`!`前缀。 输入`ctrl-c`将退出嵌入式shell。
+
 ### 添加CLI扩展
+你可以使用`install`命令为CLI添加扩展。该命令在一组或多组`group:artifact:version`格式中提取组件坐标。 例如：
+```
+$ spring install com.example:spring-boot-cli-extension:1.0.0.RELEASE
+```
+除了安装由你提供的坐标识别的组件之外，还将安装所有组件的依赖项。
+
+要卸载依赖关系，请使用`uninstall`命令。与`install`命令一样，它在一组或多组`group:artifact:version`格式中提取组件坐标。 例如：
+```
+$ spring uninstall com.example:spring-boot-cli-extension:1.0.0.RELEASE
+```
+它将卸载由你提供的坐标及其依赖关系识别的组件。
+
+要卸载所有其他依赖关系，你可以使用`--all`选项。 例如：
+```
+$ spring uninstall --all
+```
+
 ## 使用Groovey beans DSL 开发应用
+Spring Framework 4.0原生支持`Bean {}`“DSL”（借鉴于Grails），你可以在你的Groovy应用程序脚本中嵌入使用相同的格式的bean定义。 这有时是包含外部功能（如声明中间件）的好方法。 例如：
+```
+@Configuration
+class Application implements CommandLineRunner {
+
+    @Autowired
+    SharedService service
+
+    @Override
+    void run(String... args) {
+        println service.message
+    }
+
+}
+
+import my.company.SharedService
+
+beans {
+    service(SharedService) {
+        message = "Hello World"
+    }
+}
+```
+你可以将类声明与`beans {}`混合在同一个文件中，只要它们保持在顶层，或者你可以将bean DSL放在单独的文件中。
+
 ## 使用settings.xml配置CLI
+Spring Boot CLI使用Aether（Maven的依赖关系解析引擎）来解析依赖关系。CLI使用`~/.m2/settings.xml`中的Maven配置来配置Aether。 以下配置设置由CLI使用：
+- Offline
+- Mirrors
+- Servers
+- Proxies
+- Profiles
+    - Activation
+    - Repositories
+- Active profiles
+
+有关更多信息，请参阅[Maven的设置文档](https://maven.apache.org/settings.html)。
+
 ## 延伸阅读
+GitHub仓库中有一些[示例groovy脚本](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-cli/samples)，你可以使用它来尝试Spring Boot CLI。 整个[源代码](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-cli/src/main/java/org/springframework/boot/cli)中也有大量的Javadoc。
+
+如果你发现你达到CLI工具的极限，你可能需要考虑将应用程序转换为完整的Gradle或Maven构建的“groovy项目”。 下一节将介绍可以用于Gradle或Maven的Spring Boot的[Build工具插件](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#build-tool-plugins)。
