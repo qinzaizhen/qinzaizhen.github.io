@@ -41,7 +41,47 @@ Spring Boot 自动配置尽可能做“正确的事情”，但是有时候失�
 - 通过添加`META-INF/spring.factories`来声明并打包成一个jar文件，所有应用程序都将其作为一个库使用。
 
 `SpringApplication`向监听器发送一些特殊的`ApplicationEvents`(有些甚至在创建上下文之前)，然后注册`ApplicationContext`所发布的事件的监听器。请参阅“Spring Boot特性”小节中的“[应用程序事件和监听器](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-application-events-and-listeners)”部分以获得完整的列表。
+
+也可以在使用`EnvironmentPostProcessor`刷新应用程序上下文之前自定义`Environment`。每个实现都应该在`META-INF/spring.factories`中注册:
+```
+org.springframework.boot.env.EnvironmentPostProcessor=com.example.YourEnvironmentPostProcessor
+```
+该实现可以加载任意文件并将其添加到`Environment`中。例如，下面这个例子从类路径加载一个YAML配置文件:
+```java
+public class EnvironmentPostProcessorExample implements EnvironmentPostProcessor {
+
+	private final YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
+
+	@Override
+	public void postProcessEnvironment(ConfigurableEnvironment environment,
+			SpringApplication application) {
+		Resource path = new ClassPathResource("com/example/myapp/config.yml");
+		PropertySource<?> propertySource = loadYaml(path);
+		environment.getPropertySources().addLast(propertySource);
+	}
+
+	private PropertySource<?> loadYaml(Resource path) {
+		if (!path.exists()) {
+			throw new IllegalArgumentException("Resource " + path + " does not exist");
+		}
+		try {
+			return this.loader.load("custom-resource", path, null);
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(
+					"Failed to load yaml configuration from " + path, ex);
+		}
+	}
+
+}
+```
+
+> 在默认情况下，`Environment`已经准备好了所有常见的Spring Boot 加载的属性。因此，可以从环境中获取文件的位置。这个例子在列表的末尾添加了`custom-resource`属性源，因此在其他任何位置中定义的键都是有优先级的。自定义的实现可以明确地定义其他顺序。
+
+> 虽然在你的`@SpringBootApplication`上使用`@PropertySource`似乎很方便，而且很容易在`Environment`中加载自定义资源，但是我们并不推荐它，因为Spring Boot 会在`ApplicationContext`刷新之前准备好`Environment`。通过`@PropertySource`定义的任何key 都将被加载得太晚以至于不会对自动配置产生任何影响。
+
 ### 构建ApplicationContext层次结构（添加父或上下文）
+你可以使用`ApplicationBuilder`类来创建父/子`ApplicationContext`层次结构。参见“Spring Boot 功能”部分的“[流式构建器API](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-fluent-builder-api)”部分，了解更多信息。
 ### 创建非web应用
 ## 属性和配置
 ### 在构建时自动扩展属性
