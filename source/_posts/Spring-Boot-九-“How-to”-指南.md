@@ -82,18 +82,182 @@ public class EnvironmentPostProcessorExample implements EnvironmentPostProcessor
 
 ### 构建ApplicationContext层次结构（添加父或上下文）
 你可以使用`ApplicationBuilder`类来创建父/子`ApplicationContext`层次结构。参见“Spring Boot 功能”部分的“[流式构建器API](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-fluent-builder-api)”部分，了解更多信息。
+
 ### 创建非web应用
+并非所有Spring 应用程序都必须是web应用程序(或web服务)。如果你想要在`main`方法中执行一些代码，但是也要启动一个Spring应用程序来设置要使用的基础组件，那么使用Spring Boot的`SpringSpringApplication`特性这事就很容易了。一个`SpringApplication`根据它是否需要一个web应用程序来更改它的`ApplicationContext`类。你可以做的第一件事就是将servlet API依赖从类路径中去除。如果你不能这样做(例如，你从相同的代码库运行两个应用程序)，那么你可以在你的`SpringApplication`实例上显式地调用`setWebEnvironment(false)`方法，或者设置`applicationContextClass`属性(通过Java API或外部属性)。你希望作为业务逻辑运行的应用程序代码可以作为`CommandLineRunner`实现，并作为一个`@Bean`定义注入上下文中。
 ## 属性和配置
-### 在构建时自动扩展属性
-#### 使用Maven自动扩展属性
-#### 使用Gradle自动扩展属性
+### 在构建时自动展开属性
+你可以使用现有的构建配置自动地扩展它们，而不是在你的项目的构建配置中硬编码指定的一些属性。这在Maven和Gradle中都是可能的。
+
+#### 使用Maven自动展开属性
+你可以使用资源过滤来自动展开Maven项目中的属性。如果你使用了`spring-boot-starter-parent`，那么你可以通过`@..@`占位符访问Maven项目属性。例如：
+```
+app.encoding=@project.build.sourceEncoding@
+app.java.version=@java.version@
+```
+
+> 只有生产配置才能通过这种方式过滤（比如`src/test/resources`中不会过滤）。
+
+> 如果你启用了`addResources`标志，`spring-boot:run`可以将`src/main/resources`直接添加到classpath中(出去热加载的目的)。这将绕过资源过滤和这个功能。你可以使用`exec:java` goal或者自定义这个插件的配置，查看[插件使用页面](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/maven-plugin//usage.html)获取更多细节。
+
+如果你没有使用starter parent，你需要在`pom.xml`(在`<build/>元素中`)加入以下代码：
+```
+<resources>
+	<resource>
+		<directory>src/main/resources</directory>
+		<filtering>true</filtering>
+	</resource>
+</resources>
+```
+和(`<plugins/>`中)：
+```
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-resources-plugin</artifactId>
+	<version>2.7</version>
+	<configuration>
+		<delimiters>
+			<delimiter>@</delimiter>
+		</delimiters>
+		<useDefaultDelimiters>false</useDefaultDelimiters>
+	</configuration>
+</plugin>
+```
+
+> 如果你在配置中使用了标准的Spring占位符(例如：`${foo}`)，`useDefaultDelimiters`属性非常重要。如果没有设置为`false`，这些也将会被展开。
+
+#### 使用Gradle自动展开属性
+你可以通过配置Java插件的`processResources`任务来自动展开Gradle项目的属性：
+```
+processResources {
+	expand(project.properties)
+}
+```
+然后你可以通过占位符引用Gradle项目属性，例如：
+```
+app.name=${name}
+app.description=${description}
+```
+
+> Gradle的`expand`方法使用Groovy的`SimpleTemplateEngine`,它将转换`${...}`标志。`${..}`样式与Spring自己的属性占位符技术有冲突。为了一起使用Spring的属性占位符和自动展开，你需要转义`\${..}`Spring 的属性占位符。
+
 ### 外部化SpringApplication的配置
+一个`SpringApplication`具有bean属性(主要是setter方法)，因此当你创建应用程序时你可以使用它的Java API来修改其行为。或者你可以使用`spring.main.*`中的属性对配置进行外部化。例如,在`application.properties`中你可以：
+```
+spring.main.web-environment=false
+spring.main.banner-mode=off
+```
+然后Spring Boot banner 将不会在启动时打印出来，并且这个应用将不会是web应用。
+
+> 上面的例子还演示了允许在属性名中使用下划线(_)和斜杠(-)是多么的灵活。
+
+定义在外部配置的属性将会覆盖通过Java API指定的值，除了用来创建`ApplicationContext`的sources。让我们看下面的应用
+```
+new SpringApplicationBuilder()
+	.bannerMode(Banner.Mode.OFF)
+	.sources(demo.MyApp.class)
+	.run(args);
+```
+使用了下面的配置：
+```
+spring.main.sources=com.acme.Config,com.acme.ExtraConfig
+spring.main.banner-mode=console
+```
+实际的应用将会显示出banner（因为被配置覆盖了）并且·`ApplicationContext`使用3个source(以下面的顺序)：`demo.MyApp`, `com.acme.Config`, `com.acme.ExtraConfig`。
+
 ### 更改应用程序的外部属性的位置
-### 使用'short'命令行参数
+默认情况下不同的source是以定义好的顺序（查看“Spring Boot特性”一节中[外部配置](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-external-config)了解确切的顺序）添加到Spring`Environment`的。
+
+增强和修改这一功能的一个很好的方法是将@propertysource注解添加到你的应用程序sources。传递给`SpringApplication`静态方法，并使用`setSources()`添加的这些类将被检查是否有`PropertySources`，如果它们有，那么这些属性将被尽早添加到`Environment`中，以便在`ApplicationContext`生命周期的所有阶段中使用。以这种方式添加的属性比使用默认位置(如application.Properties)、系统属性、环境变量或命令行添加的任何属性优先级都要低。
+
+你也可以提供系统属性（或环境变量）来改变这一行为：
+- `spring.config.name` (`SPRING_CONFIG_NAME`),默认`application`为这个文件名的根。
+- `spring.config.location` (`SPRING_CONFIG_LOCATION`) 是要加载的文件（例如classpath资源或URL）。为这个文档设置了一个单独的`Environment`属性并且它可以被系统属性，环境变量或者命令行参数覆盖。
+
+无论你设置了什么环境变量，Spring Boot都会加载`application.properties`。如果使用了YAML那么以“.yml”结尾的文件默认也会被添加到列表中去。
+
+Spring Boot 在`DEBUG`级别将会打印出加载的配置文件，并在`TRACE`级别打印出没有找到的备选文件。
+
+查看[ConfigFileApplicationListener](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/context/config/ConfigFileApplicationListener.java)了解更多细节。
+
+### 使用'短'命令行参数
+有些人喜欢用（例如）`--port=9000`而不用`--server.port=9000`在命令行设置配置属性。你可以很容易地通过在`application.properties`中使用占位符来启用这个功能，例如：
+```
+server.port = ${port:8080}
+```
+
+> 如果你从`spring-boot-starter-parent`POM继承而来，`maven-resources-plugins`默认的过滤标记从`${*}`修改为`@`(例如`@maven.token@`代替`${maven.token}`)来避免与Spring风格的占位符冲突。如果你直接为`application.properties`启用了maven的过滤，你可能也需要修改默认的过滤符为其他的分隔符。
+
+> 在这种特定情况下端口绑定可以在Heroku和Clound Foundry这样的PaaS环境中生效，因为这两个平台`PORT`环境变量是自动设置的，并且Spring 可以绑定到`Environment`属性的大写的同义词属性。
+
 ### 使用YAML外部属性
-### 设置激活的Spring配置文件
+YAML是JSON的一个超集，并且方便以层次格式存储外部属性。例如：
+```
+spring:
+	application:
+		name: cruncher
+	datasource:
+		driverClassName: com.mysql.jdbc.Driver
+		url: jdbc:mysql://localhost/test
+server:
+	port: 9000
+```
+创建一个名为`application.yml`的文件并放在classpath根目录，也需要将`snakeyaml`添加到依赖中(maven坐标为`org.yaml:snakeyaml`,如果你使用`spring-boot-starter`将会自动包含进来)。YAML文件将会解析为Java `Map<String,Object>`(就像一个JSON对象)，并且Spring Boot使这个map变扁平，这样它具有一层深度并且拥有句号分隔的key，有点儿像java中常常使用的`Properties`文件。
+
+上面的YAML例子对应到`applicatoin.properties`文件：
+```
+spring.application.name=cruncher
+spring.datasource.driverClassName=com.mysql.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost/test
+server.port=9000
+```
+在“Spring Boot特性”一节中查看“[使用YAML代替Properties](http:www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-external-config-yaml)”了解更多细节。
+
+### 设置激活的Spring profile
+Spring `Environment` 有一个针对此的API，但是通常你应该设置一个系统属性(`spring.profiles.active`)或者一个OS环境变量(`SPRING_PROFILES_ACTIVE`)。例如通过一个`-D`参数（记住把它放在main 类或者jar包前）来启动你的应用：
+```
+$ java -jar -Dspring.profiles.active=production demo-0.0.1-SNAPSHOT.jar
+```
+在Spring Boot中你也可以在`application.properties`中设置激活的profile。例如：
+```
+spring.profiles.active=production
+```
+通过这种方式设置的值可以被系统属性或者环境变量设置替代，但是`SpringApplicationBuilder.profiles()`方法不会。因此后面的Java API 可以用来参数化profile而不改变默认的。
+
+查看“Spring Boot特性”一节中[Profiles](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-profiles)了解更多细节。
+
 ### 根据环境改变配置
+YAML文件实际上是一系列以`---`线分隔的文档，并且每个文档都被解析成独立的扁平map。
+
+如果一个YAML文档包含了`spring.profiles` key, 那么这个profiles的值（逗号隔开的列表）将会传入Spring `Environment.acceptsProfiles()` 并且如果其中的任何profile激活了，那么这个文档将会包含到最终的合并结果中（否则不会）。
+
+例如：
+```
+server:
+	port: 9000
+---
+
+spring:
+	profiles: development
+server:
+	port: 9001
+
+---
+
+spring:
+	profiles: production
+server:
+	port: 0
+```
+在这个例子中，默认的端口号是9000，但是如果Spring "development" profile激活了，那么端口号会是9001，如果"production" 激活了，那么它将是0。
+
 ### 发现外部属性的内置选项
+Spring Boot 在运行时从`application.properties`(或`.yml`)(和其他位置)绑定外部属性到应用程序中。在一个位置上没有(而且技术上不可能是)所有受支持的属性的详尽列表，因为属性可以来自类路径上的附加jar文件。
+
+具有Actuator 功能的运行中的应用程序有一个`configprops`端点，它显示了通过`@ConfigurationProperties`可获得的所有绑定和可绑定属性。
+
+附录包括一个[`application.properties`](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#common-application-properties)示例,包含了Spring Boot所支持的最常见属性的列表。最终的列表来自搜索`@ConfigurationProperties`和`@Value`注解，以及偶尔使用`Binder`的源代码。
+
 ## 嵌入式Web服务器
 ### 使用其它Web服务器
 ### 配置Jetty
