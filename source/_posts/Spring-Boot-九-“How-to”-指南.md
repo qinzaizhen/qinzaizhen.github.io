@@ -418,14 +418,85 @@ server.jetty.accesslog.filename=/var/log/jetty-access.log
 
 > 如果你的应用程序正在Cloud Foundry 或 Heroku 中运行，那么`server.use-forward-headers`属性将默认为`true`（如果未指定）。 在所有其他情况下，它默认为`false`。
 
-
 #### 自定义Tomcat的代理配置
+如果你正在使用Tomcat，则可以另外配置用于携带“转发”信息的头的名称：
+```
+server.tomcat.remote-ip-header=x-your-remote-ip-header
+server.tomcat.protocol-header=x-your-protocol-header
+```
+Tomcat也配置了一个默认的正则表达式来匹配要被信任的内部代理。默认情况下，`10/8`, `192.168/16`, `169.254/16` 和 `127/8`中的IP地址是可信的。你可以通过向`application.properties`添加条目来自定义阀的配置。例如：
+```
+server.tomcat.internal-proxies=192\\.168\\.\\d{1,3}\\.\\d{1,3}
+```
+
+> 只有在使用属性文件进行配置时才需要双反斜杠。如果你使用的是YAML，则单个反斜杠就足够了，并且与上面显示的相同的值将是`192\.168\.\d{1,3}\.\d{1,3}`。
+
+> 你可以通过将`internal-proxies`设置为空来信任所有代理（但不要在生产中这样做）。
+
+通过切换自动关闭（即设置 `server.use-forward-headers = false`）并在`TomcatServletWebServerFactory` bean中添加一个新的阀实例，可以完全控制Tomcat的`RemoteIpValve`配置。
+
 ### 配置Tomcat
+通常，你可以按照[“发现外部属性的内置选项”](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#howto-discover-build-in-options-for-external-properties)中有关`@ConfigurationProperties`（`ServerProperties`是此处的主要内容）的建议，还可以查看`ServletWebServerFactoryCustomizer`和各种可以添加到Tomcat特定的`*Customizers`。 Tomcat的API相当丰富，所以一旦你可以访问`TomcatServletWebServerFactory`，你可以通过多种方式对其进行修改。或者是添加自己的`TomcatServletWebServerFactory`。
+
 ### 启用Tomcat多Connector功能
+将`org.apache.catalina.connector.Connector`添加到`TomcatServletWebServerFactory`，该`TomcatServletWebServerFactory`可以允许多个连接器，例如， HTTP和HTTPS连接器：
+```
+@Bean
+public ServletWebServerFactory servletContainer() {
+	TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
+	tomcat.addAdditionalTomcatConnectors(createSslConnector());
+	return tomcat;
+}
+
+private Connector createSslConnector() {
+	Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+	Http11NioProtocol protocol = (Http11NioProtocol) connector.getProtocolHandler();
+	try {
+		File keystore = new ClassPathResource("keystore").getFile();
+		File truststore = new ClassPathResource("keystore").getFile();
+		connector.setScheme("https");
+		connector.setSecure(true);
+		connector.setPort(8443);
+		protocol.setSSLEnabled(true);
+		protocol.setKeystoreFile(keystore.getAbsolutePath());
+		protocol.setKeystorePass("changeit");
+		protocol.setTruststoreFile(truststore.getAbsolutePath());
+		protocol.setTruststorePass("changeit");
+		protocol.setKeyAlias("apitester");
+		return connector;
+	}
+	catch (IOException ex) {
+		throw new IllegalStateException("can't access keystore: [" + "keystore"
+				+ "] or truststore: [" + "keystore" + "]", ex);
+	}
+}
+```
+
 ### 使用 Tomcat的 LegacyCookieProcessor
+Spring Boot使用的嵌入式Tomcat不支持开箱即用的Cookie格式的“Version 0”，你可能会看到以下错误：
+```
+java.lang.IllegalArgumentException: An invalid character [32] was present in the Cookie value
+```
+如果可能的话，你应该考虑更新你的代码，只存储符合新Cookie规范的值。但是，如果你无法更改cookie的写入方式，则可以将Tomcat配置为使用`LegacyCookieProcessor`。 要切换到`LegacyCookieProcessor`，请使用添加`TomcatContextCustomizer`的`ServletWebServerFactoryCustomizer` bean：
+```
+@Bean
+public WebServerFactoryCustomizer<TomcatServletWebServerFactory> cookieProcessorCustomizer() {
+	return (serverFactory) -> serverFactory.addContextCustomizers(
+			(context) -> context.setCookieProcessor(new LegacyCookieProcessor()));
+}
+```
+
 ### 配置Undertow
 ### 启用 Undertow 多Listener功能
 ### 使用@ServerEndpoint创建WebSocket端点
+如果要在使用嵌入式容器的Spring Boot应用程序中使用`@ServerEndpoint`，则必须声明一个`ServerEndpointExporter ` @Bean：
+```
+@Bean
+public ServerEndpointExporter serverEndpointExporter() {
+	return new ServerEndpointExporter();
+}
+```
+
 ### 启用HTTP响应压缩
 ## Spring MVC
 ### 编写JSON REST 服务
@@ -501,3 +572,4 @@ server.jetty.accesslog.filename=/var/log/jetty-access.log
 ### 部署WAR到WebLogic
 ### 在老版本容器(Servlet 2.5)中部署WAR
 ### 使用Jedis 代替Lettuce
+
