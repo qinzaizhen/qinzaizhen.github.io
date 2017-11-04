@@ -260,6 +260,52 @@ Spring Boot 在运行时从`application.properties`(或`.yml`)(和其他位置)�
 
 ## 嵌入式Web服务器
 ### 使用其它Web服务器
+下面的Spring Boot starters 为我们带来了一个默认的容器：
+- `spring-boot-starter-web`和`spring-boot-starter-tomcat`一起带来了tomcat，
+但可以使用`spring-boot-starter-jetty` 和 `spring-boot-starter-undertow`替代。
+- `spring-boot-starter-webflux`和`spring-boot-starter-reactor-netty`带来了Reactor Netty，但是可以使用`spring-boot-starter-tomcat, spring-boot-starter-jetty` 和 `spring-boot-starter-undertow`替代。
+
+> 许多starter 只支持Spring MVC,因此它们传递地带来了`spring-boot-starter-web`。
+
+如果你选择使用不同的HTTP服务器，你需要排除那些依赖并且引入你选择的。Spring Boot为HTTP 服务器提供了独立的starter来使这个过程尽可能简单。
+
+下面是一个Maven 的例子：
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+	<exclusions>
+		<!-- Exclude the Tomcat dependency -->
+		<exclusion>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+<!-- Use Jetty instead -->
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-jetty</artifactId>
+</dependency>
+```
+
+Gradle:
+```
+configurations {
+	// exclude Reactor Netty
+	compile.exclude module: 'spring-boot-starter-reactor-netty'
+}
+
+dependencies {
+	compile 'org.springframework.boot:spring-boot-starter-webflux'
+	// Use Undertow instead
+	compile 'org.springframework.boot:spring-boot-starter-undertow'
+	// ...
+}
+```
+
+> 使用`WebClient`需要`spring-boot-starter-reactor-netty`,因此如果你需要使用其他的HTTP服务器，你需要排除它。
+
 ### 配置Jetty
 ### 添加Servlet, Filter 或 Listener
 #### 使用类路径扫描添加Servlet，Filter和Listener
