@@ -307,14 +307,118 @@ dependencies {
 > 使用`WebClient`需要`spring-boot-starter-reactor-netty`,因此如果你需要使用其他的HTTP服务器，你需要排除它。
 
 ### 配置Jetty
+一般可以按照[“发现内置外部属性”](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#howto-discover-build-in-options-for-external-properties)对`@ConfigurationProperties`(`ServerProperties`是主要的一个)的建议,但也看看`ServletWebServerFactoryCustomizer`。Jetty api非常丰富,所以一旦你可以访问`JettyServletWebServerFactory`你可以以多种方式修改它。或者是添加自己的`JettyServletWebServerFactory`。
+
 ### 添加Servlet, Filter 或 Listener
+有两种方法可以添加`Servlet`、`Filter`、`ServletContextListener`和其他受Servlet规范支持的`Listener`。你可以为它们提供Spring bean，也可以启用Servlet组件扫描。
+
+#### 使用Spring Bean添加Servlet，Filter和Listener
+要添加Servlet、Filter或Servlet`*Listener`，可以为其提供一个`@Bean`定义。当你想要注入配置或依赖项时，这可能非常有用。但是，你必须非常小心，它们不会引起太多其他bean的热切初始化，因为它们必须在应用程序生命周期的早期就被安装在容器中(例如，让它们依赖于你的`DataSource`或JPA配置不是一个好主意)。你可以通过在第一次使用时懒加载而不是初始化时来解决这些限制。
+
+对于`Filters`和`Servlet`，你还可以通过添加`FilterRegistrationBean`或`ServletRegistrationBean`来添加映射和初始化参数而不是使用底层组件。
+
+> 如果在过滤器注册中没有指定`dispatcherType`，它将匹配`FORWARD`，`INCLUDE`和`REQUEST`。 如果已启用异步，则它也将匹配`ASYNC`。
+如果要迁移`web.xml`中没有`dispatcher`元素的过滤器，则需要自行指定`dispatcherType`：
+>    ```
+>    @Bean
+>    public  FilterRegistrationBean myFilterRegistration() {
+>    	FilterRegistrationBean registration = new FilterRegistrationBean();
+>    	registration.setDispatcherTypes(DispatcherType.REQUEST);
+>    	....
+>    	return registration;
+>    }
+>    ```
+
+##### 禁止注册Servlet 或 Filter
+如上所述，任何`Servlet`或`Filter` bean将自动注册到servlet容器。 要禁用特定的`Filter`或`Servlet` bean的注册，请为其创建一个注册 bean并将其标记为禁用。例如：
+```java
+@Bean
+public FilterRegistrationBean registration(MyFilter filter) {
+	FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+	registration.setEnabled(false);
+	return registration;
+}
+```
 #### 使用类路径扫描添加Servlet，Filter和Listener
+`@WebServlet`、`@WebFilter`和`@WebListener`注解类可以自动注册一个嵌入的servlet容器，通过使用`@ServletComponentScan`注解`@Configuration`类，并指定包含你想要注册的组件的包(s)。默认情况下，`@ServletComponentScan`将从带注解的类的包中进行扫描。
+
 ### 修改HTTP端口
+在独立应用程序中，主HTTP端口默认为`8080`，但可以使用`server.port`（例如在`application.properties`或系统属性中）进行设置。 由于`Environment`值的松散绑定，你还可以使用`SERVER_PORT`（例如作为OS环境变量）。
+
+要完全关闭HTTP端点，但仍然创建`WebApplicationContext`，请使用`server.port = -1`（这对于测试有时很有用）。
+
+有关更多详细信息，请参阅“Spring Boot功能”部分中的[“定制嵌入式Servlet容器”](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-customizing-embedded-containers)或[`ServerProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java)源代码。
+
 ### 使用随机未分配的HTTP端口
+要扫描一个空闲端口（使用OS本机来防止冲突），请使用`server.port = 0`。
 ### 在运行时发现HTTP端口
+你可以从日志输出中访问运行服务器的端口，也可以通过`ServletWebServerApplicationContext`的`EmbeddedWebServer`访问。最好的办法来获取和确保它已经初始化了，就是添加一个`ApplicationListener<ServletWebServerInitializedEvent>`类型的`@Bean`，并在容器发布的时候将其从容器中取出。
+
+使用`@SpringBootTest（webEnvironment = WebEnvironment.RANDOM_PORT）`的测试用例也可以使用`@LocalServerPort`注解将实际的端口注入到字段中。例如：
+```
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
+public class MyWebIntegrationTests {
+
+	@Autowired
+	ServletWebServerApplicationContext server;
+
+	@LocalServerPort
+	int port;
+
+	// ...
+
+}
+```
+
+> `@LocalServerPort`是`@Value（“$ {local.server.port}”）`的元注解。不要试图在普通应用程序中注入端口。 正如我们刚刚看到的，只有在容器初始化后才会设置该值。 与测试相反，应用程序代码回调会被提前处理（即在值实际可用之前）。
+
 ### 配置SSL
+可以通过设置各种`server.ssl.*`属性（通常在`application.properties`或`application.yml`中）声明性地配置SSL。例如：
+```
+server.port=8443
+server.ssl.key-store=classpath:keystore.jks
+server.ssl.key-store-password=secret
+server.ssl.key-password=another-secret
+```
+请参阅[`Ssl`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/web/server/Ssl.java)了解所有支持的属性的详细信息。
+
+使用类似上例的配置意味着应用程序将不再支持8080端口上的普通HTTP连接器。Spring Boot不支持通过`application.properties`配置HTTP和HTTPS两个连接器。如果你想有两个，那么你需要以编程方式配置其中之一。建议使用`application.properties`配置HTTPS，因为HTTP连接器以编程方式更容易配置。有关示例，请参阅[`spring-boot-sample-tomcat-multi-connectors`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-tomcat-multi-connectors)示例项目。
+
 ### 配置访问日志
+可以通过各自的命名空间为Tomcat，Undertow和Jetty配置访问日志。
+
+例如，以下以[自定义模式](https://tomcat.apache.org/tomcat-8.5-doc/config/valve.html#Access_Logging)配置Tomcat访问日志。
+```
+server.tomcat.basedir=my-tomcat
+server.tomcat.accesslog.enabled=true
+server.tomcat.accesslog.pattern=%t %a "%r" %s (%D ms)
+```
+
+> 日志的默认位置是相对于tomcat基本目录的`logs`目录，默认情况下该目录是临时目录，因此你可能需要修复Tomcat的基本目录或使用日志的绝对路径。在上面的示例中，日志将在相对于应用程序的工作目录的`my-tomcat/logs`目录中。
+
+undertow 访问日志可以用类似的方式进行配置
+```
+server.undertow.accesslog.enabled=true
+server.undertow.accesslog.pattern=%t %a "%r" %s (%D ms)
+```
+日志存储在相对于应用程序的工作目录的`logs`目录中。这可以通过`server.undertow.accesslog.directory`进行自定义。
+
+最后，jetty的访问日志也可以这样配置：
+```
+server.jetty.accesslog.enabled=true
+server.jetty.accesslog.filename=/var/log/jetty-access.log
+```
+默认情况下，日志将被重定向到`System.err`。 有关更多详细信息，请参阅[文档](https://www.eclipse.org/jetty/documentation/9.4.x/configuring-jetty-request-logs.html)。
+
 ### 使用前端代理服务器
+你的应用程序可能需要发送`302`重定向或使用绝对链接呈现内容。在代理之后运行时，调用者需要链接到代理，而不是托管应用的机器的物理地址。通常情况下，这种情况是通过与代理的约定来处理的，代理将添加头来告诉后端如何构建到自己的链接。
+
+如果代理添加了常规的`X-Forwarded-For`和`X-Forwarded-Proto`头（大部分是开箱即用的），只要在你的`application.properties`中设置`server.use-forward-headers`为`true`的,那么服务器就可以正确地呈现绝对链接。
+
+> 如果你的应用程序正在Cloud Foundry 或 Heroku 中运行，那么`server.use-forward-headers`属性将默认为`true`（如果未指定）。 在所有其他情况下，它默认为`false`。
+
+
 #### 自定义Tomcat的代理配置
 ### 配置Tomcat
 ### 启用Tomcat多Connector功能
