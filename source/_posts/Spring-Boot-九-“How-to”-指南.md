@@ -489,44 +489,541 @@ public WebServerFactoryCustomizer<TomcatServletWebServerFactory> cookieProcessor
 ### 配置Undertow
 ### 启用 Undertow 多Listener功能
 ### 使用@ServerEndpoint创建WebSocket端点
-如果要在使用嵌入式容器的Spring Boot应用程序中使用`@ServerEndpoint`，则必须声明一个`ServerEndpointExporter ` @Bean：
+如果要在使用嵌入式容器的Spring Boot应用程序中使用`@ServerEndpoint`，则必须声明一个`ServerEndpointExporter ` `@Bean`：
 ```
 @Bean
 public ServerEndpointExporter serverEndpointExporter() {
 	return new ServerEndpointExporter();
 }
 ```
+这个bean将用底层的WebSocket容器注册任何`ServerEndpoint`注解的bean。当部署到一个独立的servlet容器时，这个角色由servlet容器初始化器执行，而`ServerEndpointExporter` bean是不需要的。
 
 ### 启用HTTP响应压缩
+Jetty,Tomcat和Undertow都支持HTTP响应压缩。可以通过`application.properties`启用：
+```
+server.compression.enabled=true
+```
+默认情况下，响应的长度必须至少达到2048个字节，以便进行压缩。可以使用`server.compression.min-response-size`属性进行配置。
+
+默认情况下，只有当内容类型为以下内容时，响应才会被压缩:
+- text/html
+- text/xml
+- text/plain
+- text/css
+
+可以使用`server.compression.mime-types`属性进行配置。
+
 ## Spring MVC
 ### 编写JSON REST 服务
+在Spring Boot应用程序中，只要Jackson2位于类路径上, 任何Spring `@RestController`都应该在默认情况下呈现JSON响应。例如:
+```
+@RestController
+public class MyController {
+
+	@RequestMapping("/thing")
+	public MyThing thing() {
+			return new MyThing();
+	}
+
+}
+```
+只要`MyThing`可以由Jackson2(例如普通的POJO或Groovy对象)序列化，那么`localhost:8080/thing`将默认返回JSON。有时在浏览器中，你可能会看到XML响应，因为浏览器倾向于发送XML优先的accept头。
+
 ### 编写XML REST 服务
+如果在类路径中有Jackson XML扩展(`jackson-dataformat-xml`)，它将被用于呈现XML响应，而与我们使用的JSON相同的示例也会起作用。要使用它，请在你的项目中添加以下依赖项:
+```xml
+<dependency>
+	<groupId>com.fasterxml.jackson.dataformat</groupId>
+	<artifactId>jackson-dataformat-xml</artifactId>
+</dependency>
+```
+你可能还想添加对Woodstox的依赖。它比JDK提供的默认StAX实现快得多，而且还增加了美化的打印支持和改进的命名空间处理:
+```xml
+<dependency>
+	<groupId>org.codehaus.woodstox</groupId>
+	<artifactId>woodstox-core-asl</artifactId>
+</dependency>
+```
+如果不能使用杰克逊的XML扩展，那么将使用JAXB(默认为JDK提供)，并附加要求将`MyThing`注解`@XmlRootElement`:
+```java
+@XmlRootElement
+public class MyThing {
+	private String name;
+	// .. getters and setters
+}
+```
+为了让服务器呈现XML而不是JSON，你可能需要发送一个`Accept:text/XML`头(或使用浏览器)。
+
 ### 自定义Jackson ObjectMapper
+Spring MVC(客户端和服务器端)使用`HttpMessageConverters`在HTTP交互中协商内容转换。如果Jackson 在类路径中,你已经得到了`Jackson2ObjectMapperBuilder`提供的默认的转换器(s),这是自动配置的一个实例。
+
+默认创建的`ObjectMapper`(或用于JacksonXML转换器的`XmlMapper`)实例具有以下自定义属性:
+- `MapperFeature.DEFAULT_VIEW_INCLUSION`是禁用的
+- `DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES`是禁用的
+
+Spring Boot也有一些特性，可以使定制这个行为变得更加容易。
+
+你可以使用环境配置`ObjectMapper`和`XmlMapper`实例。Jackson提供了一套广泛的简单的开关特性，可用于配置其处理的各个方面。这些特性是在Jackson的六个枚举中描述的，这些枚举映射到环境中的属性:
+
+Jackson 枚举 | 环境属性
+---|---
+`com.fasterxml.jackson.databind.DeserializationFeature`|`spring.jackson.deserialization.<feature_name>=true|false`
+`com.fasterxml.jackson.core.JsonGenerator.Feature`|`spring.jackson.generator.<feature_name>=true|false`
+`com.fasterxml.jackson.databind.MapperFeature`|`spring.jackson.mapper.<feature_name>=true|false`
+`com.fasterxml.jackson.core.JsonParser.Feature`|`spring.jackson.parser.<feature_name>=true|false`
+`com.fasterxml.jackson.databind.SerializationFeature`|`spring.jackson.serialization.<feature_name>=true|false`
+`com.fasterxml.jackson.annotation.JsonInclude.Include`|`spring.jackson.default-property-inclusion=always|non_null|non_absent|non_default|non_empty`
+
+例如,设置`spring.jackson.serialization.indent_output = true`启用美化打印。注意，由于使用了[松散绑定](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/html/boot-features-external-config.html#boot-features-external-config-relaxed-binding)，`indent_output`的情况不必与对应的枚举常量相匹配，后者是`INDENT_OUTPUT`。
+
+这种基于环境的配置应用于自动配置`Jackson2ObjectMapperBuilder` bean,并将适用于任何使用这个builder创建的mappers ,包括自动配置`ObjectMapper` bean。
+
+上下文的`Jackson2ObjectMapperBuilder`可以由一个或多个`Jackson2ObjectMapperBuilderCustomizer` bean定制。这种定制的bean可以被排序，而Boot自己的定制器的顺序是0，允许在Boot的定制之前和之后进行额外的定制。
+
+任何`com.fasterxml.jackson.databind.Module`类型的bean将自动注册自动配置的`Jackson2ObjectMapperBuilder`和应用于任何它创建的`ObjectMapper`实例。当向你的应用程序添加新特性时，这提供了一种用于定制模块的全局机制。
+
+如果你想完全替换默认`ObjectMapper`,要么定义一个这种类型的`@ bean`并将其标记为`@Primary`,或者,如果你喜欢builder方式,可以定义一个`Jackson2ObjectMapperBuilder`  的`@Bean`。注意，在这两种情况下，这将禁用`ObjectMapper`的所有自动配置。
+
+如果你提供任何`MappingJackson2HttpMessageConverter`类型的`@ Beans`然后他们将取代MVC的默认配置。另外，还提供了一种`HttpMessageConverters`类型的bean(如果使用默认的MVC配置的话，总是可用的)，它提供了一些有用的方法来访问默认的和用户增强的消息转换器。
+
+请参阅[“定制`@ResponseBody`渲染”](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/html/howto-spring-mvc.html#howto-customize-the-responsebody-rendering)部分和[`WebMvcAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration.java)源代码以获得更多详细信息。
+
 ### 自定义@ResponseBody渲染
+Spring使用`HttpMessageConverters`来渲染`@ResponseBody`(或来自`@RestController`的响应)。只需在Spring Boot 上下文中添加这种类型的bean，就可以提供额外的转换器。如果添加的bean是默认包含的类型(例如`MappingJackson2HttpMessageConverter` JSON转换),那么它将取代默认值。提供了一种`HttpMessageConverters`类型的bean(如果使用默认的MVC配置的话，总是可用的)，它提供了一些有用的方法来访问默认的和用户增强的消息转换器(例如，如果你想手动将它们注入到一个定制的`RestTemplate`中)。
+
+在正常使用MVC时,任何提供的`WebMvcConfigurer` bean通过重写`configureMessageConverters`方法也可以贡献转换器,但与正常MVC不一样的是,你只能供应你需要的额外的转换器(因为 Spring Boot 使用相同的机制提供它默认的)。最后,如果你选择通过提供自己的`@EnableWebMvc`配置退出Spring Boot默认的MVC配置,然后你可以完全控制,并使用`WebMvcConfigurationSupport` 到`getMessageConverters`来手动做任何事。
+
+更多细节请参见[`WebMvcAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration.java)源代码。
+
 ### 处理文件上传
+Spring Boot包含Servlet 3 `javax.servlet.http.Part`API来支持上传文件。在默认情况下，Spring Boot配置Spring MVC，每个文件最大为1MB，在单个请求中最多可达到10MB的文件数据。你可以覆盖这些值，以及存储中间数据的位置(例如，存储到`/tmp`目录)，以及通过使用在`MultipartProperties`类中公开的属性将数据刷新到磁盘的阈值。如果你想指定文件是无限的,例如,设置`spring.servlet.multipart.max-file-size`属性为`-1`。
+
+当你希望在Spring MVC控制器处理程序方法中作为`@RequestParam`注解的`MultipartFile`类型参数来接收multipart编码的文件数据时，multipart的支持是很有帮助的。
+
+查看[`MultipartAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/servlet/MultipartAutoConfiguration.java)源代码获取更多的细节。
+
 ### 关闭Spring MVC DispatcherServlet
+Spring Boot希望从应用程序的`/`提供所有内容。如果你更愿意将自己的servlet映射到该URL，你可以这样做，但是你可能会丢失一些其他的Boot MVC 特性。添加自己的servlet并将其映射到根资源只需声明一个`Servlet`类型的`@ Bean`并且给它特殊的bean名称-`dispatcherServlet`(如果你想关掉它,而不是取代它,你还可以创建一个不同类型同名称的bean)。
+
 ### 关闭默认MVC配置
+对MVC配置进行完全控制的最简单方法是，提供你自己的`@Configuration`，并使用`@EnableWebMvc`注解。这将把所有MVC配置掌握在你的手中。
+
 ### 自定义ViewResolver
+`ViewResolver`是Spring MVC的核心组件，将`@Controller`中的视图名转换为实际的`View`实现。请注意，`ViewResolvers`主要用于UI应用程序，而不是REST风格的服务(`View`不用于渲染`@ResponseBody`)。有许多`ViewResolver`的实现可供选择，而Spring本身并不建议你应该使用哪一个。另一方面，Spring Boot根据它在类路径和应用程序上下文中找到的内容，为你安装一个或两个。`DispatcherServlet`使用它在应用程序上下文中找到的所有解析器，依次尝试每一个解析器，直到得到一个结果，因此，如果你要添加自己的解析器，那么你必须了解该顺序，并在其中添加你的解析器。
+
+`WebMvcAutoConfiguration`为您的上下文添加了以下`ViewResolvers`:
+
+- 一个`InternalResourceViewResolver` bean，id 为“defaultViewResolver”。这一项定位了可以使用`DefaultServlet`来渲染的物理资源(例如，如果你使用的是静态资源和JSP页面)。它在视图名中应用一个前缀和一个后缀，然后在servlet上下文中查找带有该路径的物理资源(默认值都是空的，但是通过`spring.mvc.view.prefix`和`spring.mvc.view.suffix`可以访问外部配置)。可以通过提供相同类型的bean来覆盖它。
+- 一个id为“BeanNameViewResolver”的`BeanNameViewResolver`。这是视图解析器链中的一个有用的成员，它将使用与正在解析的`View`相同的名称来获取任何bean。不应该重写或替换它。
+- 一个id 为“viewResolver”的`ContentNegotiatingViewResolver` 实际上只有存在实际的`View`类型的bean时才会被添加。这是一个“主”解析器，委托给其他解析器，并试图找到一个匹配客户端发送的“Accept”HTTP头的匹配项。有一个[关于`ContentNegotiatingViewResolver`有用的博客](https://spring.io/blog/2013/06/03/content-negotiation-using-views),你可能更喜欢研究学习,可以查看源代码了解更多。你可以通过定义一个bean名为“viewResolver”关掉自动配置`ContentNegotiatingViewResolver`。
+- 如果你用的是Thymeleaf，也会有一个id为“thymeleafViewResolver”的`ThymeleafViewResolver`。它通过使用前缀和后缀包围视图名来查找资源(`spring.thymeleaf.prefix`和`spring.thymeleaf.suffix`，默认分别为"classpath:/templates/"和".html"的)。可以通过提供相同名称的bean来覆盖它。
+- 如果你使用FreeMarker，也会有一个id为“freeMarkerViewResolver”的`FreeMarkerViewResolver`。它在围绕视图名称的前缀和后缀(`spring.freemarker.prefix`和 `spring.freemarker.suffix`)的加载路径(`spring.freemarker.templateLoaderPath`,默认分别为“classpath:/templates/”和".tpl")中查找资源。可以通过提供相同名称的bean来覆盖它。
+- 如果您使用的是Groovy模板(实际上，如果你的类路径上有Groovy模板)，那么也会有一个id为'groovyMarkupViewResolver'的`GroovyMarkupViewResolver`。它在围绕视图名称的前缀和后缀(`spring.groovy.template.prefix`和 `spring.groovy.template.suffix`)的加载路径(`spring.freemarker.templateLoaderPath`,默认分另为“classpath:/templates/”和".tpl")中查找资源。可以通过提供相同名称的bean来覆盖它。
+
+查看[`WebMvcAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration.java)、[`ThymeleafAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/thymeleaf/ThymeleafAutoConfiguration.java)，[`FreeMarkerAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/freemarker/FreeMarkerAutoConfiguration.java)，[`GroovyTemplateAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/groovy/template/GroovyTemplateAutoConfiguration.java)了解更多。
+
 ## HTTP 客户端
 ### 配置RestTemplate使用代理
+正如[“RestTemplate定制”](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/html/boot-features-resttemplate.html#boot-features-resttemplate-customization)中所描述的那样，`RestTemplateCustomizer`可以使用`RestTemplateBuilder`来构建一个定制的`RestTemplate`。这是创建配置使用代理的`RestTemplate`的推荐方法。
+
+代理配置的具体细节取决于正在使用的底层客户端请求工厂。这里有一个例子配置`HttpComponentsClientRequestFactory`,包含了一个 `HttpClient`,除了`192.168.0.5`以外，它为其他的主机都使用一个代理。
+```java
+static class ProxyCustomizer implements RestTemplateCustomizer {
+
+	@Override
+	public void customize(RestTemplate restTemplate) {
+		HttpHost proxy = new HttpHost("proxy.example.com");
+		HttpClient httpClient = HttpClientBuilder.create()
+				.setRoutePlanner(new DefaultProxyRoutePlanner(proxy) {
+
+					@Override
+					public HttpHost determineProxy(HttpHost target,
+							HttpRequest request, HttpContext context)
+									throws HttpException {
+						if (target.getHostName().equals("192.168.0.5")) {
+							return null;
+						}
+						return super.determineProxy(target, request, context);
+					}
+
+				}).build();
+		restTemplate.setRequestFactory(
+				new HttpComponentsClientHttpRequestFactory(httpClient));
+	}
+
+}
+```
 ## 日志
+除了Commons Logging API，Spring Boot没有强制的日志记录依赖，其中有许多实现可供选择。要使用[Logback](http://logback.qos.ch/)，你需要在引入它和`jcl-over-slf4j`(它实现了公共资源日志API)。最简单的方法是通过starter，这些启动器都依赖于`spring-boot-starter-logging`。对于一个web应用程序，你只需要`spring-boot-starter-web`，因为它依赖于日志starter。例如在Maven中：
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+```
+Spring Boot有一个`LoggingSystem`抽象，它试图根据类路径的内容来配置日志记录。如果可以使用Logback，这是第一选择。
+
+如果你需要对日志进行的惟一更改是设置不同记录器的级别，那么你可以在`application.properties`中使用"logging.level" 前缀来执行此操作,,如:
+```
+logging.level.org.springframework.web=DEBUG
+logging.level.org.hibernate=ERROR
+```
+你还可以使用“logg.file”设置文件的位置(除控制台之外)。
+
+要更细粒度的设置日志系统，你需要使用由`LoggingSystem`支持的原生配置格式。默认情况下，Spring Boot从系统的默认位置获取原生配置(例如:Logback的`classpath:logback.xml`)，但是你可以使用"logging.config"属性设置配置文件的位置。
 ### 配置Logback进行日志记录
+如果你放了一个`logback.xml`文件在类路径的根目录中，它将从那里获取(或者是`logback-spring.xml`以利用Boot 提供的模板特性)。Spring Boot提供了一个默认的基本配置，如果你只想设置级别，你可以包括它。例如：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/base.xml"/>
+	<logger name="org.springframework.web" level="DEBUG"/>
+</configuration>
+```
+
+如果你看过spring-boot jar中的`base.xml`，你将看到它使用了一些有用的系统属性，`LoggingSystem`为你创建了这些属性。它们是:
+
+- `${PID}`当前的进程ID。
+- `${LOG_FILE}` 如果在Boot的外部配置中设置了`logging.file`。
+- `${LOG_PATH}` 如果设置了`logging.path`(表示一个用于存放日志文件的目录)。
+- `${LOG_EXCEPTION_CONVERSION_WORD}` 如果在Boot 的外部配置中设置了`logging.exception-conversion-word`。
+
+Spring Boot还使用自定义的Logback转换器在控制台(但不是在日志文件中)提供了一些漂亮的ANSI颜色终端输出。查看默认的`base.xml`配置了解更多细节。
+
+如果Groovy在类路径上，你应该也能够用`logback.groovy`来配置Logback(如果有的话，它将会被优先考虑)。
+
 #### 配置logback只以文件输出
+如果你想要禁用控制台日志记录，并且只将输出写入文件，那么你需要一个自定义的`logback-spring.xml`文件,它引入`file-appender.xml`而不引入`console-appender.xml`:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+	<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
+	<include resource="org/springframework/boot/logging/logback/file-appender.xml" />
+	<root level="INFO">
+		<appender-ref ref="FILE" />
+	</root>
+</configuration>
+```
+你还需要在`application.properties`中加入`logging.file`:
+```
+logging.file=myapplication.log
+```
 ### 配置Log4j进行日志记录
+如果在类路径上存在[Log4j 2](http://logging.apache.org/log4j/2.x)，Spring Boot 将支持Log4j 2进行日志配置。如果你正在使用starter来收集依赖关系，这意味着你必须排除Logback，然后将log4j 2包含在内。如果你没有使用starter，那么除了Log4j 2之外，你还需要提供`jcl-over-slf4j`(至少)。
+
+最简单的方式可能是通过starter，尽管它需要配置一些不包含，例如在Maven中：
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter</artifactId>
+	<exclusions>
+		<exclusion>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-logging</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-log4j2</artifactId>
+</dependency>
+```
+
+> Log4j starter的使用聚集了对常见日志必要的依赖项(例如，包括Tomcat使用的`java.util.logging`但是配置使用Log4j 2进行日志记录）。请参阅Actuator Log4j 2的示例以获得更多细节，并在实际操作中查看。
+
 #### 使用YAML或JSON来配置Log4j 2
+除了默认的XML配置格式之外，Log4j 2还支持YAML和JSON配置文件。要配置Log4j 2以使用另一种配置文件格式，将适当的依赖项添加到类路径，并命名配置文件以匹配你所选择的文件格式:
+
+格式|	依赖|	文件名
+---|---|---
+YAML|com.fasterxml.jackson.core:jackson-databind    com.fasterxml.jackson.dataformat:jackson-dataformat-yaml|log4j2.yaml log4j2.yml
+JSON|com.fasterxml.jackson.core:jackson-databind|log4j2.json   log4j2.jsn
+
 ## 数据访问
 ### 配置自定义数据源
+要配置你自己的`DataSource`，请在你的配置中定义该类型的`@Bean`。 Spring Boot会在需要的地方重复使用你的`DataSource`，包括数据库初始化。 如果你需要将某些设置外部化，则可以轻松地将`DataSource`绑定到环境（请参阅[第24.7.1节“第三方配置”](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/html/boot-features-external-config.html#boot-features-external-config-3rd-party-configuration)）。
+```java
+@Bean
+@ConfigurationProperties(prefix="app.datasource")
+public DataSource dataSource() {
+	return new FancyDataSource();
+}
+```
+```
+app.datasource.url=jdbc:h2:mem:mydb
+app.datasource.username=sa
+app.datasource.pool-size=30
+```
+假设你的`FancyDataSource`具有常规的JavaBean属性,包括url，用户名和池大小，那么在`DataSource`可用于其他组件之前，将自动绑定这些设置。 常规的[数据库初始化](http://www.docsh.site/docs/spring-boot/spring-boot-docs/current/en/reference/html/howto-database-initialization.html#howto-initialize-a-database-using-spring-jdbc)也会发生（所以`spring.datasource.*`的相关子集仍然可以与你的自定义配置一起使用）。
+
+如果你正在配置自定义的JNDI`DataSource`，则可以应用相同的原则：
+```java
+@Bean(destroyMethod="")
+@ConfigurationProperties(prefix="app.datasource")
+public DataSource dataSource() throws Exception {
+	JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
+	return dataSourceLookup.getDataSource("java:comp/env/jdbc/YourDS");
+}
+```
+Spring Boot还提供了一个实用的构造器类`DataSourceBuilder`，可用于创建其中一个标准数据源（如果它在类路径上）。构造器可以根据类路径上的可用内容来检测要使用的类。 它也会根据JDBC URL自动检测驱动程序。
+```java
+@Bean
+@ConfigurationProperties("app.datasource")
+public DataSource dataSource() {
+	return DataSourceBuilder.create().build();
+}
+```
+要使用该`DataSource`运行应用程序，所需要的只是连接信息; 还可以提供特定于池的设置，请检查将在运行时使用的具体实现以获取更多详细信息。
+```
+app.datasource.url=jdbc:mysql://localhost/test
+app.datasource.username=dbuser
+app.datasource.password=dbpass
+app.datasource.pool-size=30
+```
+但有一个问题。 由于连接池的实际类型未公开，所以在你的自定义`DataSource`的元数据中不会生成任何键，并且你的IDE中没有自动提示功能（`DataSource`接口不公开任何属性）。 另外，如果你碰巧在类路径上有Hikari，这个基本的设置将不起作用，因为Hikari没有`url`属性（而是一个`jdbcUrl`属性）。 你将不得不重写你的配置：
+```
+app.datasource.jdbc-url=jdbc:mysql://localhost/test
+app.datasource.username=dbuser
+app.datasource.password=dbpass
+app.datasource.maximum-pool-size=30
+```
+你可以通过强制连接池使用并返回一个专门的实现，而不是`DataSource`来解决这个问题。 你将无法在运行时更改实现，但选项列表将是显式的。
+```java
+@Bean
+@ConfigurationProperties("app.datasource")
+public HikariDataSource dataSource() {
+	return DataSourceBuilder.create().type(HikariDataSource.class).build();
+}
+```
+你甚至可以进一步利用`DataSourceProperties`为你做的事情，即如果没有提供一个合理的用户名和密码的URL,则提供一个默认的嵌入式数据库。 你可以很容易地从任何`DataSourceProperties`的状态初始化一个`DataSourceBuilder`，所以你可以注入Spring Boot自动创建的那个。 但是，这会将你的配置拆分为两个命名空间：url，用户名，密码，类型和驱动在`spring.datasource`上，其他的在自定义命名空间（`app.datasource`）上。为了避免这种情况，你可以在自定义命名空间上重新定义自定义的`DataSourceProperties`：
+```java
+@Bean
+@Primary
+@ConfigurationProperties("app.datasource")
+public DataSourceProperties dataSourceProperties() {
+	return new DataSourceProperties();
+}
+
+@Bean
+@ConfigurationProperties("app.datasource")
+public HikariDataSource dataSource(DataSourceProperties properties) {
+	return properties.initializeDataSourceBuilder().type(HikariDataSource.class)
+			.build();
+}
+```
+除了选择了一个专用的连接池（在代码中）并且它的设置暴露在相同的命名空间，这个设置使你与默认情况下的Spring Boot配合。 由于`DataSourceProperties`为你处理`url`/`jdbcUrl`转义，因此可以像这样配置它：
+```
+app.datasource.url=jdbc:mysql://localhost/test
+app.datasource.username=dbuser
+app.datasource.password=dbpass
+app.datasource.maximum-pool-size=30
+```
+> 由于你的自定义配置选择Hikari，`app.datasource.type`将不起作用。 在实践中，构造器将被初始化为设置的任何可能的值，然后被对`.type()`的调用覆盖。
+
+更多详细信息请参见“Spring Boot功能”部分的[第29.1节“配置数据源”](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/html/boot-features-sql.html#boot-features-configure-datasource)和[`DataSourceAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration.java)类源代码。
+
 ### 配置两个数据源
+如果你需要配置多个数据源，则可以应用上一节中所述的相同技巧。 但是，你必须标记一个`DataSource``@Primary`，因为各种自动配置都希望能够按类型获得一个。
+
+如果您创建自己的`DataSource`，则自动配置将退出。在下面的示例中，我们提供了与在主数据源上自动配置提供的完全相同的功能集：
+```java
+@Bean
+@Primary
+@ConfigurationProperties("app.datasource.foo")
+public DataSourceProperties fooDataSourceProperties() {
+	return new DataSourceProperties();
+}
+
+@Bean
+@Primary
+@ConfigurationProperties("app.datasource.foo")
+public DataSource fooDataSource() {
+	return fooDataSourceProperties().initializeDataSourceBuilder().build();
+}
+
+@Bean
+@ConfigurationProperties("app.datasource.bar")
+public BasicDataSource barDataSource() {
+	return DataSourceBuilder.create().type(BasicDataSource.class).build();
+}
+```
+
+> 必须将`fooDataSourceProperties`标记为`@Primary`，以便数据库初始化程序功能使用你的副本（如果使用的话）。
+
+这两个数据源也都是用于高级自定义的。 例如，你可以如下配置它们：
+```
+app.datasource.foo.type=com.zaxxer.hikari.HikariDataSource
+app.datasource.foo.maximum-pool-size=30
+
+app.datasource.bar.url=jdbc:mysql://localhost/test
+app.datasource.bar.username=dbuser
+app.datasource.bar.password=dbpass
+app.datasource.bar.max-total=30
+```
+当然，你也可以将相同的概念应用于辅助`DataSource`：
+```java
+@Bean
+@Primary
+@ConfigurationProperties("app.datasource.foo")
+public DataSourceProperties fooDataSourceProperties() {
+	return new DataSourceProperties();
+}
+
+@Bean
+@Primary
+@ConfigurationProperties("app.datasource.foo")
+public DataSource fooDataSource() {
+	return fooDataSourceProperties().initializeDataSourceBuilder().build();
+}
+
+@Bean
+@ConfigurationProperties("app.datasource.bar")
+public DataSourceProperties barDataSourceProperties() {
+	return new DataSourceProperties();
+}
+
+@Bean
+@ConfigurationProperties("app.datasource.bar")
+public DataSource barDataSource() {
+	return barDataSourceProperties().initializeDataSourceBuilder().build();
+}
+```
+最后的这个例子在自定义命名空间上配置了两个数据源，这与Spring Boot在自动配置中做了相同的逻辑。
 ### 使用Spring Data仓库
+Spring Data可以为你创建各种风格的`@Repository`接口。只要这些`@Repositories`包含在`@EnableAutoConfiguration`类的相同包（或子包）中，Spring Boot将为你处理所有这些接口。
+
+对于许多应用程序来说，你需要的所有东西是把正确的Spring Data依赖关系放到你的类路径中（JPA有一个`spring-boot-starter-data-jpa`和一个Mongodb的`spring-boot-starter-data-mongodb`），创建一些仓库接口来处理你的`@Entity`对象。 有两个示例[JPA示例](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-data-jpa)和[Mongodb示例](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-data-mongodb)。
+
+Spring Boot尝试根据找到的`@EnableAutoConfiguration`来猜测`@Repository`定义的位置。 为了更好的控制，可以使用`@EnableJpaRepositories`注解（来自Spring Data JPA）。
 ### 从Spring配置中分离@Entity定义
+Spring Boot尝试根据找到的`@EnableAutoConfiguration`来猜测你的`@Entity`定义的位置。 为了获得更多控制权，你可以使用`@EntityScan`注解，例如：
+```java
+@Configuration
+@EnableAutoConfiguration
+@EntityScan(basePackageClasses=City.class)
+public class Application {
+
+	//...
+
+}
+```
+
 ### 配置JPA属性
+Spring Data JPA已经提供了一些与供应商无关的配置选项（例如用于SQL日志记录），Spring Boot公开了这些，还有一些作为hibernate的外部配置属性。 其中一些是根据上下文自动检测，所以你不应该设置它们。
+
+`spring.jpa.hibernate.ddl-auto`是一个特殊情况，因为它具有不同的默认值，这取决于运行时的条件。 如果使用嵌入式数据库，并且没有像Liquibase或Flyway这样的schema管理器处理`DataSource`，那么它将默认使用`create-drop`。 在其他情况下，它默认为`none`。
+
+使用的方言也是根据当前的`DataSource`自动检测的，但是如果你想明确地使用方言，你可以自己设置`spring.jpa.database`，并绕过启动时的检查。
+
+> 指定一个`database`将导致定义良好的Hibernate方言的配置。一些数据库有不止一个`Dialect`，这有可能不适合你的需要。在这种情况下，你可以将`spring.jpa.database`设置为默认值，让Hibernate自己解决，或使用`spring.jpa.database-platform`属性设置方言。
+
+最常见的选项是：
+```
+spring.jpa.hibernate.naming.physical-strategy=com.example.MyPhysicalNamingStrategy
+spring.jpa.show-sql=true
+```
+另外，在创建本地`EntityManagerFactory`时，`spring.jpa.properties.*`中的所有属性都作为普通的JPA属性（去掉了前缀）传递。
 ### 配置Hibernate命名策略
+Hibernate使用[两种不同的命名策略](http://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html#naming)来将名称从对象模型映射到相应的数据库名称。物理和隐式策略实现的完全限定类名称可分别使用`spring.jpa.hibernate.naming.physical-strategy`和`spring.jpa.hibernate.naming.implicit-strategy`属性进行配置。
+
+Spring Boot默认使用`SpringPhysicalNamingStrategy`配置物理命名策略。这个实现提供了与Hibernate 4相同的表结构：所有的点都被下划线替换，而且驼峰也被下划线替换。 默认情况下，所有表名都以小写形式生成，但如果你的schema 需要，则可以覆盖该标志。
+
+具体来说，`TelephoneNumber`实体将被映射到`telephone_number`表。
+
+如果你更喜欢使用Hibernate 5的默认值，请设置以下属性：
+```
+spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+```
+有关更多详细信息，请参阅[`HibernateJpaAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaAutoConfiguration.java)和[`JpaBaseConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java)。
 ### 使用自定义EntityManagerFactory
+要完全控制`EntityManagerFactory`的配置，你需要添加一个名为“entityManagerFactory”的`@Bean`。 Spring Boot的自动配置基于该类型的bean的存在与否关闭其实体管理器。
+
 ### 使用两个实体管理器
+即使默认的`EntityManagerFactory`工作正常，你也需要定义一个新的，否则该类型的第二个bean的存在将关闭默认的这个。 为了简化操作，你可以使用Spring Boot提供的方便的`EntityManagerBuilder`，或者如果你愿意，可以直接使用Spring ORM中的`LocalContainerEntityManagerFactoryBean`。
+示例：
+```java
+// add two data sources configured as above
+
+@Bean
+public LocalContainerEntityManagerFactoryBean customerEntityManagerFactory(
+		EntityManagerFactoryBuilder builder) {
+	return builder
+			.dataSource(customerDataSource())
+			.packages(Customer.class)
+			.persistenceUnit("customers")
+			.build();
+}
+
+@Bean
+public LocalContainerEntityManagerFactoryBean orderEntityManagerFactory(
+		EntityManagerFactoryBuilder builder) {
+	return builder
+			.dataSource(orderDataSource())
+			.packages(Order.class)
+			.persistenceUnit("orders")
+			.build();
+}
+```
+上面的配置几乎可以自行完成。要完成整个过程，你还需要为两个`EntityManagers`配置`TransactionManagers`。 如果你把其中一个标记为@Primary，它可以被Spring Boot中默认的`JpaTransactionManager`支持，另一个必须明确地注入一个新的实例。 或者你也可以使用跨越两者的JTA事务管理器。
+
+如果你使用Spring Data，则需要相应地配置`@EnableJpaRepositories`：
+```java
+@Configuration
+@EnableJpaRepositories(basePackageClasses = Customer.class,
+		entityManagerFactoryRef = "customerEntityManagerFactory")
+public class CustomerConfiguration {
+	...
+}
+
+@Configuration
+@EnableJpaRepositories(basePackageClasses = Order.class,
+		entityManagerFactoryRef = "orderEntityManagerFactory")
+public class OrderConfiguration {
+	...
+}
+```
 ### 使用传统的persistence.xml
+Spring不需要使用XML来配置JPA提供程序，并且Spring Boot假定你想要利用该功能。如果你喜欢使用`persistence.xml`，那么你需要定义自己的`LocalEntityManagerFactoryBean`（id为'entityManagerFactory')类型的`@Bean`，并设置持久化单元名称。
+
+有关默认设置，请参阅[`JpaBaseConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java)。
+
 ### 使用Spring Data JPA和Mongo仓库
+Spring Data JPA和Spring Data Mongo可以自动为你创建`Repository`实现。 如果它们都出现在类路径中，那么可能需要做一些额外的配置来告诉Spring Boot你为哪一个（或两者）创建存储库。 最明显的方法是使用标准的Spring Data `@Enable*Repositories`，并告诉它你的`Repository`接口的位置（其中'*'是'Jpa'或'Mongo'或是两者）。
+
+还有一些`spring.data.*.repositories.enabled`标志，你可以使用它们在外部配置中打开和关闭自动配置的存储库。例如，如果你想要关闭Mongo仓库并且仍然使用自动配置的`MongoTemplate`，这很有用。
+
+其他自动配置的Spring Data  存储库类型（Elasticsearch，Solr）也存在同样的障碍和相同的功能。只需分别更改注解和标志的名称。
 ### 暴露Spring数据仓库为REST端点
+Spring Data REST只要为应用程序启用了Spring MVC，就可以将`Repository`实现公开为REST端点。
+
+Spring Boot公开了一些自定义`RepositoryRestConfiguration`的`spring.data.rest`命名空间的有用属性。如果你需要提供额外的定制，你应该使用`RepositoryRestConfigurer` bean。
+
+> 如果你没有在你自定义的`RepositoryRestConfigurer`中指定任何顺序，它将在Spring Boot在内部使用的那个后运行。 如果你需要指定顺序，请确保它大于0。
+
 ### 配置JPA使用的组件
+如果你想配置一个将被JPA使用的组件，那么你需要确保组件在JPA之前被初始化。 如果组件是自动配置的，Spring Boot将为你处理这个问题。例如，当Flyway自动配置时，Hibernate被配置为依赖于Flyway，这样后者有机会在Hibernate尝试使用它之前初始化数据库。
+
+如果你自己配置组件，则可以使用`EntityManagerFactoryDependsOnPostProcessor`子类作为设置必需依赖项的便捷方式。例如，如果你使用Elasticsearch作为Hibernate Search的索引管理器，那么任何`EntityManagerFactory` bean都必须配置为依赖于`elasticsearchClient` bean：
+```java
+/**
+ * {@link EntityManagerFactoryDependsOnPostProcessor} that ensures that
+ * {@link EntityManagerFactory} beans depend on the {@code elasticsearchClient} bean.
+ */
+@Configuration
+static class ElasticsearchJpaDependencyConfiguration
+		extends EntityManagerFactoryDependsOnPostProcessor {
+
+	ElasticsearchJpaDependencyConfiguration() {
+		super("elasticsearchClient");
+	}
+
+}
+```
 ## 数据库初始化
 ### 使用JPA初始化数据库
 ### 使用Hibernate初始化数据库
@@ -572,4 +1069,3 @@ public ServerEndpointExporter serverEndpointExporter() {
 ### 部署WAR到WebLogic
 ### 在老版本容器(Servlet 2.5)中部署WAR
 ### 使用Jedis 代替Lettuce
-
