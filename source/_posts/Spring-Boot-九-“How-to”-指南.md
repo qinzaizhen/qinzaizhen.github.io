@@ -1025,9 +1025,28 @@ static class ElasticsearchJpaDependencyConfiguration
 }
 ```
 ## 数据库初始化
+SQL数据库可以用不同的方式初始化，这取决于你选择的是什么技术。当然，只要数据库是一个独立的进程，你也可以手动完成。
 ### 使用JPA初始化数据库
+JPA具有用于生成DDL的功能，可以将这些功能设置为在启动时运行。 这是通过两个外部属性来控制的：
+- `spring.jpa.generate-ddl`（boolean）打开和关闭该功能，并且独立于供应商。
+- `spring.jpa.hibernate.ddl-auto`（enum）是一个Hibernate特性，以更细粒度的方式控制该行为。
+
 ### 使用Hibernate初始化数据库
+你可以显式设置`spring.jpa.hibernate.ddl-auto`，标准Hibernate属性值为`none`，`validate`，`update`，`create`，`create-drop`。 Spring Boot根据数据库是否为嵌入式的为你选择一个默认值：如果没有检测到schema管理器，则默认为`create-drop`，在其他所有情况下均设置为`none`。通过查看`Connection`类型来检测嵌入式数据库：`hsqldb`，`h2`和`derby`是嵌入式的，其余不是。从内存数据库切换到“真实”数据库时请小心，不要假定新平台中存在表和数据。 你必须显式设置`ddl-auto`，或使用其他机制来初始化数据库。
+
+> 你可以通过启用`org.hibernate.SQL`日志记录器来输出schema创建的过程。如果启用调试模式，将自动完成。
+
+另外，如果Hibernate从头开始创建schema（即，如果`ddl-auto`属性设置为`create`或`create-drop`），那么在启动时将执行类路径根目录中名为`import.sql`的文件。 这对于演示和测试是非常有用的。 这是一个Hibernate功能（与Spring无关）。
+
 ### 初始化数据库
+Spring Boot可以自动创建`DataSource`的schema（DDL脚本）并对其进行初始化（DML脚本）：它分别从标准根类路径位置`schema.sql`和`data.sql`中加载SQL。 另外，Spring Boot将处理`schema-${platform}.sql`和`data-${platform}.sql`文件（如果存在），其中`platform`是`spring.datasource.platform`的值。这允许你在必要时切换到数据库特定的脚本，例如你可以选择将其设置为数据库的供应商名称（`hsqldb`，`h2`，`oracle`，`mysql`，`postgresql`等）。
+
+Spring Boot默认启用Spring JDBC初始化程序的快速失败功能，所以如果脚本导致异常，应用程序将无法启动。 你可以使用`spring.datasource.continue-on-error`来调整它。
+
+> 在基于JPA的应用程序中，可以选择让Hibernate创建schema或使用`schema.sql`，但不能两者同时使用。如果你选择了后者，请确保禁用`spring.jpa.hibernate.ddl-auto`。
+
+你也可以通过将`spring.datasource.initialize`设置为`false`来禁用初始化。
+
 ### 初始化一个Spring Batch数据库
 ### 使用更高级别的数据库迁移工具
 #### 启动时执行Flyway数据库迁移
