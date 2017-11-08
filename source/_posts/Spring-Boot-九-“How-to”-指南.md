@@ -1171,30 +1171,461 @@ public class AuthenticationManagerConfiguration extends
 }
 ```
 
-### 在代理服务器后启用HTTPS
+### 使用代理服务器时启用HTTPS
+确保你的所有主要端点只能通过HTTPS使用，这对于任何应用程序来说都是非常重要的任务。 如果你使用Tomcat作为servlet容器，那么Spring Boot会在检测到某些环境设置时自动添加Tomcat自己的`RemoteIpValve`，并且你应该能够依赖`HttpServletRequest`来报告它是否安全（即使是代理的下游 服务器处理真正的SSL终端）。标准行为是由是否存在某些请求头（`x-forwarded-for`和`x-forwarded-proto`）来决定的，它们的名字是常规的，所以它应该可以与大多数前端代理一起工作。你可以通过在`application.properties`中添加一些条目来打开阀门,例如：
+```
+server.tomcat.remote-ip-header=x-forwarded-for
+server.tomcat.protocol-header=x-forwarded-proto
+```
+（任何一个属性的存在都会打开阀门，或者你可以通过添加`TomcatServletWebServerFactory` bean来自行添加`RemoteIpValve`。）
 
+Spring Security也可以被配置为需要所有（或某些请求）的安全通道。 要在Spring Boot应用程序中切换，只需在`application.properties`中将`security.require_ssl`设置为`true`即可。
 ## 热加载
 ### 刷新静态内容
+有几个热加载的选项。推荐的方法是使用[`spring-boot-devtools`](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#using-boot-devtools)，因为它提供了额外的开发期间的功能，如支持快速应用程序重启和LiveReload以及合理的开发期间的配置（例如模板缓存）。Devtools通过监视类路径的变化来工作。这意味着静态资源的变化必须“构建”，以使变更生效。默认情况下，当你保存更改时，这会在Eclipse中自动发生。在IntelliJ IDEA中，Make Project将触发必要的构建。由于[默认的重新启动排除](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#using-boot-devtools-restart-exclude)，对静态资源的更改不会触发应用程序的重新启动。但是，他们会触发一个实时的重新加载。
+
+另外，在IDE中运行（特别是在调试时）是一种很好的开发方式（所有的现代IDE都允许重新加载静态资源，并且通常也可以热加载Java类的变化）。
+
+最后，可以配置Maven和Gradle插件（请参阅`addResources`属性）以支持从命令行直接从源文件重新加载静态文件。如果你使用更高级别的工具编写代码，则可以将其用于外部css/js编译。
 ### 不重启容器刷新模板
+Spring Boot支持的大部分模板技术都包含禁用缓存的配置选项（请参阅下面的详细信息）。 如果你使用的是`spring-boot-devtools`模块，则在开发时将[自动为你配置](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#using-boot-devtools-property-defaults)这些属性。
 #### Thymeleaf 模板
+如果你使用的是Thymeleaf，则将`spring.thymeleaf.cache`设置为`false`。 有关其他Thymeleaf自定义选项，请参阅[`ThymeleafAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/thymeleaf/ThymeleafAutoConfiguration.java)。
 #### FreeMarker 模板
+如果你正在使用FreeMarker，则将`spring.freemarker.cache`设置为`false`。 有关其他FreeMarker自定义选项，请参阅[`FreeMarkerAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/freemarker/FreeMarkerAutoConfiguration.java)。
 #### Groovy 模板
+如果你正在使用Groovy模板，则将`spring.groovy.template.cache`设置为`false`。 有关其他Groovy自定义选项，请参阅[`GroovyTemplateAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/groovy/template/GroovyTemplateAutoConfiguration.java)。
 ### 快速重启
+`spring-boot-devtools`模块支持应用程序自动重新启动。虽然速度不如JRebel这样的技术，但通常比“冷启动”要快得多。在调查下面讨论的一些更复杂的重新加载选项之前，你应该尝试一下。
+
+有关更多详细信息，请参阅[第20章开发人员工具](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#using-boot-devtools)部分。
 ### 不重启容器重新加载Java类
+现代的IDE（Eclipse，IDEA等）都支持字节码的热交换，所以如果你做了一个不影响类或方法签名的改变，它应该利索地重新加载，没有副作用。
+
 ## 构建
 ### 生成构建信息
+Maven和Gradle插件都允许生成包含项目坐标，名称和版本的构建信息。该插件也可以配置为通过配置添加其他属性。 当这个文件出现时，Spring Boot会自动配置一个`BuildProperties` bean。
+
+要使用Maven生成构建信息，请为`build-info` goal添加一个execution：
+```xml
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<version>2.0.0.BUILD-SNAPSHOT</version>
+			<executions>
+				<execution>
+					<goals>
+						<goal>build-info</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build>
+```
+
+> 查看[Spring Boot Maven Plugin文档](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/maven-plugin//)以获取更多详细信息。
+
+Gradle一样：
+```
+springBoot {
+	buildInfo()
+}
+```
+
+可以使用DSL添加其他属性：
+```
+springBoot  {
+	buildInfo {
+		additionalProperties = [
+			'foo': 'bar'
+		]
+	}
+}
+```
+
 ### 生成git信息
+Maven和Gradle都允许在构建项目时生成一个`git.properties`文件，其中包含有关`git`源代码库状态的信息。
+
+对于Maven用户来说，`spring-boot-starter-parent` POM包含一个预先配置的插件来生成一个`git.properties`文件。 只需将以下声明添加到你的POM：
+```xml
+<build>
+	<plugins>
+		<plugin>
+			<groupId>pl.project13.maven</groupId>
+			<artifactId>git-commit-id-plugin</artifactId>
+		</plugin>
+	</plugins>
+</build>
+```
+Gradle用户可以使用[`gradle-git-properties`](https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties)插件获得相同的结果:
+```gradle
+plugins {
+	id "com.gorylenko.gradle-git-properties" version "1.4.17"
+}
+```
+> `git.properties`中的提交时间预计与`yyyy-MM-dd’T’HH:mm:ssZ`格式匹配。这是上面列出的两个插件的默认格式。使用这种格式可以将时间解析成`Date`，并在序列化为JSON时由Jackson的日期序列化配置设置控制它的格式。
+
 ### 自定义依赖版本
+如果你使用直接或间接从`spring-boot-dependencies`（例如`spring-boot-starter-parent`）继承的Maven构建，但是你想重写特定的第三方依赖项，则可以添加适当的`<properties>`元素。浏览[`spring-boot-dependencies`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-dependencies/pom.xml) POM以获取完整的属性列表。 例如，要选择一个不同的slf4j版本，你可以添加以下内容：
+```xml
+<properties>
+	<slf4j.version>1.7.5<slf4j.version>
+</properties>
+```
+
+> 这只适用于你的Maven项目是从`spring-boot-dependencies`继承（直接或间接）下来的。 如果你在你的`dependencyManagement`部分中用`<scope>import</scope>`添加了`spring-boot-dependencies`，那么你必须自己重新定义这个artifact，而不是重写属性。
+
+> 每个Spring Boot版本都是针对特定的第三方依赖进行设计和测试的。覆盖版本可能会导致兼容性问题。
+
 ### 使用Maven创建可执行jar
+`spring-boot-maven-plugin`可以用来创建一个可执行的“fat”JAR。如果你使用的是`spring-boot-starter-parent` POM，则可以简单地声明该插件，并将你的jar包重新打包：
+```xml
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+		</plugin>
+	</plugins>
+</build>
+```
+如果你不使用父POM，你仍然可以使用这个插件，但是你必须另外添加一个`<executions>`部分：
+```xml
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<version>2.0.0.BUILD-SNAPSHOT</version>
+			<executions>
+				<execution>
+					<goals>
+						<goal>repackage</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build>
+```
+有关完整的使用详细信息，请参阅[插件文档](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/maven-plugin//usage.html)。
+
 ### 使用Spring Boot应用程序作为依赖
+像war文件一样，Spring Boot应用程序并不打算用作依赖项。如果你的应用程序包含要与其他项目共享的类，则推荐的方法是将该代码移动到单独的模块中。你的应用程序和其他项目可以依靠这个单独的模块。
+
+如果你不能按照上面的建议重新调整你的代码，那么Spring Boot的Maven和Gradle插件必须被配置为产生一个适合用作依赖项的独立的组件。可执行文件不能用作依赖项，因为[可执行的jar格式](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#executable-jar-jar-file-structure)在`BOOT-INF/classes`中打包应用程序类。这意味着当可执行jar被用作依赖时，它们不能被找到。
+
+为了生成两个组件，一个可以用作依赖关系，一个可执行，必须指定一个分类器。此分类器应用于可执行文件的名称，保留用作依赖项的默认文件。
+
+要在Maven中配置`exec`的分类器，可以使用以下配置：
+```java
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<configuration>
+				<classifier>exec</classifier>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
+```
+
 ### 当可执行的jar运行时，提取特定的库
+可执行jar中的大多数内部库不需要解压来运行，但某些库可能会有问题。例如，JRuby包含自己的内部jar支持，它假设`jruby-complete.jar`总是直接作为一个文件直接使用。
+
+为了处理任何有问题的库，可以标记特定的内部jar应该在可执行jar第一次运行时自动解压到“temp文件夹”。
+
+例如，为了说明JRuby应该被标记为使用Maven Plugin解压，你可以添加以下配置：
+```xml
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<configuration>
+				<requiresUnpack>
+					<dependency>
+						<groupId>org.jruby</groupId>
+						<artifactId>jruby-complete</artifactId>
+					</dependency>
+				</requiresUnpack>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
+```
+
 ### 使用exclusions 创建不可执行的JAR
+通常，如果你将可执行文件和不可执行的jar作为构建产品，则可执行文件版本将具有作为库的jar中不需要的其他配置文件。 例如,不可执行的JAR中可能会排除`application.yml`配置文件。
+
+`maven-jar-plugin`用来暴露一个`forceCreation`属性，允许你在`repackage` goal 运行后*再次*创建jar。可以说，由于它依赖于插件执行的顺序，所以它有点脆弱。 在Maven中，可执行的jar文件必须是主要的工件，你可以为库添加一个分类的jar：
+```xml
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+		</plugin>
+		<plugin>
+			<artifactId>maven-jar-plugin</artifactId>
+			<executions>
+				<execution>
+					<id>lib</id>
+					<phase>package</phase>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+					<configuration>
+						<classifier>lib</classifier>
+						<excludes>
+							<exclude>application.yml</exclude>
+						</excludes>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build>
+```
+
 ### 远程调试Maven启动的Spring Boot应用程序
+要将一个远程调试器连接到一个使用Maven启动的Spring Boot应用程序，你可以使用[maven插件](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/maven-plugin//)的`jvmArguments`属性。
+
+查看[这个例子](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/maven-plugin//examples/run-debug.html)了解更多细节。
 ### 用Ant构建可执行存档时不使用spring-boot-antlib 
+
 ## 传统部署方式
 ### 创建可部署的war文件
+生成可部署的war文件的第一步是提供一个`SpringBootServletInitializer`子类并覆盖其`configure`方法。 这将使用Spring框架的Servlet 3.0支持功能，并当它由servlet容器启动时允许你配置你的应用程序。通常，你更新你的应用程序的主类来继承`SpringBootServletInitializer`：
+```java
+@SpringBootApplication
+public class Application extends SpringBootServletInitializer {
+
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(Application.class);
+	}
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(Application.class, args);
+	}
+
+}
+```
+下一步是更新你的构建配置，以便你的项目生成一个war文件，而不是一个jar文件。 如果你使用的是Maven，并使用`spring-boot-starter-parent`（会为你配置Maven的war插件），你只需修改`pom.xml`将 packaging 更改为war：
+```
+<packaging>war</packaging>
+```
+如果你使用的是Gradle，则需要修改`build.gradle`启用war插件：
+```
+apply plugin: 'war'
+```
+这个过程的最后一步是确保嵌入的servlet容器不会干扰要部署war文件的servlet容器。 为此，你需要标记嵌入式servlet容器依赖项为provided。
+
+在Maven中：
+```xml
+<dependencies>
+	<!-- … -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-tomcat</artifactId>
+		<scope>provided</scope>
+	</dependency>
+	<!-- … -->
+</dependencies>
+```
+在Gradle中：
+```gradle
+dependencies {
+	// …
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	// …
+}
+```
+> `providedRuntime`比Gradle的`compileOnly`配置更受欢迎，因为在其他限制中，`compileOnly`依赖不在测试类路径上，因此任何基于Web的集成测试都将失败。
+
+如果你使用的是[Spring Boot构建工具](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#build-tool-plugins)，则标记嵌入的Servlet容器依赖项为provided将生成一个可执行的war文件，其中提供的依赖项打包在`lib-provided`的目录中。这意味着，除了可以部署到servlet容器之外，还可以在命令行上使用`java -jar`运行应用程序。
+
+> 查看Spring Boot的示例应用程序，可以找到上述配置的[基于Maven的示例](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-traditional/pom.xml)。
+
 ### 为老版本servlet容器创建可部署war文件
+较老的Servlet容器不支持Servlet 3.0中使用的`ServletContextInitializer`引导进程。你仍然可以在这些容器中使用Spring和Spring Boot，但是你将需要将`web.xml`添加到你的应用程序，并将其配置为通过`DispatcherServlet`加载`ApplicationContext`。
+
 ### 将现有应用转换为Spring Boot应用
+对于非Web应用程序来说，应该很简单（丢弃创建`ApplicationContext`的代码并将其替换为对`SpringApplication`或`SpringApplicationBuilder`的调用）。 Spring MVC Web应用程序通常可以首先创建可部署的war应用程序，然后稍后将其迁移到可执行的war和/或jar。 [“将jar转换为war的入门指南”](http://spring.io/guides/gs/convert-jar-to-war/)可能对你非常有用。
+
+通过扩展`SpringBootServletInitializer`（例如，在一个名为`Application`的类）中创建一个可部署的war，并添加Spring Boot `@SpringBootApplication`注解。 例如：
+```java
+@SpringBootApplication
+public class Application extends SpringBootServletInitializer {
+
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		// Customize the application or call application.sources(...) to add sources
+		// Since our example is itself a @Configuration class (via @SpringBootApplication)
+		// we actually don't need to override this method.
+		return application;
+	}
+
+}
+```
+请记住，无论你放在源代码中的是什么，只是一个Spring `ApplicationContext`，通常任何已经工作的东西都应该在这里工作。可能稍后会删除一些bean，并让Spring Boot 为它们提供自己的默认值，但应该可以先做一些工作。
+
+可以将静态资源移动到类路径根中的`/public`（或`/static`或`/resources`或/ `META-INF/resources`）。`messages.properties`也是如此。（Spring Boot会在类路径的根目录中自动检测到这个）。
+
+Spring `DispatcherServlet`和Spring Security的使用不需要进一步的修改。如果你的应用程序中有其他功能，例如使用其他servlet或过滤器，那么你可能需要在`Application`上下文中添加一些配置，从`web.xml`中替换这些元素，如下所示：
+- `Servlet`或`ServletRegistrationBean`类型的`@Bean`将该bean安装到容器中，就好像它是`web.xml`中的`<servlet />`和`<servlet-mapping />`一样。
+- 类型为`Filter`或`FilterRegistrationBean`的`@Bean`的行为类似（如`<filter />`和`<filter-mapping />`）。
+- XML文件中的`ApplicationContext`可以通过`Application`中的`@ImportResource`添加。 或者注解配置大量使用的简单情况已经可以作为`@Bean`定义在几行代码中重新创建。
+ 
+一旦war 生效，我们通过向我们的`Application`添加`main`方法来使其可以执行。例如：
+```java
+public static void main(String[] args) {
+	SpringApplication.run(Application.class, args);
+}
+```
+
+> 如果你打算将应用作为war或可执行应用程序启动，则需要在`SpringBootServletInitializer`回调和`main`方法都可用的方法中共享构建器的自定义设置，如下所示：
+>```
+>@SpringBootApplication
+>public class Application extends SpringBootServletInitializer {
+>
+>	@Override
+>	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+>		return configureApplication(builder);
+>	}
+>
+>	public static void main(String[] args) {
+>		configureApplication(new SpringApplicationBuilder()).run(args);
+>	}
+>
+>	private static SpringApplicationBuilder configureApplication(SpringApplicationBuilder builder) {
+>		return builder.sources(Application.class).bannerMode(Banner.Mode.OFF);
+>	}
+>
+>}
+```
+
+应用程序可以分为多个类别：
+- 没有`web.xml`的Servlet 3.0+应用程序。
+- 带有`web.xml`的应用程序.
+- 具有上下文层次的应用程序.
+- 没有上下文层次的应用程序.
+
+所有这些都应该适合转换，但每个可能需要稍微不同的技巧。
+
+如果Servlet 3.0+应用程序已经使用Spring Servlet 3.0+初始化程序支持类，那么它们可能会非常容易转换。通常，来自现有`WebApplicationInitializer`的所有代码都可以移入`SpringBootServletInitializer`。如果你现有的应用程序有多个`ApplicationContext`（例如，如果它使用`AbstractDispatcherServletInitializer`），那么你可能能够将所有上下文源压缩到一个`SpringApplication`中。你可能遇到的主要难题是如果这不起作用，你需要维护上下文层次结构。请参阅[构建层次结构的示例](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#howto-build-an-application-context-hierarchy)。现有的包含Web特定功能父上下文通常需要分解，以便所有`ServletContextAware`组件都在子上下文中。
+
+不是Spring应用的应用程序可能会转换成Spring Boot应用程序，上面的指导可能会有帮助，但是你的路可能会有所不同。
+
 ### 部署WAR到WebLogic
+要将Spring Boot应用程序部署到WebLogic，必须确保servlet初始化程序直接实现`WebApplicationInitializer`（即使从已经实现它的基类中进行继承）。
+
+一个典型的WebLogic初始化器是这样的：
+```java
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.web.WebApplicationInitializer;
+
+@SpringBootApplication
+public class MyApplication extends SpringBootServletInitializer implements WebApplicationInitializer {
+
+}
+```
+如果使用logback，则还需要告知WebLogic更喜欢打包的版本，而不是预装在服务器上的版本。 你可以通过添加具有以下内容的`WEB-INF/weblogic.xml`文件来执行此操作：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<wls:weblogic-web-app
+	xmlns:wls="http://xmlns.oracle.com/weblogic/weblogic-web-app"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd
+		http://xmlns.oracle.com/weblogic/weblogic-web-app
+		http://xmlns.oracle.com/weblogic/weblogic-web-app/1.4/weblogic-web-app.xsd">
+	<wls:container-descriptor>
+		<wls:prefer-application-packages>
+			<wls:package-name>org.slf4j</wls:package-name>
+		</wls:prefer-application-packages>
+	</wls:container-descriptor>
+</wls:weblogic-web-app>
+```
 ### 在老版本容器(Servlet 2.5)中部署WAR
+Spring Boot使用Servlet 3.0 API来初始化`ServletContext`（注册`Servlets`等），所以不能在Servlet 2.5容器中使用相同的应用程序。然而，使用一些特殊的工具可以在一个较老的容器上运行Spring Boot应用程序。 如果你依赖了`org.springframework.boot:spring-boot-legacy`（[独立](https://github.com/scratches/spring-boot-legacy)于Spring Boot的核心并且目前在1.0.2.RELEASE上提供），那么你只需要创建一个`web.xml`并 声明一个上下文监听器来创建应用程序上下文以及你的过滤器和servlet。上下文监听器是Spring Boot的特殊用途，但其余部分对于Servlet 2.5中的Spring应用程序来说是正常的。 例如：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>demo.Application</param-value>
+	</context-param>
+
+	<listener>
+		<listener-class>org.springframework.boot.legacy.context.web.SpringBootContextLoaderListener</listener-class>
+	</listener>
+
+	<filter>
+		<filter-name>metricsFilter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>metricsFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextAttribute</param-name>
+			<param-value>org.springframework.web.context.WebApplicationContext.ROOT</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+</web-app>
+```
+在这个例子中，我们使用一个应用程序上下文（由上下文监听器创建的上下文），并使用init参数将其附加到`DispatcherServlet`。 这在Spring Boot应用程序中是正常的（通常你只有一个应用程序上下文）。
 ### 使用Jedis 代替Lettuce
+Spring Boot starter（`spring-boot-starter-data-redis`）默认使用[Lettuce](https://github.com/lettuce-io/lettuce-core/)。 你需要排除该依赖关系，并包含[Jedis](https://github.com/xetorthio/jedis/)。 Spring Boot管理这些依赖关系，以使这个过程尽可能简单。
+在Maven中：
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-data-redis</artifactId>
+	<exclusions>
+		<exclusion>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+<dependency>
+	<groupId>redis.clients</groupId>
+	<artifactId>jedis</artifactId>
+</dependency>
+```
+在Gradle中：
+```gradle
+configurations {
+	compile.exclude module: "lettuce"
+}
+
+dependencies {
+	compile("redis.clients:jedis")
+	// ...
+}
+```
