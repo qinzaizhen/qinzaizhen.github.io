@@ -1048,21 +1048,131 @@ Spring Boot默认启用Spring JDBC初始化程序的快速失败功能，所以�
 你也可以通过将`spring.datasource.initialize`设置为`false`来禁用初始化。
 
 ### 初始化一个Spring Batch数据库
+如果你使用的是Spring Batch，那么它将为大多数流行的数据库平台预先打包SQL初始化脚本。 Spring Boot可以检测你的数据库类型并在启动时执行这些脚本。如果你使用嵌入式数据库，则默认情况下会发生这种情况。你也可以为任何数据库类型启用这个功能：
+```
+spring.batch.initialize-schema=always
+```
+你也可以使用`spring.batch.initialize-schema = never`显式地关闭初始化功能。
 ### 使用更高级别的数据库迁移工具
+Spring Boot支持两种更高级的迁移工具：[Flyway](http://flywaydb.org/)和[Liquibase](http://www.liquibase.org/)。
+
 #### 启动时执行Flyway数据库迁移
+要在启动时自动运行Flyway数据库迁移，请将`org.flywaydb:flyway-core`添加到类路径中。
+
+迁移是以`V<VERSION>__<NAME>.sql`格式（带有`<VERSION>`下划线分隔的版本，例如'1'或'2_1'）的脚本。默认情况下，它们位于文件夹`classpath:db/migration`中，但是可以使用`spring.flyway.locations`修改它。你还可以添加特殊的`{vendor}`占位符来使用供应商特定的脚本。 假设：
+```
+spring.flyway.locations=db/migration/{vendor}
+```
+这个配置不是使用`db/migration`，而是根据数据库的类型（对于Mysql来说即`db/migration/mysql`）来设置使用的文件夹。可以在[`DatabaseDriver`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/jdbc/DatabaseDriver.java)中查看受支持的数据库列表。
+
+另请参阅flyway-core的Flyway类以了解可用设置（如模式等）的详细信息。另外，Spring Boot在[`FlywayProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/flyway/FlywayProperties.java)中提供了一组属性，可用于禁用迁移或关闭位置检查。 Spring Boot将调用`Flyway.migrate（）`来执行数据库迁移。 如果你想要更多的控制，提供一个实现了[`FlywayMigrationStrategy`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/flyway/FlywayMigrationStrategy.java)的`@Bean`。
+
+Flyway支持SQL和Java[回调](http://flywaydb.org/documentation/callbacks.html)。 要使用基于SQL的回调，请将回调脚本放在`classpath:db/migration`文件夹中。 要使用基于Java的回调，创建一个或多个实现了`FlywayCallback`的Bean，或者最好是继承`BaseFlywayCallback`。 任何这样的bean将自动注册到`Flyway`。 他们可以通过使用`@Order`或实现`Ordered`来指定顺序。
+
+默认情况下，Flyway将在你的上下文中自动装配（`@Primary`）`DataSource`，并将其用于迁移。 如果你喜欢使用不同的`DataSource`，你可以创建一个`@Bean`标记为`@FlywayDataSource` - 如果你这样做，记得创建另一个数据源,如果你需要两个数据源记得把它标记为`@Primary`。 或者，你可以通过在外部属性中设置`spring.flyway.[url，user，password]`来使用Flyway的原生`DataSource`。
+
+这里有一个[Flyway示例](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-flyway)，你可以看到如何设置这些东西。
+
+你也可以使用Flyway为特定场景提供数据。例如，你可以将测试专用的迁移脚本放在`src/test/resources`中，并且只有在你的应用程序开始测试时才会运行它们。 如果你想更复杂一点，可以使用特定profile的配置来自定义`spring.flyway.locations`，以便某些迁移脚本只在特定profile激活时运行。 例如，在`application-dev.properties`中：
+```
+spring.flyway.locations=classpath:/db/migration,classpath:/dev/db/migration
+```
+使用该设置，`dev/db/migration`中的迁移脚本将仅在`dev` profile激活时运行。
+
 #### 启动时执行Liquibase数据库迁移
+要在启动时自动运行Liquibase数据库迁移，请将`org.liquibase:liquibase-core`添加到你的类路径中。
+
+主要的更改日志默认从`db/changelog/db.changelog-master.yaml`中读取，但可以设置使用`spring.liquibase.change-log`。除了YAML，Liquibase还支持JSON，XML和SQL更改日志格式。
+
+默认情况下，Liquibase会在你的上下文中自动装载（`@Primary`）`DataSource`，并用它来进行迁移。 如果你喜欢使用不同的`DataSource`，你可以创建一个`@Bean`标记为`@LiquibaseDataSource` - 如果你这样做的话，记得创建另一个数据源，如果你想要两个数据源，就把它标记为`@Primary`。 或者，你可以通过在外部属性中设置`spring.liquibase.[url，user，password]`来使用Liquibase的原生`DataSource`。
+
+有关上下文，默认模式等可用设置的详细信息，请参阅[`LiquibaseProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/liquibase/LiquibaseProperties.java)。
+
+有一个[Liquibase示例](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-liquibase)，你可以看到如何设置。
 ## 消息
 ### 禁用事务的JMS会话
+如果你的JMS代理不支持事务会话，则必须完全禁用事务支持。如果你创建自己的`JmsListenerContainerFactory`，则无需执行任何操作，因为默认情况下不会进行事务处理。 如果你想使用`DefaultJmsListenerContainerFactoryConfigurer`来重用Spring Boot的默认设置，可以按如下所示禁用事务性会话：
+```java
+@Bean
+public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
+		ConnectionFactory connectionFactory,
+		DefaultJmsListenerContainerFactoryConfigurer configurer) {
+	DefaultJmsListenerContainerFactory listenerFactory =
+			new DefaultJmsListenerContainerFactory();
+	configurer.configure(listenerFactory, connectionFactory);
+	listenerFactory.setTransactionManager(null);
+	listenerFactory.setSessionTransacted(false);
+	return listenerFactory;
+}
+```
+这里覆盖了默认的工厂，并且它应该被应用到你的应用程序定义的任何其他工厂（如果有的话）。
 ## 批处理应用
+> 默认情况下，批处理应用程序需要一个`DataSource`来存储作业详细信息。如果你不要这么做，你需要实现`BatchConfigurer`，请参阅[`@EnableBatchProcessing`的Javadoc](http://docs.spring.io/spring-batch/apidocs/org/springframework/batch/core/configuration/annotation/EnableBatchProcessing.html)获取更多细节。
+
 ### 启动时执行Spring Batch作业
+Spring Batch自动配置是通过在你的上下文中添加`@EnableBatchProcessing`（从Spring Batch）来实现的。
+
+默认情况下，它会在启动时执行应用程序上下文中的**所有**`Jobs`（有关详细信息，请参阅[JobLauncherCommandLineRunner](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/batch/JobLauncherCommandLineRunner.java)）。 你可以通过指定`spring.batch.job.names`（逗号分隔的作业名称模式）来限制到特定作业或作业的范围。
+
+如果应用程序上下文包含`JobRegistry`，则在注册信息中查找`spring.batch.job.names`中的作业，而不是从上下文自动装配。 这是一个常见的模式，其中有更复杂的系统，在这个系统中多个作业在子环境中定义并集中注册。
+
+有关更多详细信息，请参阅[BatchAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/batch/BatchAutoConfiguration.java)和[@EnableBatchProcessing](https://github.com/spring-projects/spring-batch/blob/master/spring-batch-core/src/main/java/org/springframework/batch/core/configuration/annotation/EnableBatchProcessing.java)。
 ## Actuator
 ### 更改actuator端点的HTTP端口或地址
+在独立应用程序中，Actuator HTTP端口默认与主HTTP端口相同。为了让应用程序在不同的端口上监听，可以设置外部属性`management.port`。要监听一个完全不同的网络地址（例如，如果你有一个用于管理的内部网络和一个用于外部用户应用的网络），你还可以将`management.address`设置为服务器能够绑定的有效IP地址。
+
+有关更多详细信息，请参阅[`ManagementServerProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/autoconfigure/web/ManagementServerProperties.java)源代码以及“Production-ready功能”部分中的[第50.2节“自定义管理服务器端口”](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#production-ready-customizing-management-server-port)。
+
 ### 自定义“whitelabel”错误页面
+如果你遇到服务器错误（使用JSON和其他媒体类型的计算机客户端应该看到具有正确错误代码的合理响应），Spring Boot将安装一个“whitelabel”错误页面。
+
+> 设置`server.error.whitelabel.enabled = false`将关闭默认错误页面并恢复为你正在使用的servlet容器的默认值。请注意，Spring Boot仍然会尝试解决错误视图，所以你可能会添加你自己的错误页面，而不是完全禁用它。
+
+用你自己的覆盖错误页面取决于你正在使用的模板技术。例如，如果你使用的是Thymeleaf，则可以添加一个`error.html`模板，如果你使用的是FreeMarker，则可以添加一个`error.ftl`模板。一般来说，你需要的是一个用错误名称解析的`View`，和/或处理`/error`路径的`@Controller`。除非你替换了一些默认配置，否则你应该在你的`ApplicationContext`中找到一个`BeanNameViewResolver`，所以带有id`error`的`@Bean`将是一个简单的方法。查看[`ErrorMvcAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/servlet/error/ErrorMvcAutoConfiguration.java)以获取更多详情。
+
+有关如何在servlet容器中注册处理程序的详细信息，另请参阅[错误处理](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#boot-features-error-handling)一节。
 ### Actuator 和 Jersey
+Actuator HTTP端点仅适用于基于Spring MVC的应用程序。如果你想使用Jersey并仍然使用Actuator，则需要启用Spring MVC（例如，依赖于`spring-boot-starter-web`）。默认情况下，Jersey和Spring MVC调度程序servlet都映射到相同的路径（`/`）。你将需要更改其中一个的路径（通过为Spring MVC配置`server.servlet.path`或为Jersey配置`spring.jersey.application-path`）。 例如，如果将`server.servlet.path = / system`添加到`application.properties`中，则actuator HTTP端点将可以在`/ system`下使用。
+
 ## Security
 ### 关闭Spring Boot 安全配置
+如果你在应用程序中的任何位置使用`@EnableWebSecurity`定义`@Configuration`，它将关闭Spring Boot中的默认Web应用程序安全设置（但保留Actuator的安全配置）。 要调整默认值，请尝试设置`security.*`（请参阅[`SecurityProperties`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/SecurityProperties.java)以获取可用设置的详细信息）以及[Common应用程序属性](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#common-application-properties-security)的`SECURITY`部分。
 ### 更改AuthenticationManager并添加用户帐户
+如果你提供了一个类型为`AuthenticationManager`的`@Bean`，那么将不会创建默认的，所以你可以使用Spring Security的全部功能（例如[各种认证选项](http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc-authentication)）。
+
+Spring Security还提供了一个方便的`AuthenticationManagerBuilder`，它可以用来构建一个带有通用选项的`AuthenticationManager`。在webapp中使用这种方法的推荐方法是将其注入`WebSecurityConfigurerAdapter`中的void方法，例如：
+```java
+@Configuration
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+			auth.inMemoryAuthentication()
+				.withUser("barry").password("password").roles("USER"); // ... etc.
+	}
+
+	// ... other stuff for application security
+
+}
+```
+如果将其放在嵌套类或独立类中（即不会混入大量可能影响实例化顺序的其他`@Beans`），你将获得最佳结果。 [安全的Web示例](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-web-secure)是一个有用的模板。
+
+如果遇到实例化问题（例如，对用户详细信息存储使用JDBC或JPA），将`AuthenticationManagerBuilder`回调提取到`GlobalAuthenticationConfigurerAdapter`中（在`init()`方法中，以便在其他地方需要身份验证管理器之前进行）有可能是值得。
+```java
+@Configuration
+public class AuthenticationManagerConfiguration extends
+		GlobalAuthenticationConfigurerAdapter {
+
+	@Override
+	public void init(AuthenticationManagerBuilder auth) {
+		auth.inMemoryAuthentication() // ... etc.
+	}
+
+}
+```
+
 ### 在代理服务器后启用HTTPS
+
 ## 热加载
 ### 刷新静态内容
 ### 不重启容器刷新模板
