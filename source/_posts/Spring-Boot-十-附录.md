@@ -1396,7 +1396,7 @@ server.servlet.path=/home
 最后，“提示”是用于帮助用户配置给定属性的附加信息。当配置`spring.jpa.hibernate.ddl-auto`属性时，一个工具可以使用它来为`none`，`validate`，`update`，`create`和`create-drop`值提供一些自动完成的帮助。
 
 #### B.1.1 组的属性
-包含在`groups`数组中的JSON对象可以包含以下属性：
+`groups`数组中的JSON对象可以包含以下属性：
 
 名称|类型|目的
 --|--|--
@@ -1405,14 +1405,319 @@ server.servlet.path=/home
 `description`|String|可以向用户显示的组的简短说明。如果没有可用的描述，可以省略。 建议描述是一个简短的段落，第一行提供一个简明的总结。描述的最后一行应以句点（`.`）结尾。
 `sourceType`|String|贡献此组的源的类名称。例如，如果组基于`@ConfigurationProperties`注解的`@Bean`方法，则此属性将包含此方法的`@Configuration类的`完全限定名称。 如果源类型未知，则该属性可以省略。
 `sourceMethod`|String|贡献该组的方法的全名（包括括号和参数类型）。例如，`@ConfigurationProperties`注释的`@Bean`方法的名称。如果源方法未知，可以省略。
+
 #### B.1.2 Properties的属性
-包含在`properties`数组中的JSON对象可以包含以下属性：
+`properties`数组中的JSON对象可以包含以下属性：
+
+名称|类型|目的
+--|--|--
+`name`|String|属性的全名。名称以小写的虚线形式（例如`server.servlet.path`）。 该属性是强制性的。
+`type`|String|该属性的数据类型的完整签名。例如，`java.lang.String`，也是一个完整的泛型类型，比如`java.util.Map <java.util.String，acme.MyEnum>`。这个属性可以用来指导用户可以输入的值的类型。 为了一致性，基本类型使用它的包装对象来指定，即布尔类型变成`java.lang.Boolean`。 请注意，这个类可能是一个复杂的类型，当值被绑定时，它会从字符串转换而来。 如果类型未知，可以省略。
+`description`|String|可以向用户显示的组的简短说明。如果没有可用的描述，可以省略。 建议描述是一个简短的段落，第一行提供一个简明的总结。描述的最后一行应以句点（`.`）结尾。
+`sourceType`|String|贡献此属性的源的类名称。例如，如果属性来自使用`@ConfigurationProperties`注解的类，则此属性将包含该类的完全限定名称。如果源类型未知，可以省略。
+`defaultValue`|Object|如果未指定属性，将使用默认值。如果属性的类型是一个数组，也可以是一个值的数组。 如果默认值未知，可以省略。
+`deprecation`|Deprecation|指定该属性是否被弃用。如果该字段未被弃用，或者该信息未知，则可以省略。 请参阅下面的更多细节。
+
+包含在每个属性元素的`deprecation`属性中的JSON对象可以包含以下属性：
+
+名称|类型|目的
+--|--|--
+`level`|String|弃用级别可以是`warning`（默认）或`error`。当一个属性具有`warning`弃用级别时，它应该仍然被绑定在环境中。但是，如果它具有`error`弃用级别，则不再管理该属性，也不会被绑定。
+`reason`|String|属性被弃用原因的简短描述。 如果没有原因可以省略。建议描述是一个简短的段落，第一行提供一个简明的总结。 描述的最后一行应以句点（`.`）结尾。
+`replacement`|String|替换此弃用属性的属性的全名。如果没有这个属性的替换属性，可以省略。
+
+> 在Spring Boot 1.3之前，可以使用一个废弃的布尔属性来代替`deprecation`元素。 这仍被支持，不应再使用。如果没有原因和替换属性，则应该设置一个空的`deprecation`对象。
+
+也可以在代码中明确指定弃用，方法是将`@DeprecatedConfigurationProperty`注释添加到属性的getter方法中。例如，假设`app.foo.target`属性很混乱，并被重命名为`app.foo.name`
+```java
+@ConfigurationProperties("app.foo")
+public class FooProperties {
+
+	private String name;
+
+	public String getName() { ... }
+
+	public void setName(String name) { ... }
+
+	@DeprecatedConfigurationProperty(replacement = "app.foo.name")
+	@Deprecated
+	public String getTarget() {
+		return getName();
+	}
+
+	@Deprecated
+	public void setTarget(String target) {
+		setName(target);
+	}
+}
+```
+
+> 由于代码仍在处理属性，因此无法设置`level`，因为总是假设`warning`。
+
+上面的代码确保不推荐使用的属性仍然有效（委托给后台的`name`属性）。 一旦`getTarget`和`setTarget`方法可以从公共API中删除，元数据中的自动弃用提示也将消失。 如果要保留提示，添加具有`error`弃用级别的手动元数据可确保用户仍被通知该属性，并且在提供`replacement`时特别有用。
+
 #### B.1.3 提示属性
+`hints`数组中的JSON对象可以包含以下属性：
+
+名称|类型|目的
+--|--|--
+`name`|String|这个提示引用的属性的全名。名称以小写的虚线形式（例如`server.servlet.path`）。 如果该属性引用一个map（例如`system.contexts`），则该提示要么应用于map的*keys*（`system.context.keys`），要么应用于values（`system.context.values`）。 该属性是强制性的。
+`values`|ValueHint[]|`ValueHint`对象定义的有效值列表（请参见下文）。 每个条目定义了这个值，并可能有描述信息。
+`providers`|ValueProvider[]|由`ValueProvider`对象定义的提供者列表（见下文）。 每个条目定义提供者的名称及其参数（如果有的话）。
+
+包含在每个`hint`元素的`values`属性中的JSON对象可以包含以下属性：
+
+名称|类型|目的
+--|--|--
+`value`|Object|提示引用的元素的有效值。如果属性的类型是一个数组，也可以是一个值的数组。 该属性是强制性的。
+`description`|String|可以向用户显示的值的简短说明。如果没有可用的描述，可以省略。 建议描述是一个简短的段落，第一行提供一个简明的总结。描述的最后一行应以句点（`.`）结尾。
+
+包含在每个`hint`元素的`providers`属性中的JSON对象可以包含以下属性：
+名称|类型|目的
+--|--|--
+`name`|String|提供者的名称，用于为提示引用的元素提供其他帮助。
+`parameters`|JSON object|提供者支持的任何其他参数（有关更多详细信息，请参阅提供者的文档）。
+
 #### B.1.4 重复的元数据项目
+具有相同名称的“属性”和“组”对象在元数据文件内出现多次是完全可以接受的。例如，你可以将两个单独的类绑定到相同的前缀，每个类都可能提供重复的属性名称。 尽管这不常见，但是元数据的使用者应该注意确保他们支持这种情况。
 ### B.2 提供手动提示
+为了改善用户体验并进一步帮助用户配置给定属性，可以提供以下元数据：
+
+- 描述一个属性的取值的列表。
+- 关联一个提供者将一个明确定义的语义附加到属性上，以便工具可以根据该项目的上下文发现取值的列表。
+
 #### B.2.1 值提示
-#### B.2.2 值来源
+每个提示的`name`属性引用的是一个属性的`name`。在上面的例子中，我们为`spring.jpa.hibernate.ddl-auto`属性提供了5个值：`none`，`validate`，`update`，`create`和`create-drop`。 每个值也可以有一个描述。
+
+如果你的属性是`Map`类型，则可以为键和值提供提示（但不能为map本身提供）。 必须使用特殊的`.keys`和`.values`后缀分别表示键和值。
+
+让我们假设一个`foo.contexts`将魔术字符串映射到一个整数：
+```java
+@ConfigurationProperties("foo")
+public class FooProperties {
+
+	private Map<String,Integer> contexts;
+	// getters and setters
+}
+```
+魔术值是foo和bar。 为了为keys提供额外的内容帮助，你可以将以下内容添加到[模块的手动元数据](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#configuration-metadata-additional-metadata)中：
+```json
+{"hints": [
+	{
+		"name": "foo.contexts.keys",
+		"values": [
+			{
+				"value": "foo"
+			},
+			{
+				"value": "bar"
+			}
+		]
+	}
+]}
+```
+> 当然，你应该用`Enum`来代替这两个值。如果你的IDE支持，这是迄今为止最有效的自动完成方法。
+
+#### B.2.2 值提供者
+提供者是将语义附加到属性的有效方式。我们在下面的部分定义了官方提供者。但是请记住，你最喜欢的IDE可能会实现其中的一些，或者一个都没有。 它也可以提供它自己的。
+
+> 由于这是一个新功能，IDE开发商将不得不加上这个新功能。
+
+下表总结了支持的提供者列表：
+
+名称|描述
+--|--
+`any`|允许提供任何额外的值。
+`class-reference`|自动完成项目中可用的类。通常受到通过`target`参数指定的基类的约束。
+`handle-as`|处理该属性，就好像它是通过强制的`target`参数定义的类型定义的一样。
+`logger-name`|自动完成有效的日志记录器名称。通常当前项目中可用的包和类名称都可以自动完成。
+`spring-bean-reference`|自动完成当前项目中的可用bean名称。通常受到通过`target`参数指定的基类的约束。
+`spring-profile-name`|自动完成项目中可用的Spring profile名称。
+
+> 对于给定的属性，只能有一个提供者处于活动状态，但是如果它们可以通过某种方式来管理属性，则可以指定多个提供者。确保首先放置最强大的提供者，因为IDE必须使用它可以处理的JSON部分中的第一个提供者。如果不支持给定属性的提供者，那么不会提供特别的内容帮助。
+
+##### Any
+*any*提供者允许提供任何额外的值。如果支持的话，则应该应用基于属性类型的常规值校验。
+
+如果你有一个值列表，那么通常会使用这个提供者，并且任何额外的值仍将被视为有效的。
+
+以下示例为`system.state`的自动完成提供了`on`和`off`值;其他的任何值也是允许的：
+```json
+{"hints": [
+	{
+		"name": "system.state",
+		"values": [
+			{
+				"value": "on"
+			},
+			{
+				"value": "off"
+			}
+		],
+		"providers": [
+			{
+				"name": "any"
+			}
+		]
+	}
+]}
+```
+##### Class reference
+**class-reference**提供者自动完成项目中可用的类。这个提供者支持下面这些参数：
+
+参数|类型|默认值|描述
+--|--|--|--
+`target`|`String` (`Class`)|*none*|应该分配给所选值的类的完全限定名称。通常用于过滤非候选类。请注意，这些信息可以由类型本身通过暴露具有适当上限的类来提供。
+`concrete`|`boolean`|true|指定是否只有具体的类被视为有效的候选者。
+
+下面的元数据片段对应于标准的`server.servlet.jsp.class-name`属性，该属性定义了要使用的`JspServlet`类名称：
+```json
+{"hints": [
+	{
+		"name": "server.servlet.jsp.class-name",
+		"providers": [
+			{
+				"name": "class-reference",
+				"parameters": {
+					"target": "javax.servlet.http.HttpServlet"
+				}
+			}
+		]
+	}
+]}
+```
+##### Handle As
+**handle-as**提供者允许你将属性的类型替换为更高级的类型。当属性具有`java.lang.String`类型时，通常会发生这种情况，因为你不希望配置类依赖可能不在类路径中的类。 这个提供者支持这些参数：
+
+参数|类型|默认值|描述
+--|--|--|--
+`target`|String (Class)|*none*|要考虑的属性类型的完全限定名称。该参数是强制性的。
+
+可以使用以下类型：
+- 列出属性任何可能值的`java.lang.Enum`（尝试使用`Enum`类型定义属性，而不要求IDE自动完成值的进一步提示）。
+- `java.nio.charset.Charset`：字符集/编码值的自动完成（例如`UTF-8`）
+- `java.util.Locale`：自动完成语言环境（例如`en_US`）
+- `org.springframework.util.MimeType`：内容类型的自动完成（例如`text/plain`）
+- `org.springframework.core.io.Resource`：自动完成Spring的资源抽象来引用文件系统或类路径上的文件。（例如`classpath:/foo.properties`）
+
+> 如果可以提供多个值，请使用`Collection`或*Array*类型告诉IDE。
+
+下面的元数据片段对应于标准的`spring.liquibase.change-log`属性，该属性定义了要使用的更改日志的路径。它实际上是作为`org.springframework.core.io.Resource`在内部使用的，但是不能被公开，因为我们需要保留原来的String值来传递给Liquibase API。
+```json
+{"hints": [
+	{
+		"name": "spring.liquibase.change-log",
+		"providers": [
+			{
+				"name": "handle-as",
+				"parameters": {
+					"target": "org.springframework.core.io.Resource"
+				}
+			}
+		]
+	}
+]}
+```
+##### Logger name
+**logger-name**提供者会自动完成有效的日志记录器名称。通常，当前项目中可用的包和类名称都可以自动完成。具体的框架可能会有额外的魔术日志记录器名称，也可以支持。
+
+由于日志记录器名称可以是任意名称，实际上，此提供者应该允许任何值，但可以突出显示项目类路径中不可用的有效包和类名称。
+
+下面的元数据片段对应于标准的`logging.level`属性，keys是*日志记录器名称*和values对应于标准日志级别或任何自定义级别：
+```json
+{"hints": [
+	{
+		"name": "logging.level.keys",
+		"values": [
+			{
+				"value": "root",
+				"description": "Root logger used to assign the default logging level."
+			}
+		],
+		"providers": [
+			{
+				"name": "logger-name"
+			}
+		]
+	},
+	{
+		"name": "logging.level.values",
+		"values": [
+			{
+				"value": "trace"
+			},
+			{
+				"value": "debug"
+			},
+			{
+				"value": "info"
+			},
+			{
+				"value": "warn"
+			},
+			{
+				"value": "error"
+			},
+			{
+				"value": "fatal"
+			},
+			{
+				"value": "off"
+			}
+
+		],
+		"providers": [
+			{
+				"name": "any"
+			}
+		]
+	}
+]}
+```
+
+##### Spring bean reference
+**spring-bean-reference**提供者自动完成在当前项目的配置中定义的bean。这个提供者支持这些参数：
+
+参数|类型|默认值|描述
+--|--|--|--
+`target`|String (Class)|*none*|应该可分配给候选者的bean类的完全限定名称。通常用于过滤非候选bean。
+
+下面的元数据片段对应于定义要使用的`MBeanServer` bean名称的标准`spring.jmx.server`属性：
+```json
+{"hints": [
+	{
+		"name": "spring.jmx.server",
+		"providers": [
+			{
+				"name": "spring-bean-reference",
+				"parameters": {
+					"target": "javax.management.MBeanServer"
+				}
+			}
+		]
+	}
+]}
+```
+> 绑定器无法感知元数据，所以如果你提供了这个提示，你仍然需要使用`ApplicationContext`将bean的名字转换成实际的Bean引用。
+
+##### Spring profile name
+`spring-profile-name`提供者自动完成在当前项目的配置中定义的Spring profie。
+
+下面的元数据片段对应于标准`spring.profiles.active`属性，该属性定义了要启用的Spring profile的名称：
+```json
+{"hints": [
+	{
+		"name": "spring.profiles.active",
+		"providers": [
+			{
+				"name": "spring-profile-name"
+			}
+		]
+	}
+]}
+```
 ### B.3 使用注解处理器生成你自己的元数据
+
 #### B.3.1 内部属性
 #### B.3.2 添加额外的元数据
 ## 附录 C. 自动配置类
@@ -1433,3 +1738,4 @@ server.servlet.path=/home
 #### E.5.1 Zip压缩
 ### E.6 替代单jar解决方案
 ## 附录 F. 依赖版本
+
