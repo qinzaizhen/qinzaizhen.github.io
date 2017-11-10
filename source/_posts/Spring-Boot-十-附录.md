@@ -1717,8 +1717,42 @@ public class FooProperties {
 ]}
 ```
 ### B.3 使用注解处理器生成你自己的元数据
+你可以通过使用`spring-boot-configuration-processor`jar，轻松地从带有`@ConfigurationProperties`的项目中生成自己的配置元数据文件。这个jar包括一个Java注解处理器，它在你的项目编译时调用。要使用这个处理器，只需将`spring-boot-configuration-processor`作为一个可选的依赖项，例如，你可以在Maven中添加:
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-configuration-processor</artifactId>
+	<optional>true</optional>
+</dependency>
+```
+在Gradle中你可以使用[propdeps-plugin](https://github.com/spring-gradle-plugins/propdeps-plugin)，并指定:
+```
+dependencies {
+	optional "org.springframework.boot:spring-boot-configuration-processor"
+}
+compileJava.dependsOn(processResources)
+```
+> 你需要向构建添加`compileJava.dependsOn(processResources)`，以确保在编译代码之前处理资源。没有这个指令，任何`additional-spring-configuration-metadata.json`文件都不会被处理。
+
+处理器将会选择带有`@ConfigurationProperties`的类和方法。配置类中用于字段的Javadoc将用于填充`description`属性。
+
+> 你应该只使用带有`@ConfigurationProperties`字段Javadoc的简单文本，因为它们在被添加到JSON之前不会被处理。
+
+属性是通过标准的getter和setter方法而发现的，这些设置对于集合类型有特殊的处理(即使只有一个getter存在，也会被检测到)。注解处理器还支持使用`@Data`、`@Getter`和`@Setter` lombok注解。
+
+> 如果你在项目中使用了AspectJ，则需要确保注解处理器只运行一次。有几种方法可以做到这一点:使用Maven时，你可以显式地配置`maven-apt-plugin`，并且只在这里添加注解处理器依赖。你还可以在`maven-compiler-plugin`配置AspectJ插件运行所有处理和禁用注解处理:
+>```xml
+><plugin>
+>	<groupId>org.apache.maven.plugins</groupId>
+>	<artifactId>maven-compiler-plugin</artifactId>
+>	<configuration>
+>		<proc>none</proc>
+>	</configuration>
+></plugin>
+>```
 
 #### B.3.1 内部属性
+
 #### B.3.2 添加额外的元数据
 ## 附录 C. 自动配置类
 ### C.1 来自“spring-boot-autoconfigure”模块
@@ -1738,4 +1772,5 @@ public class FooProperties {
 #### E.5.1 Zip压缩
 ### E.6 替代单jar解决方案
 ## 附录 F. 依赖版本
+
 
