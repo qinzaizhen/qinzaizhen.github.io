@@ -1752,18 +1752,147 @@ compileJava.dependsOn(processResources)
 >```
 
 #### B.3.1 内部属性
+注解处理器会自动将内部类视为嵌套的属性。例如下面的类:
+```java
+@ConfigurationProperties(prefix="server")
+public class ServerProperties {
+
+	private String name;
+
+	private Host host;
+
+	// ... getter and setters
+
+	private static class Host {
+
+		private String ip;
+
+		private int port;
+
+		// ... getter and setters
+
+	}
+
+}
+```
+上面的代码将为`server.name`、`server.host.ip`、`server.host.port`属性生成元数据信息。你可以使用`@NestedConfigurationProperty`注解字段表明这个常规(non-inner)类应该被视为嵌套类。
+
+> 这对集合和map没有影响，因为这些类型是自动识别的，并且为每个类型生成一个元数据属性。
 
 #### B.3.2 添加额外的元数据
+Spring Boot的配置文件处理非常灵活;而且通常情况下属性可能存在不绑定到`@ConfigurationProperties` bean的情况。你可能还需要调整现有key的某些属性。为了支持这种情况，并允许你提供自定义的“提示”，注解处理器将自动地将来自`META-INF/additional-spring-configuration-metadata.json`的项目合并到主元数据文件中。
+
+如果你引用了自动检测到的属性，则会在指定时重写说明，默认值和弃用信息。如果在当前模块中没有识别手动属性声明，则将其添加为新的属性。
+
+`additional-spring-configuration-metadata.json`文件的格式与常规的`spring-configuration-metadata.json`完全相同。额外的属性文件是可选的，如果你没有任何额外的属性，不要添加它。
 ## 附录 C. 自动配置类
+以下是Spring Boot提供的所有自动配置类的列表，包含文档和源代码的链接。请记住在应用程序中查看autoconfig报告，了解哪些功能可以打开。（使用`--debug`或`-Ddebug`启动应用程序，或者在Actuator应用程序中使用`autoconfig`端点）。
 ### C.1 来自“spring-boot-autoconfigure”模块
+以下自动配置类来自`spring-boot-autoconfigure`模块：
+
+配置类|链接
+--|--
+[`ActiveMQAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jms/activemq/ActiveMQAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/jms/activemq/ActiveMQAutoConfiguration.html)
+[`AopAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/aop/AopAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/aop/AopAutoConfiguration.html)
+[`ArtemisAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jms/artemis/ArtemisAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/jms/artemis/ArtemisAutoConfiguration.html)
+[`BatchAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/batch/BatchAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/batch/BatchAutoConfiguration.html)
+[`CacheAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/cache/CacheAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/cache/CacheAutoConfiguration.html)
+[`CassandraAutoConfiguration`](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/cassandra/CassandraAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/cassandra/CassandraAutoConfiguration.html)
+[CassandraDataAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/data/cassandra/CassandraDataAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/data/cassandra/CassandraDataAutoConfiguration.html)
+[CassandraReactiveDataAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/data/cassandra/CassandraReactiveDataAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/data/cassandra/CassandraReactiveDataAutoConfiguration.html)
+[CassandraReactiveRepositoriesAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/data/cassandra/CassandraReactiveRepositoriesAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/data/cassandra/CassandraReactiveRepositoriesAutoConfiguration.html)
+[CassandraRepositoriesAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/data/cassandra/CassandraRepositoriesAutoConfiguration.java)[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/data/cassandra/CassandraRepositoriesAutoConfiguration.html)
+[CloudAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/cloud/CloudAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/cloud/CloudAutoConfiguration.html)
+[CodecsAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/http/codec/CodecsAutoConfiguration.java)[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/http/codec/CodecsAutoConfiguration.html)
+[ConfigurationPropertiesAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/context/ConfigurationPropertiesAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/context/ConfigurationPropertiesAutoConfiguration.html)
+[CouchbaseAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/couchbase/CouchbaseAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/couchbase/CouchbaseAutoConfiguration.html)
+[CouchbaseDataAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/data/couchbase/CouchbaseDataAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/data/couchbase/CouchbaseDataAutoConfiguration.html)
+[CouchbaseRepositoriesAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/data/couchbase/CouchbaseRepositoriesAutoConfiguration.java)[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/data/couchbase/CouchbaseRepositoriesAutoConfiguration.html)
+[DataSourceAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration.html)
+[DataSourceTransactionManagerAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jdbc/DataSourceTransactionManagerAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/jdbc/DataSourceTransactionManagerAutoConfiguration.html)
+[DeviceDelegatingViewResolverAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/mobile/DeviceDelegatingViewResolverAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/mobile/DeviceDelegatingViewResolverAutoConfiguration.html)
+[DeviceResolverAutoConfiguration](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/mobile/DeviceResolverAutoConfiguration.java)|[javadoc](http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/api/org/springframework/boot/autoconfigure/mobile/DeviceResolverAutoConfiguration.html)
+
+[更多查看](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#auto-configuration-classes-from-autoconfigure-module)
 ### C.2 来自“spring-boot-actuator-autoconfigure”模块
+以下自动配置类来自`spring-boot-actuator-autoconfigure`模块：
 ## 附录 D. 测试自动配置注解
+以下是各种`@...Test`注解的表格，可用于测试应用程序以及默认导入的自动配置：
 ## 附录 E. 可执行的jar格式
+`Spring-Boot-loader`模块允许Spring Boot支持可执行的jar和war文件。如果你使用的是Maven或Gradle插件，会自动生成可执行jar，你通常不需要知道它们的工作细节。
+
+如果你需要从不同的构建系统创建可执行的JAR，或者你只是对底层技术感兴趣，本节将提供一些背景知识。
 ### E.1 内部jar
+Java不提供任何标准的方法来加载嵌套的jar文件（即jar文件本身包含在jar中）。 如果你想分发一个自包含的应用程序，可以从命令行运行而不需要解压，这可能会有问题。
+
+为了解决这个问题，许多开发者使用“shaded”jar。shaded jar简单地把所有的类从所有的jar中包装成一个“超级jar”。shaded jar的问题在于，很难在应用程序中看到实际使用的库。如果在多个jar中使用相同的文件名（但是具有不同的内容），则有可能是有问题的。 Spring Boot采用了不同的方法，可以直接嵌入jar。
 #### E.1.1 可执行的jar文件结构
+Spring Boot Loader兼容的jar文件应该按照以下方式构建：
+```
+example.jar
+ |
+ +-META-INF
+ |  +-MANIFEST.MF
+ +-org
+ |  +-springframework
+ |     +-boot
+ |        +-loader
+ |           +-<spring boot loader classes>
+ +-BOOT-INF
+    +-classes
+    |  +-mycompany
+    |     +-project
+    |        +-YourClasses.class
+    +-lib
+       +-dependency1.jar
+       +-dependency2.jar
+```
+应用程序类应放置在嵌套的`BOOT-INF/classes`目录中。依赖应该放在一个嵌套的`BOOT-INF/lib`目录中。
 #### E.1.2 可执行的war文件结构
+Spring Boot Loader兼容的war文件应该按以下方式构建：
+```
+example.war
+ |
+ +-META-INF
+ |  +-MANIFEST.MF
+ +-org
+ |  +-springframework
+ |     +-boot
+ |        +-loader
+ |           +-<spring boot loader classes>
+ +-WEB-INF
+    +-classes
+    |  +-com
+    |     +-mycompany
+    |        +-project
+    |           +-YourClasses.class
+    +-lib
+    |  +-dependency1.jar
+    |  +-dependency2.jar
+    +-lib-provided
+       +-servlet-api.jar
+       +-dependency3.jar
+```
+依赖应放置在嵌套的`WEB-INF/lib`目录中。运行时所需的任何嵌入式，但在部署到传统Web容器时不需要的依赖，则应放在`WEB-INF/lib-provided`目录。
 ### E.2 Spring Boot的“JarFile”类
+用于支持加载嵌套jar的核心类是`org.springframework.boot.loader.jar.JarFile`。 它允许你从标准的jar文件或嵌套的子jar数据中加载jar内容。第一次加载时，每个`JarEntry`的位置都会映射到外部jar的物理文件偏移量：
+```
+myapp.jar
++-------------------+-------------------------+
+| /BOOT-INF/classes | /BOOT-INF/lib/mylib.jar |
+|+-----------------+||+-----------+----------+|
+||     A.class      |||  B.class  |  C.class ||
+|+-----------------+||+-----------+----------+|
++-------------------+-------------------------+
+ ^                    ^           ^
+ 0063                 3452        3980
+ ```
+ 上面的例子显示了如何在`myapp.jar`的`0063`位置的`/BOOT-INF/classes`中找到`A.class`。嵌套jar中的`B.class`实际上可以在`myapp.jar`中`3452`位置找到，而`C.class`位于`3980`。
+ 
+ 有了这些信息，我们可以通过简单地寻找外部jar的适当部分来加载特定的嵌套条目。 我们不需要解压，也不需要把所有的录入数据读入内存。
+ 
 #### E.2.1 与标准Java“JarFile”兼容
+Spring Boot Loader努力与现有的代码和库保持兼容。`org.springframework.boot.loader.jar.JarFile`继承自`java.util.jar.JarFile`，应该首先考虑。`getURL()`方法将返回一个`URL`，该URL打开一个与`java.net.JarURLConnection`兼容的连接，并可以与Java的`URLClassLoader`一起使用。
 ### E.3 启动可执行文件
 #### E.3.1 启动程序清单
 #### E.3.2 解压的分档
@@ -1772,5 +1901,4 @@ compileJava.dependsOn(processResources)
 #### E.5.1 Zip压缩
 ### E.6 替代单jar解决方案
 ## 附录 F. 依赖版本
-
 
