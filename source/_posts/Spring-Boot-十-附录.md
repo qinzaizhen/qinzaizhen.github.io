@@ -1894,11 +1894,76 @@ myapp.jar
 #### E.2.1 与标准Java“JarFile”兼容
 Spring Boot Loader努力与现有的代码和库保持兼容。`org.springframework.boot.loader.jar.JarFile`继承自`java.util.jar.JarFile`，应该首先考虑。`getURL()`方法将返回一个`URL`，该URL打开一个与`java.net.JarURLConnection`兼容的连接，并可以与Java的`URLClassLoader`一起使用。
 ### E.3 启动可执行文件
-#### E.3.1 启动程序清单
-#### E.3.2 解压的分档
-### E.4 PropertiesLauncher特性
-### E.5 可执行的jar限制
-#### E.5.1 Zip压缩
-### E.6 替代单jar解决方案
-## 附录 F. 依赖版本
+`org.springframework.boot.loader.Launcher`类是一个特殊的引导类，它被用作可执行jar的主入口点。它是jar文件中实际的`Main-Class`，它用于设置一个合适的`URLClassLoader`并最终调用你的`main()`方法。
 
+有3个子类启动器(`JarLauncher`、`WarLauncher`和`PropertiesLauncher`)。它们的目的是加载来自内部的jar文件中的资源(`.class`文件等)或目录中的war文件(类路径上)。在`JarLauncher`和`WarLauncher`的情况下，内部的路径是固定的。`JarLauncher`在`BOOT-INF/lib/`中查找，而`WarLauncher`在`WEB-INF/lib`和`/和WEB-INF/lib-provided/`中查找，所以如果需要更多的话，只需在这些位置添加额外的jar文件。默认情况下，`PropertiesLauncher`在你的应用程序包`BOOT-INF/lib/`中查找文件，但是你可以通过设置一个环境变量`LOADER_PATH`或在`loader.properties`中设置`loader.path`属性来添加额外的位置(逗号分隔的目录，档案或档案中的目录的列表)。
+#### E.3.1 启动程序清单
+你需要指定一个适当的`Launcher`作为`META-INF/MANIFEST.MF`中的`Main-Class`属性。 应该在`Start-Class`属性中指定要启动的实际类（即，你编写的包含`main`方法的类）。
+
+例如，以下是可执行jar文件的一个典型`MANIFEST.MF`：
+```
+Main-Class: org.springframework.boot.loader.JarLauncher
+Start-Class: com.mycompany.project.MyApplication
+```
+对于war文件，这将是：
+```
+Main-Class: org.springframework.boot.loader.WarLauncher
+Start-Class: com.mycompany.project.MyApplication
+```
+
+> 你不需要在清单文件中指定`Class-Path`项，类路径将从嵌套的jar文件中推导出来。
+
+#### E.3.2 解压包
+某些PaaS实现可能会选择在运行之前解压包文件。 例如，Cloud Foundry就是以这种方式运行的。你可以通过简单地启动适当的启动程序运行一个解压的包：
+```
+$ unzip -q myapp.jar
+$ java org.springframework.boot.loader.JarLauncher
+```
+
+### E.4 PropertiesLauncher特性
+`PropertiesLauncher`具有一些可以使用外部属性（系统属性，环境变量，清单条目或`loader.properties`）启用的特殊功能。
+
+Key|目的
+--|--
+`loader.path`|逗号分隔的类路径，例如`lib,${HOME}/app/lib`。 前面的项目优先，就像`javac`命令行上的常规`-classpath`参数一样。
+`loader.home`|用于解析`loader.path`中的相对路径。例如`loader.path=lib`然后`${loader.home}/lib`是一个类路径位置（以及该目录中的所有jar文件）。还用于查找`loader.properties`文件。例如`/opt/app`（默认为`${user.dir}`）。
+`loader.args`|main方法的默认参数（空格分隔）
+`loader.main`|要启动的主类的名称`com.app.Application`
+`loader.config.name`|属性文件的名称，例如 `launcher`（默认为`loader`）。
+`loader.config.location`|属性文件的路径，例如`classpath:loader.properties`（默认为`loader.properties`）。
+`loader.system`|布尔标志，指示应将所有属性添加到系统属性（默认为`false`）
+
+当指定为环境变量或清单项时，应使用以下名称：
+
+Key|Manifest 项|环境变量
+--|--|--
+`loader.path`|`Loader-Path`|`LOADER_PATH`
+`loader.home`|`Loader-Home`|`LOADER_HOME`
+`loader.args`|`Loader-Args`|`LOADER_ARGS`
+`loader.main`|`Start-Class`|`LOADER_MAIN`
+`loader.config.location`|`Loader-Config-Location`|`LOADER_CONFIG_LOCATION`
+`loader.system`|`Loader-System`|`LOADER_SYSTEM`
+
+> 构建fat jar时，构建插件会自动将`Main-Class`属性移动到`Start-Class`。如果你正在使用它，请使用`Main-Class`属性指定要启动的类的名称，并省略`Start-Class`.
+
+- 首先在`loader.home`中搜索`loader.properties`，然后在类路径的根目录中，然后在`classpath:/BOOT-INF/classes`中搜索。会使用找到的第一个目录中的文件。
+- `loader.home` 只要`loader.config.location`没有指定, `loader.home` 只是一个额外的属性文件的目录位置（覆盖默认值）。
+- `loader.path`可以包含目录（递归扫描jar和zip文件），归档路径，扫描jar文件（例如`dependencies.jar!/lib`）的归档文件中的目录，或者通配符（用于默认JVM行为）。归档路径可以相对于`loader.home`或文件系统中具有`jar:file:`前缀的任何位置。
+- `loader.path`（如果为空）默认为`BOOT-INF/lib`（表示本地目录或从存档运行的嵌套目录）。正因为如此，在没有提供额外的配置时，`PropertiesLauncher`与`JarLauncher`的行为相同。
+- `loader.path`不能用于配置`loader.properties`的位置（用于搜索后者的类路径是启动`PropertiesLauncher`时的JVM类路径）。
+- 占位符替换是在使用前从系统和环境变量加上属性文件本身对所有值进行的。
+- 属性的搜索顺序（在多个地方查找是有意义的）是环境变量，系统属性，`loader.properties`，展开的归档清单，归档清单。
+
+### E.5 可执行的jar限制
+在使用Spring Boot Loader打包的应用程序时，需要考虑许多限制。
+#### E.5.1 Zip压缩
+必须使用`ZipEntry.STORED`方法保存嵌套jar的`ZipEntry`。这是必需的，以便我们可以直接查找嵌套jar中的单个内容。嵌套的jar文件本身的内容仍然可以被压缩，外层jar中的任何其他条目也可以被压缩。
+#### E.5.2 System ClassLoader
+启动的应用程序应该在加载类时使用`Thread.getContextClassLoader()`（大多数库和框架默认会这样做）。尝试通过`ClassLoader.getSystemClassLoader()`加载嵌套的jar类将会失败。 请注意，`java.util.Logging`总是使用系统类加载器，因此你应该考虑使用不同的日志记录实现。
+### E.6 单jar替代方案
+如果上面的限制意味着你不能使用Spring Boot Loader，可以考虑下面的选择：
+- [Maven Shade Plugin](http://maven.apache.org/plugins/maven-shade-plugin/)
+- [JarClassLoader](http://www.jdotsoft.com/JarClassLoader.php)
+- [OneJar](http://one-jar.sourceforge.net/)
+
+## 附录 F. 依赖版本
