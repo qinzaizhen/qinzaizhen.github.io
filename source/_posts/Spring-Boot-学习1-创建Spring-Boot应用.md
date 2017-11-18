@@ -139,7 +139,35 @@ mvn dependency:tree
 [INFO]       +- org.springframework:spring-context:jar:5.0.2.BUILD-SNAPSHOT:compile
 [INFO]       \- org.springframework:spring-expression:jar:5.0.2.BUILD-SNAPSHOT:compile
 ```
-主要是spring web, tomcat等web相关的jar。可以看出来这种方式会相比我们之前的开发方式方便快捷许多。spring boot 提供了一系统的starter，当然如果这些还不能满足你的话，完全可以开发自己的starter，只需要遵循spring boot提供的命名规范就可以了。后面会讲到如何开发starter。
+主要是spring web, tomcat等web相关的jar。可以看出来这种方式会相比我们之前的开发方式方便快捷许多。spring boot 提供了一系列的starter，当然如果这些还不能满足你的话，完全可以开发自己的starter，只需要遵循spring boot提供的命名规范就可以了。后面会讲到如何开发starter。
+
+### 编写代码
+在src/main/java目录中新建一个简单的类
+```
+import org.springframework.boot.*;
+import org.springframework.boot.autoconfigure.*;
+import org.springframework.stereotype.*;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@EnableAutoConfiguration
+public class Example {
+
+	@RequestMapping("/")
+	String home() {
+		return "Hello World!";
+	}
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(Example.class, args);
+	}
+
+}
+```
+这个类中指定了我们的spring boot 的入口`main`函数，这个类就是下步中的main-class。
+类上有`@EnableAutoConfiguration`注解，这个注解会告诉Spring Boot 自动该应用，具体做了哪些配置，以后再说。比如说我们添加了web的starter，那么Spring Boot 会认为我们在开发一个web应用，那么会创建一个web applicationContext。自动配置和starter没有完全的绑定有关系，如果把相关的依赖都单独加进来，而不使用starter, Spring Boot 也会尽量做好自动配置工作。另外两个注解`@RestController`和`@RequestMapping("/")`是Spring MVC的。
+
+main方法里面调用`SpringApplication.run()`方法，将我们的主配置类传递给`SpringApplication`,还可以通过args参数将控制台参数传递进去。
 
 ### 运行我们的程序
 Spring Boot 要求编绎环境为1.8以上，可以在maven pom中设置。
