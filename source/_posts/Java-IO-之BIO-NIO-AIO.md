@@ -344,38 +344,224 @@ BIO通信模型
 [BIO通信模型](http://ooll8xqpq.bkt.clouddn.com/bio%E9%80%9A%E4%BF%A1%E6%A8%A1%E5%9E%8B.png)
 该模型最大的问题就是缺乏弹性伸缩能力，当客户端并发访问量增加后，服务端的线程个数和客户端连接数呈1：1的正比关系，Java中的线程也是比较宝贵的系统资源，线程数量快速膨胀后，系统的性能将急剧下降。
 
-## 伪异步I/O编程
-### 伪异步I/O编程模型图
+## 伪异步IO编程
+我们可以使用线程池来管理服务端这些线程，实现1个或多个线程处理N个客户端的模型（但是底层还是使用的同步阻塞IO），通常被称为“伪异步IO模型”。
+
+如果使用`java.util.concurrent.Executors#newCachedThreadPool()`线程池（不限制线程数量），其实除了能自动帮我们管理线程（复用），看起来也就像是`1：1`的客户端线程模型，而使用`java.util.concurrent.Executors#newFixedThreadPool(int)`可以有效控制线程的最大数量，保证了系统有限资源的控制，实现了`N:M`的伪异步IO模型。但是当发生大量并发请求时，超过最大数量的线程就只能等待，直到线程池中有空闲的线程可以使用。
+### 伪异步IO编程模型图
 ### 伪异步IO编程实例
 # NIO编程
-## 非常形象的实例
+Java NIO（New IO）是一个可以替代标准Java IO API（从Java 1.4开始）的新的API。
+主要由以下几个核心部分组成：
+- Channel
+- Buffer
+- Selector
+
 ## 工作原理
 ## Java NIO和IO的主要区别
+
+IO | NIO
+---|---
+面向流| 面向Buffer
+阻塞| 非阻塞
+- | Selector
+
 ### 面向流与面向缓冲
+NIO和IO之间第一个最大的区别是，IO是面向流的，NIO是面向缓冲区的
+
+IO面向流意味着每次从流中读取一个或多个字节，直到读取所有字节，它们没有被缓存在任何地方。此外，它不能前后移动流中的数据。如果需要前后移动从流中读取的数据，需要先将它缓存到一个缓冲区。NIO的读取方式略有不同。数据读取到一个它稍后处理的缓冲区，需要时可在缓冲区中前后移动。这就增加了处理过程中的灵活性。但是，还需要检查是否该缓冲区中包含所有需要处理的数据，而且需要确保当更多的数据读入缓冲区时，不要覆盖缓冲区里沿未处理的数据。
+
 ### 阻塞与非阻塞IO
-### NIO和IO如何影响应用程序的设计
+IO的各种流都是阻塞的。这意味着，当一个线程调用`read()`或`write()`时，该线程被阻塞，直到有一些数据被读取，或数据完全写入。该线程在此期间不能再干任何事情。NIO的非阻塞模式，使一个线程从某通道发送请求读取数据，但是它公能得到目前可用的数据，如果目前没有数据可用时，就什么都不会获取，而不是保持线程阻塞，所以在可以读取数据之前，该线程可以继续做其他的事情。非阻塞写也是如此，一个线程请求写入一些数据到某通道，但不需要等待它完全写入，这个线程同时可以去做其他的事情。
+
 ## 通道 Channel
+Channel 是对数据的源头或数据目标点流径途径的抽象，在这个意义上和`Inputstream`和`OutputStream`类似。
 ### Java NIO的通道与流区别
+- 既可以从通道中读取数据，又可以写数据到通道。但流的读写通常是单向的。
+- 通道可以地读写。
+- 通道中的数据总是要先读到一个`Buffer`，或者总是要从一个`Buffer`中写入。
+
+**通道必须结合Buffer使用，不能直接向通道中读/写数据**
+
 ### Channel主要分类
-### Channel的实现
+广义来说通道可以被分为两类：File IO和Stream IO，也就是文件通道和套接字通道。具体细分为：
+- `FileChannel` 从文件读写数据
+- `SocketChannel`通过TCP读写网络数据
+- `ServerSocketChannel`可以监听新进来的TCP连接，并对每个连接创建对应的`SocketChannel`
+- `DatagramChannel` 通过UDP读写网络数据
+
 #### FileChannel
+从File中读取数据
 ##### 打开FileChannel
+在使用`FileChannel`之前，必须先打开。但是不无法直接打开一个`FileChannel`, 需要通过使用`InputStream`、`OutputStream`或`RandomAccessFile`来获取一个`FileChannel`实例。下面通过`RandomAccessFile`打开`FileChannel`：
+```java
+RandomAccessFile file = new RandomAccessFile("c:/data.txt","rw");
+FileChannel channel = file.getChannel();
+```
 ##### 从FileChannel读取数据
+有多个read()可以从FileChannel中读取数据。如：
+```java
+ByteBuffer buf = ByteBuffer.allocate(48);
+int bytesRead = channel.read(buf);
+```
+首先，分配一个Buffer，从FileChannel中读取到的数据将被存放在Buffer中。
+
+然后调用`FileChannel.read()`方法，该方法将数据从`FileChannel`读取到`Buffer`中。`read()`方法返回的`int`值表示了有多少字节被读到了`Bubber`中。如果返回`-1`，表示到了文件`末尾`。
+
 ##### 向FileChannel写数据
+使用FileChannel.write()方法向FileChannel写数据，该方法的参数是一个Buffer。如：
+```java
+String data = "写入数据" + System.currentTimeMillis();
+ByteBuffer buf = ByteBuffer.allocate(48);
+buf.clear();
+buf.put(data.getBytes());
+buf.flip();
+while(buf.hasRemaining()){
+    channel.write(buf);
+}
+```
+注意FileChannel.write()是在while循环中调用的，因为无法保证write()方法一次能向FileChannel写入所有字节，因此需要重复调用write()方法，直到Buffer中已经没有尚未写入通道的数据。
+
 ##### 关闭FileChannel
+用完FileChannel后必须将其关闭：
+```java
+channel.close();
+```
+
 ##### FileChannel的position方法
+有时需要在`FileChannel`的某个特定位置进行数据的读写操作，可以通过调用`position()`方法获取`FileChannel`的当前位置。
+也可以通过调用`position(long pos)`方法设置`FileChannel`的当前位置。
+
+如：
+```
+long pos = channel.position();
+channel.position(pos + 10);
+```
+如果将位置设置在文件结束符之后，然后试图从文件通道中读取数据，读方法将返回 `-1`  -- 文件结束标志。
+
+如果向通道中写数据，文件将撑大到当前位置并写入数据。这可能导致“文件空洞”。
 ##### FileChannel的size方法
+`FileChannel`实例的`size()`方法将返回该实例所关联文件的大小。如：
+```java
+long fileSize = channel.size();
+```
+
 ##### FileChannel的truncate方法
+可以使用`FileChannel.truncate(size)`方法截取一个文件。截取文件时，如果文件当前的长度大于给定长度，那么指定长度后的文件内容会被删除，如果给定的大小大于等于当前文件大小，则不会修改该文件。在任何一种情况下，如果这个通道的`position`大于给定的大小，然后它被设置为这个大小。如：
+```
+channel.truncate(1024); 
+```
+这个例子截取文件的前1024个字节。
 ##### FileChannel的force方法
+`FileChannel.force()`方法将通道里尚未写入磁盘的数据强制写到磁盘上。出于性能方面的考虑，操作系统会将数据缓存在内存中，所以无法保证写入到`FileChannel`里的数据一定会即时写到磁盘上。要保证这一点，需要调用`force()`方法。
+
+`force()`方法有一个boolean类型的参数，指明是否同时将文件元数据（权限信息等）写到磁盘上。
+
+下面的例子同时将文件数据和元数据强制写到磁盘上：
+```
+channel.force(true);
+```
+
 ##### transferFrom()
+`FileChannel`的`transferFrom()`方法可以将数据从源通道传输到`FileChannel`中。下面是一个简单的例子：
+
+```
+RandomAccessFile accessFile = new RandomAccessFile("E:\\qinzaizhen\\javasedemo\\src\\io\\nio\\nio.txt","rw");
+FileChannel channel = accessFile.getChannel();
+RandomAccessFile toFile = new RandomAccessFile("E:\\qinzaizhen\\javasedemo\\src\\io\\nio\\niotofile.txt","rw");
+FileChannel toChannel = toFile.getChannel();
+toChannel.transferFrom(channel,0,10);
+channel.close();
+accessFile.close();
+toChannel.close();
+//源文件中有中文，写入到新文件中后乱码
+```
+`transferFrom` 方法的输入参数 `position` 表示从 `position` 处开始向目标文件写入数据，count 表示最多传输的字节数。如果源通道的剩余空间小于 count 个字节，则所传输的字节数要小于请求的字节数。如果给定的`position`大于文件的大小，则不会传输数据。此方法不会修改`position`。如果源通道有`position`，那么将会从源通道此位置开始读取，并且会根据读取的字节增加`position`。
+
+此外要注意，在 `SoketChannel`的实现中，`SocketChannel`只会传输此刻准备好的数据（可能不足`count`字节）。因此，`SocketChannel` 可能不会将请求的所有数据(`count`个字节)全部传输到 `FileChannel`中。
+
 ##### transferTo()
-#### Channel简单实例
+`transferTo()`方法将数据从`FileChannel`传输到其他的`channel`中。下面是一个简单的例子：
+
+是不是发现这个例子和前面那个例子特别相似？除了调用方法的FileChannel对象不一样外，其他的都一样。
+```java
+RandomAccessFile accessFile = new RandomAccessFile("E:\\qinzaizhen\\javasedemo\\src\\io\\nio\\nio.txt","rw");
+FileChannel channel = accessFile.getChannel();
+RandomAccessFile toFile = new RandomAccessFile("E:\\qinzaizhen\\javasedemo\\src\\io\\nio\\niotofile.txt","rw");
+FileChannel toChannel = toFile.getChannel();
+System.out.println(toChannel.position());
+//        toChannel.transferFrom(channel,1,10);
+
+channel.transferTo(2,10, toChannel);
+System.out.println(toChannel.position());
+System.out.println(channel.position());
+
+
+channel.close();
+accessFile.close();
+toChannel.close();
+//此方式不乱码
+```
+上面所说的关于`SocketChannel`的问题在`transferTo()`方法中同样存在。`SocketChannel`会一直传输数据直到目标`buffer`被填满。
+
 ## 缓冲区 Buffer
+缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来访问这块内存。
 ### Buffer的基本用法
+使用Buffer读写数据一般遵循以下四个步骤：
+- 写入数据到Buffer 
+- 从Buffer中读取数据
+- 调用clear()方法或者compact()方法
+
+当向buffer写入数据时，buffer会记录下写了多少数据。一旦要读取数据，需要通过flip()方法将Buffer从写模式切换到读模式。在读模式下，可以读取之前写入到buffer的所有数据。
+
+一旦读完了所有的数据，就需要清空缓冲区，让它可以再次被写入。`clear()`方法会清空整个缓冲区，`ByteBuffer`的`compact()`方法只会清除已经读过的数据。任何未读的数据都被移到缓冲区的起始处，新写入的数据将放到缓冲区未读数据的后面。
+
 ### Buffer的三个属性
+为了理解Buffer的工作原理，需要熟悉它的三个属性：
+- `capacity`：作为一个内存块，Buffer有一个固定的大小值。你只能写`capacity`个`byte`、`long`、`char`等类型数据。
+- `position`：当你写数据到`Buffer`中时，`position`表示当前的位置。初始的`position`值为`0`，当一个`byte`、`long`等数据写到Buffer后，`position`会向前移动到下一个可插入数据的`Buffer`单元。`position`最大可为`capacity - 1`。当`Buffer`切换到读模式时，`position`会被重置为`0`，当从`Buffer`的`position`处读取数据时，`position`向前移动到下一个可读的位置。
+- `limit`：在写模式下，`Buffer`的`limit`表示你最多能往`Buffer`里写多少数据。`写模式`下，`limit` 等于`Buffer`的`capacity`。当切换到`读模式`时，`limit` 表示你最多能读到多少数据。因此，当切换`Buffer`到读模式时，`limit`会被设置成写模式下的`position`值。
+
+![模型示意图](http://ooll8xqpq.bkt.clouddn.com/buffer%E5%B1%9E%E6%80%A7.png)
+
 ### Buffer的类型
+NIO 有以下Buffer 类型：
+
+- ByteBuffer
+- MappedByteBuffer
+- CharBuffer
+- DoubleBuffer
+- FloatBuffer
+- IntBuffer
+- LongBuffer
+- ShortBuffer
+
 ### Buffer的分配
+要想获取一个Buffer对象，首先要进行分配。每一个Buffer类都有一个`allocate`方法。下面是一个分配48字节`capacity`的`ByteBuffer`的例子。
+```java
+ByteBuffer buf = ByteBuffer.allocate(48);
+```
+下面是分配一个可存储1024个字符的CharBuffer：
+```java
+CharBuffer buf = CharBuffer.allocate(1024);
+```
+
 ### Buffer写数据
+写数据到`Buffer`有两种方式：
+- 从`Channel`写到`Buffer`
+- 通过`Buffer`的`put()`方法写到`Buffer`里
+
+从`Channel`写到`Buffer`，如：
+```java
+int bytesRead = channel.read(buf);
+```
+
+通过`put`方法写到Buffer的例子：
+```java
+buf.put(128);
+```
+`put` 方法有很多个，允许你以不同的方式把数据写入到`Buffer`中。例如，写到一个指定的位置，或者把一个字节数据写入到`Buffer`。
+
 #### flip()方法
 ### Buffer中读取数据
 #### rewind()方法
