@@ -563,15 +563,86 @@ buf.put(128);
 `put` 方法有很多个，允许你以不同的方式把数据写入到`Buffer`中。例如，写到一个指定的位置，或者把一个字节数据写入到`Buffer`。
 
 #### flip()方法
+`flip()`方法将`Buffer`从写模式切换到读模式。调用`flip()`方法会将`position`设为`0`，并将`limit`设置成之前`position`的值。
+
+换句话说，`position`现在用于标记读的位置，`limit` 表示之前写进了多少个`byte`、`char`等  --- 现在能读多少个`byte` 、`char`等。
 ### Buffer中读取数据
+从`Buffer`中读取数据有两种方式：
+- 从`Buffer`读取数据到`Channel`
+- 使用`get()`方法从`Buffer`中读取数据
+
+从Buffer读取数据到Channel的例子：
+```java
+int bytesWritten = channel.write(buf);
+```
+使用get()方法从Buffer中读取数据的例子：
+```java
+byte b = buf.get();
+```
+`get`方法有很多版本，允许你以不同的方式从`Buffer`中读取数据。例如，从指定`position`读取，或者从`Buffer`中读取数据到字节数组。
 #### rewind()方法
+Buffer.rewind()将position设回0，所以你可以重读Buffer中的所有数据。limit 保持不变，仍然表示能从Buffer中读取多少个元素（byte、char等）
 #### clear()与compact()方法
+一旦读完`Buffer`中的数据，需要让`Buffer`准备好再次被写入。可以通过`clear()`或`compact()`方法来完成。
+
+如果调用的是`clear()`方法，`position`将被设为`0`，`limit`被设置成`capacity`的值。换句话说，`Buffer`被清空了。
+
+如果`Buffer`中有一些未读的数据，调用`clear()`方法，数据将“被遗忘”，意味着不再有任何标记会告诉你哪些数据被读过，哪些还没有。
+
+如果`Buffer`中仍有未读的数据，且后续还需要这些数据，但是此时想要先写些数据，那么使用`compact()`方法。`compact()`方法将所有未读的数据拷贝到`Buffer`起始处，然后将`position`设置为最后一个未读元素的下一个位置。`limit`属性依然像`clear()`方法一样，设置成`capacity`。现在`Buffer`准备好写数据了，但不会覆盖未读的数据。
+
 #### mark()与reset()方法
+通过调用`Buffer.mark()`方法，可以标记`Buffer`中的一个特定`position`。之后可以通过调用`Buffer.reset()`方法恢复到这个`position`。例如：
+```java
+buffer.mark();  
+//回退
+buffer.reset();  
+```
 #### equals()
+当满足下列条件时，表示两个`Buffer`相等：
+- 有相同的类型（`byte`、`char`、`int`等）
+- `Buffer`中剩余的`byte`、`char`等的个数相等
+- `Buffer`中所有剩余的`byte`、`char`等都相同
+
+equals只是比较Buffer剩余的部分中的元素。
 #### compareTo()方法
+`compareTo()方法比较两个Buffer的剩余元素（byte、char等），如果满足下列条件，则认为一个Buffer“小于”另一个Buffer：
+- 第一个不相等的元素小于另外一个BUffer中对应的元素
+- 所有元素都相等，但第一个Buffer比另一个先耗尽（第一个Buffer中的元素个数比另一个少）
+
 ## 选择器（ Selector）
+Java NIO 引入了选择器的概念，选择器用于监听多个通道的事件（比如：连接打开，数据到达）。`Selector`提供选择已经就绪的任务的能力：`Selector`会不断旬注册在其上的`Channel`，如果某个`Channel`上面发读或写事件，这个`Channel`就处于就绪状态，会被`Selector`轮询出来，然后通过`SelectionKey`可以获取就结果`Channel`的集合，进行后续的IO操作。
+
+一个`Selector`可以同时轮询多个`Channel`，因为JDK使用了`epoll()`代替传统的`select` 实现，所有没有最大连接句柄`1024/2048`的限制。所以只需要一个线程负责`Selector`的轮询，就可以接入成千上万的客户端。
+
+要使用Selector，得向Selector注册Channel，然后调用它的select()方法。这个方法会一直阻塞到某个注册的通道有事件就绪。一旦这个方法返回，线程就可以处理这些事件，比如新连接进来，数据接收等。
+
 ### Selector的创建
+通过调用Selector.open()方法创建一个Selector,例如：
+```java
+Selector selector = Selector.open();
+```
+
 ### Selector注册通道
+为了将`Channerl`和`Selector`配合使用，必须将Channel注册到selector上，通过SelectableChannel.register()方法实现，如下：
+```java
+channel.configureBlocking(false);
+SelectionKey key = channel.register(selector, Selectionkey.OP_READ);
+```
+和Selector一起使用时，Channel必须处于非阻塞模式下。这意味着不能将FileChannel与Selector一起使用，因为FileChannel不能切换到非阻塞模式，而套接字通道都可以。
+
+注意register()方法的第二个参数，这是一个“interest集合”,意思是在通过Selector监听Channel时对什么事件感兴趣。可以监听四种不同类型的事件：
+- Connnect
+- Accept
+- Read
+- Write
+
+通道触发了一个事件意思是该事件已经就绪。所以，某个channel成功连接到另一个服务器称为“连接就绪”。一个server socket channel准备好接收就进入的连接称为“接收就绪”。一个有数据可读的通道可以说是“读就绪”。等待写数据的通道可以说是“写就绪”。
+- SelectionKey.OP_CONNECT
+- SelectionKey.OP_ACCEPT
+- SelectionKey.OP_READ
+- SelectionKey.OP_WRITE
+
 ### SelectionKey
 ### interest集合
 ### ready集合
