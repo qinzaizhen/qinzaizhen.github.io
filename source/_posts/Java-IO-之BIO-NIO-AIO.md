@@ -643,12 +643,77 @@ SelectionKey key = channel.register(selector, Selectionkey.OP_READ);
 - SelectionKey.OP_READ
 - SelectionKey.OP_WRITE
 
+如果你对不止一种事件感兴趣，那么可以用“位或”操作符将常量连接起来，例如：
+```java
+int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
+```
+
 ### SelectionKey
-### interest集合
-### ready集合
-### 附加对象
+当向`Selector`注册`Channel`时，`register()`方法会返回一个`SelectionKey`对象，这个对象包含了一些你感兴趣的属性：
+- interest集合
+- read集合
+- Channel
+- Selector
+- 附加的对象（可选）
+
+#### interest集合
+`interest集合`是你所选择的感兴趣的事件集合。可以通过`SelectionKey`读写`interest集合`，例如：
+```java
+Selector selector = Selector.open();
+SocketChannel channel = SocketChannel.open();
+SelectionKey key = channel.register(selector, SelectionKey.OP_CONNECT);
+int interestOps = key.interestOps();
+boolean inAccept = (interestOps & SelectionKey.OP_ACCEPT) == SelectionKey.OP_ACCEPT;
+boolean inConnect = (interestOps & SelectionKey.OP_CONNECT) == SelectionKey.OP_CONNECT;
+boolean inRead = (interestOps & SelectionKey.OP_READ) == SelectionKey.OP_READ;
+boolean inWrite= (interestOps & SelectionKey.OP_WRITE) == SelectionKey.OP_WRITE;
+```
+
+可以看到，用“位与”操作`interest集合`和给定的`SelectionKey`常量比较，可以确定某个确定的事件是否在`interest集合`中。
+#### ready集合
+ready集合是通道已经准备就绪的操作的集合。在一次选择之后，你会首先访问这个read集合。
+```java
+int readySet = selectionKey.readyOps();
+```
+可以用检测interest集合的方式来检测channel中什么事件或操作已经就绪。也可以使用以下四个方法，它们都会返回一个布尔类型：
+```java
+key.isAcceptable();
+key.isConnectable();
+key.isReadable();
+key.isWritable();
+```
+#### 附加对象
+可以将一个对象或者更多信息附着到SelectionKey上，这样就能方便的识别某个给定的通道。例如，可以与通道一起使用的Buffer，或是包含聚焦数据的某个对象。使用方法如下：
+```java
+key.attach(new HashMap<>());
+Object obj = key.attachment();
+```
+还可以在用register()方法向Selector注册Channel的时候附加对象。如：
+```java
+SelectionKey key = channel.register(selector, SelectionKey.OP_READ, obj);
+```
 ### 通过Selector选择通道
+一旦向Selector注册了一个或多个通道，就可以调用几个重载的select()方法。这些方法返回你所感兴趣的事件（如连接、接受、读或写）已经准备就绪的那些通道。换句话说，如果你对“读就绪”的通道感兴趣，select()方法会返回读事件已经就绪的那些通道。
+
+下面是`select()`方法：
+- int select()
+- int select(long timeout)
+- int selectNow()
+
+`select()`阻塞到至少有一个通道在你注册的事件上就绪了。
+
+`select(long timeout)` 和`select()` 一样，除了最长会阻塞timeout毫秒（参数）。
+
+`selectNow()` 不会阻塞，不管什么通道就绪就立刻返回（此方法执行非阻塞的选择操作。如果自从前一次选择操作后，没有通道变成可选择的，则此方法直接返回零）。
+
+`select()`方法返回的`int`值表示有多少个通道已经就绪，也就是自上次调用`select()`方法有多少通道变成就绪状态。如果调用`select()`方法，因为有一个通道变成就绪状态，返回了`1`，若再次调用`select()`方法，如果另外一个通道就绪了，它会再次返回`1`。如果对第一个就绪的`channel`没有做任何操作，现在就有两个就绪的通道，但在每次`select()`方法调用之间，只有一个通道就绪了。
+
 ### selectedKeys()
+一旦调用了`select()`方法，并且返回值表明有一个或更多个通道就绪了，然后可以通过调用`selector`的`selectedKeys()`方法，访问“已选择key集合（selected key set）”中的就绪通道。如下所示：
+```java
+Set selectedKeys = selector.selectedKeys();
+```
+
 ### wakeUp()
 ### close()
 ## 分散（Scatter）/聚集（Gather）
