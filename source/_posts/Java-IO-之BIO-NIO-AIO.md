@@ -713,21 +713,273 @@ SelectionKey key = channel.register(selector, SelectionKey.OP_READ, obj);
 ```java
 Set selectedKeys = selector.selectedKeys();
 ```
+当向`Selector`注册`Channel`时，`Channel.register()`方法会返回一个`SelectionKey`对象，这个对象代表了注册到该`Selector`的通道。可以通过`Selector`的`keys()`方法访问这些对象。
+
+可以遍历这个已选择的Key 集合来访问就绪的通道。如下：
+```java
+Set selectedKeys = selector.selectedKeys();
+Iterator keyIterator = selectedKeys.iterator();
+while(keyIterator.hasNext()) {
+    SelectionKey key = keyIterator.next();
+    if(key.isAcceptable()) {
+        // a connection was accepted by a ServerSocketChannel.
+    } else if (key.isConnectable()) {
+        // a connection was established with a remote server.
+    } else if (key.isReadable()) {
+        // a channel is ready for reading
+    } else if (key.isWritable()) {
+        // a channel is ready for writing
+    }
+    keyIterator.remove();
+}
+```
+这个循环遍历已选择Key 集合的每个key，并检测各个键所对应的通道的就绪事件。
+
+注意每次迭代末尾的 `keyIterator.remove()`调用。`Selector`不会自己从已选择Key集合中移除 `SelectionKey`实例。必须在处理完通道时自己移除。下次该通道变成就绪时，`Selector`会再次将其放入已选择键集中。
+
+`SelectionKey.channel()` 方法返回的通道需要转型成你要处理的类型，如 `ServerSocketChannel` 或 `SocketChannel` 等。
 
 ### wakeUp()
+某个线程调用select()方法后阻塞了，即使没有通道已经就绪，也有办法让其从select()方法返回。只要让他它线程在第一个线程调用select()方法的那个对象上调用Selector.wakeup()方法即可，阻塞在select()方法上的线程会立即返回。
 ### close()
+用完 `Selector` 后调用其 `close()` 方法会关闭该`Selector`，且使注册到该`Selector`上的所有`SelectionKey`实例无效。通道本身并不会关闭。
 ## 分散（Scatter）/聚集（Gather）
+分散（scatter）：从Channel中读取是指在读操作时将读取的数据写入多个buffer中。因此，Channel将从Channel中读取的数据“分散（scatter）”到多个Buffer中。
+如：
+```java
+ByteBuffer header = ByteBuffer.allocate(128);  
+ByteBuffer body   = ByteBuffer.allocate(1024);  
+ByteBuffer[] bufferArray = { header, body };  
+channel.read(bufferArray);  
+```
+注意`buffer`首先被插入到数组，然后再将数组作为`channel.read()`的输入参数。`read()`按照`buffer`在数组中的顺序将从`channel`中读取的数据写入到`buffer`，当一个`buffer`被写满后，`channel`紧接着向另一个`buffer`中写。
+
+Scattering Reads在移动下一个`buffer`前，必须填满当前的`buffer`，这也意味着它不适用于动态消息。换句话说，如果存在消息头和消息体，消息头必须完成填充，Scattering Reads才能正常工作。
+
+聚集（gatter）:在写操作时将多个`buffer`的数据写入同一个`Channel`，因此，`Channel`将多个`buffer`的数据“聚集（gather）”后发送到`Channel`。
+```java
+ByteBuffer header = ByteBuffer.allocate(128);  
+ByteBuffer body   = ByteBuffer.allocate(1024);  
+//write data into buffers  
+ByteBuffer[] bufferArray = { header, body };  
+channel.write(bufferArray);
+```
+`buffer`的一个数组被传递给了`write()`方法，如果一个buffer有一个128字节的容量，但是只包含了58个字节，只有58个字节可以从buffer中写到channel。
+
 ### 分散/聚集的应用
+scatter / gather 经常用于需要将传输的数据分开处理的场合。例如，在编写一个使用消息对象的网络应用程序时，每一个消息被划分为固定长度的头部和固定长度的正文。可以创建一个刚好可以容纳头部的缓冲区和另一个刚好可以容纳正文的缓冲区。当将它们放入一个数组中并使用分散读取来向它们读入消息时，头部和正文将整齐地划分到这两个缓冲区中。
+
 ## 通道实现
 ### 文件通道
 ### Socket管道
+Java NIO中的 `SocketChannel` 是一个连接到 TCP网络套接字的通道。可以通过以下2种方式创建 `SocketChannel`：
+- 打开一个`SocketChannel`并连接到互联网上的某台服务器
+- 一个新连接到达 `ServerSocketChannel` 时，会创建一个`SocketChannel`
+
+#### 打开 SocketChannel
+
+下面是`SocketChannel`的打开方式：
+```java
+SocketChannel socketChannel = SocketChannel.open();
+socketChannel.connect(new InetSocketAddress("http://localhost",80));
+```
+#### 从 `SocketChannel` 读取数据
+
+要从`SocketChannel`中读取数据，调用一个`read()`的方法之一。以下是例子：
+```java
+ByteBuffer buf = ByteBuffer.allocate(48);
+int bytesRead = socketChannel.read(buf);
+```
+首先，分配一个`Buffer`。从`SocketChannel`读取到的数据将会放到这个`Buffer`中。
+
+然后，调用`SocketChannel.read()`方法。该方法将数据从`SocketChannel `读到`Buffer`中。`read()`方法返回的`int`值表示读了多少字节进`Buffer`里。如果返回的是`-1`，表示已经读到了流的末尾（连接关闭了）。
+
+#### 写入 SocketChannel
+
+写数据到`SocketChannel`用的是`SocketChannel.write()`方法，该方法以一个`Buffer`作为参数。示例如下：
+```java
+String newData = "新数据" + System.currentTimeMillis();
+ByteBuffer buf = ByteBuffer.allocate(48);
+buf.clear();
+buf.put(newData.getBytes());
+buf.flip();
+while(buf.hasRemaining()) {
+    channel.write(buf);
+}
+```
+注意`SocketChannel.write()`方法的调用是在一个`while`循环中的。`write()`方法无法保证能写多少字节到`SocketChannel`。所以，我们重复调用`write()`直到`Buffer`没有要写的字节为止。
+
+#### 非阻塞模式
+
+可以设置 `SocketChannel` 为`非阻塞`模式（`non-blocking` mode）.设置之后，就可以在异步模式下调用`connect()`, `read() `和`write()`了。
+
+#### connect()
+
+如果`SocketChannel`在`非阻塞`模式下，此时调用`connect()`，该方法可能在连接建立之前就返回了。为了确定连接是否建立，可以调用`finishConnect()`的方法。像这样：
+```java
+socketChannel.configureBlocking(false);
+socketChannel.connect(new InetSocketAddress("http://localhost", 80));
+while(! socketChannel.finishConnect() ){
+    //wait, or do something else...
+}
+```
+#### write()
+
+非阻塞模式下，`write()`方法在尚未写出任何内容时可能就返回了。所以需要在循环中调用`write()`。前面已经有例子了，这里就不赘述了。
+
+#### read()
+
+非阻塞模式下,`read()`方法在尚未读取到任何数据时可能就返回了。所以需要关注它的`int`返回值，它会告诉你读取了多少字节。
+
+#### 示例
+服务端：
+```java
+public class NIOServer {
+    private int port;
+
+    public NIOServer(int port) {
+        this.port = port;
+    }
+
+    void init() throws IOException {
+        Selector selector = Selector.open();
+        ServerSocketChannel channel = ServerSocketChannel.open();
+        channel.bind(new InetSocketAddress(port));
+        channel.configureBlocking(false);
+        channel.register(selector, SelectionKey.OP_ACCEPT);
+        while (true) {
+            selector.select();
+
+            Set<SelectionKey> selectionKeys = selector.selectedKeys();
+            Iterator<SelectionKey> selectionKeyIterator = selectionKeys.iterator();
+            while (selectionKeyIterator.hasNext()){
+                SelectionKey key = selectionKeyIterator.next();
+                //防止重复处理
+                selectionKeyIterator.remove();
+                if (key.isAcceptable()){
+                    SocketChannel socketChannel = ((ServerSocketChannel) key.channel()).accept();
+                    socketChannel.write(ByteBuffer.wrap("welcome to connect...".getBytes()));
+                    socketChannel.configureBlocking(false);
+                    socketChannel.register(selector, SelectionKey.OP_READ);
+                }else if (key.isReadable()){
+                    ByteBuffer buffer = ByteBuffer.allocate(64);
+                    SocketChannel selectableChannel = (SocketChannel) key.channel();
+                    selectableChannel.read(buffer);
+                    System.out.println("read from client : " + new String(buffer.array()));
+                    selectableChannel.write(ByteBuffer.wrap("i received your message.".getBytes()));
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        new NIOServer(9000).init();
+    }
+}
+```
+客户端：
+```java
+public class NIOClient {
+    private String ip;
+    private int port;
+
+    public NIOClient(String ip, int port) {
+        this.ip = ip;
+        this.port = port;
+    }
+
+    public void init() throws IOException {
+        Selector selector = Selector.open();
+        SocketChannel channel = SocketChannel.open();
+        channel.configureBlocking(false);
+        channel.register(selector, SelectionKey.OP_CONNECT);
+        channel.connect(new InetSocketAddress(ip, port));
+        while (true){
+            selector.select();
+            Set<SelectionKey> keys = selector.selectedKeys();
+            Iterator<SelectionKey> keyIterator = keys.iterator();
+            while (keyIterator.hasNext()){
+                SelectionKey selectionKey = keyIterator.next();
+                //防止重复处理
+                keyIterator.remove();
+                if (selectionKey.isConnectable()){
+                    SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
+                    //如果正在连接，则完成连接
+                    if (socketChannel.isConnectionPending()) {
+                        socketChannel.finishConnect();
+                    }
+                    socketChannel.write(ByteBuffer.wrap("test connecting".getBytes()));
+                    socketChannel.configureBlocking(false);
+                    socketChannel.register(selector, SelectionKey.OP_READ);
+                }else if (selectionKey.isReadable()){
+                    ByteBuffer buffer = ByteBuffer.allocate(48);
+                    SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
+                    socketChannel.read(buffer);
+                    System.out.println(new String(buffer.array()));
+                }
+
+            }
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        new NIOClient("127.0.0.1", 9000).init();
+    }
+}
+```
 ### Datagram 通道
+Java NIO中的`DatagramChannel`是一个能收发UDP包的通道。因为UDP是无连接的网络协议，所以不能像其它通道那样读取和写入。它发送和接收的是数据包。
 ## 管道（Pipe）
+Java NIO 管道是2个线程之间的单向数据连接。`Pipe`有一个`source`通道和一个`sink`通道。数据会被写到`sink`通道，从`source`通道读取。
 ### 创建管道
+通过`Pipe.open()`方法打开管道。例如：
+```java
+Pipe pipe = Pipe.open(); 
+```
 ### 向管道写数据
+要向管道写数据，需要访问`sink`通道。像这样：
+```java
+Pipe.SinkChannel sinkChannel = pipe.sink(); 
+```
+通过调用`SinkChannel`的`write()`方法，将数据写入`SinkChannel`,像这样：
+```java
+String newData = "新数据" + System.currentTimeMillis();  
+ByteBuffer buf = ByteBuffer.allocate(48);  
+buf.clear();  
+buf.put(newData.getBytes());  
+buf.flip();  
+while(buf.hasRemaining()) {  
+   sinkChannel.write(buf);
+} 
+```
 ### 从管道读取数据
+要读取管道的数据，需要访问`source`通道，像这样：
+```java
+Pipe.SourceChannel sourceChannel = pipe.source(); 
+```
+调用`source`通道的`read()`方法来读取数据，像这样：
+```java
+ByteBuffer buf = ByteBuffer.allocate(48);  
+int bytesRead = inChannel.read(buf);  
+```
+read()方法返回的int值会告诉我们多少字节被读进了缓冲区。
 ### 简单完整实例
 # AIO编程
+## AIO的特点
+- 读完了再通知我
+- 不会加快IO，只是在读完后进行通知
+- 使用回调函数，进行业务处理
+
+AIO的相关代码：
+```java
+//AsynchronousServerSocketChannel类
+server = AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(PORT));
+```
+
+使用server上的`accept`方法
+```java
+public abstract <A> void accept(A attachment,CompletionHandler<AsynchronousSocketChannel,? super A> handler);
+```
 ## NIO与AIO区别
 - NIO是同步非阻塞的，AIO是异步非阻塞的
 - 由于NIO的读写过程依然在应用线程里完成，所以对于那些读写过程时间长的，NIO就不太适合。而AIO的读写过程完成后才被通知，所以AIO能够胜任那些重量级，读写过程长的任务。
