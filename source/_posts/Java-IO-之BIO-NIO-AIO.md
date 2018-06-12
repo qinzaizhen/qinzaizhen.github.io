@@ -980,6 +980,99 @@ server = AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(PORT)
 ```java
 public abstract <A> void accept(A attachment,CompletionHandler<AsynchronousSocketChannel,? super A> handler);
 ```
+
+## 示例
+Server:
+```java
+public class AIOServer {
+    private int port ;
+
+    public AIOServer(int port) {
+        this.port = port;
+    }
+
+    void init() throws Exception {
+        AsynchronousServerSocketChannel channel = AsynchronousServerSocketChannel.open();
+        channel.bind(new InetSocketAddress(port));
+        channel.accept(new HashMap<>(), new CompletionHandler<AsynchronousSocketChannel, HashMap<? extends Object, ? extends Object>>() {
+            @Override
+            public void completed(AsynchronousSocketChannel result, HashMap<?, ?> attachment) {
+                result.write(ByteBuffer.wrap("welcome to connect...".getBytes()));
+                ByteBuffer buffer = ByteBuffer.allocate(64);
+                try {
+                    result.read(buffer).get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("read from client : " + new String(buffer.array()));
+            }
+
+            @Override
+            public void failed(Throwable exc, HashMap<?, ?> attachment) {
+                System.out.println("connect fail" + exc.getMessage());
+            }
+        });
+
+        Thread.sleep(100000);
+    }
+
+    public static void main(String[] args) throws Exception {
+        new AIOServer(9000).init();
+    }
+}
+```
+
+Client:
+```java
+public class AIOClient {
+    private String ip;
+    private int port;
+
+    public AIOClient(String ip, int port) {
+        this.ip = ip;
+        this.port = port;
+    }
+
+    public void init() throws Exception {
+
+        AsynchronousSocketChannel channel = AsynchronousSocketChannel.open();
+        channel.connect(new InetSocketAddress(ip, port), new HashMap<>(), new CompletionHandler<Void, HashMap<? extends Object, ? extends Object>>() {
+            @Override
+            public void completed(Void result, HashMap<?, ?> attachment) {
+                channel.write(ByteBuffer.wrap("test connecting".getBytes()));
+                ByteBuffer buffer = ByteBuffer.allocate(64);
+                channel.read(buffer, "", new CompletionHandler<>() {
+                    @Override
+                    public void completed(Integer result, String attachment) {
+                        if (result != -1) {
+                            System.out.println("read from server : " + new String(buffer.array(),0, result));
+                        }
+                    }
+
+                    @Override
+                    public void failed(Throwable exc, String attachment) {
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void failed(Throwable exc, HashMap<?, ?> attachment) {
+                System.out.println("connect fail" + exc.getMessage());
+            }
+        });
+
+        Thread.sleep(10000);
+    }
+
+    public static void main(String[] args) throws Exception {
+        new AIOClient("127.0.0.1", 9000).init();
+    }
+}
+```
 ## NIO与AIO区别
 - NIO是同步非阻塞的，AIO是异步非阻塞的
 - 由于NIO的读写过程依然在应用线程里完成，所以对于那些读写过程时间长的，NIO就不太适合。而AIO的读写过程完成后才被通知，所以AIO能够胜任那些重量级，读写过程长的任务。
