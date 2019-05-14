@@ -34,7 +34,7 @@ titlecase: false # Transform title into titlecase
 external_link: true # Open external links in new tab
 filename_case: 0
 render_drafts: false
-post_asset_folder: false
+post_asset_folder: true
 relative_link: false
 future: true
 highlight:
@@ -73,22 +73,22 @@ deploy:
   repo: https://github.com/qinzaizhen/qinzaizhen.github.io.git
   branch: master
 
-qiniu:
-  offline: false
-  sync: true
-  bucket: blog
-  #secret_file: sec/qn.json or C:
-  access_key: d_r5OCgrqW_CpzO779_Grec44nXfNK-C5spKatzt
-  secret_key: IBLhmsKWk4EbhIkg12LLVmbjKZSdf_f99Plocv8_
-  dirPrefix: 
-  urlPrefix: http://ooll8xqpq.bkt.clouddn.com
-  up_host: http://upload.qiniu.com
-  local_dir: static
-  update_exist: true
-  image: 
-    folder: images
-    extend: 
-  js:
-    folder: js
-  css:
-    folder: css
+# qiniu:
+#   offline: false
+#   sync: true
+#   bucket: blog
+#   #secret_file: sec/qn.json or C:
+#   access_key: d_r5OCgrqW_CpzO779_Grec44nXfNK-C5spKatzt
+#   secret_key: IBLhmsKWk4EbhIkg12LLVmbjKZSdf_f99Plocv8_
+#   dirPrefix: 
+#   urlPrefix: http://ooll8xqpq.bkt.clouddn.com
+#   up_host: http://upload.qiniu.com
+#   local_dir: static
+#   update_exist: true
+#   image: 
+#     folder: images
+#     extend: 
+#   js:
+#     folder: js
+#   css:
+#     folder: css
