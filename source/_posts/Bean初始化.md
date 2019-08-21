@@ -101,7 +101,7 @@ Bean的创建以及实例化
    通常用于禁止特定目标bean的默认实例化，例如创建具有特殊目标源的代理对象(池化目标、延迟初始化目标等)，或者实现额外的注入策略，如字段注入。注意: 此接口是一个专用接口，主要用于框架内部使用。建议尽可能实现简单的`BeanPostProcessor`接口，或者继承`InstantiationAwareBeanPostProcessorAdapter`，以便屏蔽对该接口的扩展。
    
    - `postProcessBeforeInstantiation` : 在实例化目标bean之前调用。默认实现返回null。返回的bean对象可以代替目标bean用作代理，从而有效地阻止了目标bean的默认实例化。
-     如果此方法返回非空对象，则bean创建过程将短路，不会再调用其他`InstantiationAwareBeanPostProcessor`的`postProcessBeforeInstantiation` 方法。进一步调用`InstantiationAwareBeanPostProcessor`的`postProcessAfterInitialization`方法， 如果某个`InstantiationAwareBeanPostProcessor`的`postProcessAfterInitialization`方法返回了`null`，则将返回上一个不为`null`的对象。
+     如果此方法返回非空对象，则bean创建过程将短路，不会再调用其他`InstantiationAwareBeanPostProcessor`的`postProcessBeforeInstantiation` 方法。进一步调用`BeanPostProcessor`的`postProcessAfterInitialization`方法， 如果某个`BeanPostProcessor`的`postProcessAfterInitialization`方法返回了`null`，则将返回上一个不为`null`的对象。
      此方法仅应用于具有bean类的bean定义。尤其是不会应用于带有工厂方法的bean。后处理器可以实现`SmartInstantiationAwareBeanPostProcessor`接口，以便预测它们将在这里返回的bean对象的类型。
      
      ```java
