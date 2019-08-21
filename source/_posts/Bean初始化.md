@@ -120,7 +120,7 @@ Bean的创建以及实例化
      	}
      ```
    
-   - `postProcessAfterInstantiation`: 当`postProcessBeforeInstantiation` 方法返回了非`null`对象时，则会调用此方法做进一步的处理。
+   - `postProcessAfterInitialization`: 当`postProcessBeforeInstantiation` 方法返回了非`null`对象时，则会调用此方法做进一步的处理。
    
      ```java
      bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
@@ -179,12 +179,46 @@ Bean的创建以及实例化
 
 6. 真正初始化的过程。包括`InstantiationAwareBeanPostProcessor`接口`postProcessBeforeInitialization`方法，属性填充，Aware接口，`BeanPostProcessor`接口`postProcessBeforeInitialization`方法，`InitializingBean`的`afterPropertiesSet`方法，自定义init方法调用，调用`BeanPostProcessor`接口`postProcessAfterInitialization`方法。
 
-7. 注册`DisposableBean`， 当容器销毁时回调。
+7. 注册`DisposableBean`， 当Bean销毁时回调。
 
 可以看一下下面的流程图，对实例化过程有个大概的了解。
 
 ![Bean实例化过程](Bean初始化/Bean实例化过程.png)
 
-### Bean 的生命周期
+### 初始化过程中的扩展点
 
-所谓生命周期，即是Bean何时创建，何时生存，何时销毁。也即Bean 存在的范围。更直白点儿就是Bean的作用范围，有点儿*变量*的意味。
+这里只区分实例化和初始化两个阶段。可以看一下图：
+
+![Bean实例化过程中组件作用范围](Bean初始化/Bean实例化过程中组件作用范围.png)
+
+#### 实例化之前
+
+在实例化之前`InstantiationAwareBeanPostProcessor`有机会去阻拦常规的初始化流程，可以创建我们的代理对象。主要涉及到`Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName)`和`Object postProcessAfterInitialization(Object bean, String beanName)`方法。这里`Object postProcessAfterInitialization(Object bean, String beanName)`方法实际上是`BeanPostProcessor`接口的方法，主要用在Bean初始化后做一些自定义操作。**这个方法其实应该归到初始化之后阶段**。
+
+如果上面返回的是`null`，那么则走常规实例化流程。需要的话可以从`SmartInstantiationAwareBeanPostProcessor`接口的`Constructor<?>[] determineCandidateConstructors(Class<?> beanClass, String beanName)`方法中返回构造方法。
+
+#### 实例化之后
+
+通过`MergedBeanDefinitionPostProcessor`接口`postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName)`方法获得修改Bean定义的机会，也可以通过这个方法缓存一些数据，辅助后面的初始化过程。
+
+#### 初始化之前
+
+通过`InstantiationAwareBeanPostProcessor`接口boolean postProcessAfterInstantiation(Object bean, String beanName)方法可以阻止(`return false`)接下来的属性设置过程。通过该接口`PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName)`方法处理需要设置的属性。
+
+`TypeConverter` 接口进行属性值的类型转换。XML中配置的属性值是字符串形式的，需要转换成对应的属性类型。
+
+调用`BeanNameAware`、`BeanClassLoaderAware`、`BeanFactoryAware`的设置方法。
+
+#### 初始化
+
+可以将上面的属性设置、Aware接口归到初始化阶段里。
+
+调用`BeanPostProcessor`的`Object postProcessBeforeInitialization(Object bean, String beanName)`方法。
+
+如果Bean实现了`InitializingBean`接口，则会调用`afterPropertiesSet`方法。或者调用自定义的初始化方法。
+
+调用`BeanPostProcessor`接口的`Object postProcessAfterInitialization(Object bean, String beanName)`方法。
+
+#### 销毁
+
+如果Bean注册了销毁方法，则会注册为`DisposableBean`，当Bean销毁时会调用此方法。
