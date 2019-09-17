@@ -3,7 +3,6 @@ title: BeanWrapper
 date: 2019-09-05 15:51:12
 tags: [BeanWrapper,Converter,Formatter,ConversionService,类型转换]
 ---
-
 # BeanWrapper
 
 ## BeanWrapper是什么
@@ -627,7 +626,7 @@ Spring 内部提供了一些`Formatter`，会通过`DefaultFormattingConversionS
 
 ## 使用示例
 
-以日期为例，如果不用注解的话，我们需要手动注册一下`Formatter`。
+1. 以日期为例，如果不用注解的话，我们需要手动注册一下`Formatter`。
 
 ```java
 DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
@@ -639,8 +638,6 @@ System.out.println(conversionService.convert(date, String.class));
 // 2019年9月3日
 ```
 
-
-
 `DateFormatter`还支持指定格式。可以通过构造函数传入。
 
 ```java
@@ -650,6 +647,163 @@ conversionService.addFormatter(new DateFormatter("yyyy-MM-dd"));
 // 2019-09-03
 ```
 
+2. 还是以日期为例，使用Spring提供的`@DateTimeFormat`注解。
 
+   先创建一个类，里面有个日期字段使用`@DateTimeFormat`注解。
+
+   ```java
+   class Question {
+       @DateTimeFormat(pattern = "yyyy-MM-dd")
+       private Date createTime;
+   ```
+
+   指定格式为`yyyy-MM-dd`，这里我们借助`BeanWrapper`来触发格式化的动作。
+
+   ```java
+   DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
+   
+   Question question = new Question();
+   BeanWrapper beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(question);
+   beanWrapper.setConversionService(conversionService);
+   beanWrapper.setPropertyValue("createTime", "2019-09-03");
+   System.out.println(question.getCreateTime());
+   
+   //-----------
+   // Tue Sep 03 00:00:00 CST 2019
+   
+   // 将时间格式化 字符串
+   System.out.println("注解格式化日期：" + conversionService.convert(question.getCreateTime(), new TypeDescriptor(question.getClass().getDeclaredField("createTime")), TypeDescriptor.valueOf(String.class)));
+   
+   //---------
+   //注解格式化日期：2019-09-03
+   ```
+   
+   通过打印的信息，可以看到已经成功将字符串`parse`为`Date`，并将日期`format`为字符串。由于注解在字段上，我们只提供了`Date`的值，所以还需要通过`TypeDescriptor`将字段的附加信息传递进去，这样才能正确识别到字段上的注解。
+
+## 自定义`Formatter`
+
+除了Spring 给我们提供的这些`Formatter`之外，我们还可以自定义来实现特殊功能。
+
+比如前台传过来一段字符串，我们根据正则表达式截取部分字符。
+
+### 定义`StringFormat`注解
+
+此注解用来标注该字段需要用我们的自定义逻辑。可以指定具体的正则表达式。
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
+public @interface StringFormat {
+    String pattern();
+}
+```
+
+
+
+### 定义`StringFormatAnnotationFormatterFactory`
+
+此类实现`AnnotationFormatterFactory`接口，规定`StringFormat`注解支持的字段类型。我们使用正则分隔字符串，那么可能得到多个目标串，所以`getFieldTypes`返回`List`来接收目标类型。`getParser`方法返回我们的自定义`StringFormatFormatter`。
+
+```java
+/**
+     * The types of fields that may be annotated with the &lt;A&gt; annotation.
+     */
+    @Override
+    public Set<Class<?>> getFieldTypes() {
+        return Set.of(List.class, String.class);
+    }
+
+    /**
+     * Get the Printer to print the value of a field of {@code fieldType} annotated with
+     * {@code annotation}.
+     * <p>If the type T the printer accepts is not assignable to {@code fieldType}, a
+     * coercion from {@code fieldType} to T will be attempted before the Printer is invoked.
+     *
+     * @param annotation the annotation instance
+     * @param fieldType  the type of field that was annotated
+     * @return the printer
+     */
+    @Override
+    public Printer<?> getPrinter(StringFormat annotation, Class<?> fieldType) {
+        return new StringFormatFormatter(annotation.pattern());
+    }
+
+    /**
+     * Get the Parser to parse a submitted value for a field of {@code fieldType}
+     * annotated with {@code annotation}.
+     * <p>If the object the parser returns is not assignable to {@code fieldType},
+     * a coercion to {@code fieldType} will be attempted before the field is set.
+     *
+     * @param annotation the annotation instance
+     * @param fieldType  the type of field that was annotated
+     * @return the parser
+     */
+    @Override
+    public Parser<?> getParser(StringFormat annotation, Class<?> fieldType) {
+        return new StringFormatFormatter(annotation.pattern());
+    }
+```
+
+### 自定义 `StringFormatFormatter`
+
+该类实现`Formatter`。用来负责具体的解析逻辑。该类需要使用到注解中定义的正则表达式，这样我们就可以灵活控制每个字段的转换规则了。
+
+```java
+private static class StringFormatFormatter implements Formatter<Collection> {
+        private Pattern pattern;
+         StringFormatFormatter(String pattern) {
+            this.pattern = Pattern.compile(pattern);
+        }
+
+        /**
+         * Parse a text String to produce a T.
+         *
+         * @param text   the text string
+         * @param locale the current user locale
+         * @return an instance of T
+         * @throws ParseException           when a parse exception occurs in a java.text parsing library
+         * @throws IllegalArgumentException when a parse exception occurs
+         */
+        @Override
+        public Collection parse(String text, Locale locale) throws ParseException {
+            List<String> list = new ArrayList<>();
+            Matcher matcher = pattern.matcher(text);
+            while (matcher.find()) {
+                list.add(matcher.group());
+            }
+            return list;
+        }
+
+    }
+```
+
+### 使用
+
+将我们的`Formatter`注册到`FormattingConversionService`，遇到对应的转换，则会调用我们的`Formatter`。下面的例子中`StringFormatEntity`类使用到了自定义的`StringFormat`注解。
+
+```java
+@StringFormat(pattern = "\\d+")
+private List<String> formats;
+
+
+public class CustomFormatterDemo {
+    public static void main(String[] args) throws NoSuchFieldException {
+        //注册 StringFormatAnnotationFormatterFactory 
+        DefaultFormattingConversionService conversionService = new 	DefaultFormattingConversionService();
+        conversionService.addFormatterForFieldAnnotation(new StringFormatAnnotationFormatterFactory());
+        StringFormatEntity formatEntity = new StringFormatEntity();
+        System.out.println("自定义注解格式化：" + conversionService.convert("fff43ffd344", 	TypeDescriptor.valueOf(String.class) , new TypeDescriptor(formatEntity.getClass().getDeclaredField("formats"))));
+    }
+}
+
+
+// 自定义注解格式化：[43, 344]
+```
+
+从打印出来的结果可以看出来已经正确将字符串转换成了`List`。不过`List`中都是字符串，我们还可以将字符串转换成数字类型。需要我们来主动转换吗？其实是不需要的，Spring 已经帮我们考虑到了此种情景，可以自动将`List`中的元素也转换成对应的类型。还记得`CollectionToCollectionConverter`这个转换器吗？不过有个细节要注意：**我们的`Formatter`返回的结果不能是`ArrayList`， 这样会丢失泛型，不能正确转换，所以我们可以返回`ArrayList`的子类`List<String> list = new ArrayList<>(){};`， 这样会保留泛型，会调用后续的`Converter`**。
+
+
+
+## `Converter `的注册与获取
 
 # `DirectFieldAccessor`
