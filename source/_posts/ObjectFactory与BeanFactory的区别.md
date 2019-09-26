@@ -185,6 +185,6 @@ public interface ObjectProvider<T> extends ObjectFactory<T>, Iterable<T> {
 
 `BeanFactory `与这几个不在一个层面上，名字比较像，所以容易混淆。`BeanFactory `是整个大的工厂，有各种各样的生产线，`FactoryBean`就好比是生产线。
 
-`FactoryBean` 与`ObjectFactory`相比，`FactoryBean` 主要强调自定义创建Bean的过程，通过编程的方式去创建我们的Bean，比配置文件的方式更加的灵活。而且`FactoryBean` 本身也是一个受Spring 容器管理的Bean，只不过我们更注重它创建出来的Bean。`FactoryBean` 还是Spring提供出来的SPI接口，用于扩展框架。而`ObjectFactory`是一个普通的工厂，与Spring 容器Bean的创建关系不大。在Spring 创建Bean的过程中，借助 `Scope`接口返回创建的对象。
+`FactoryBean` 与`ObjectFactory`相比，`FactoryBean` 主要强调自定义创建Bean的过程，通过编程的方式去创建我们的Bean，比配置文件的方式更加的灵活。而且`FactoryBean` 本身也是一个受Spring 容器管理的Bean，只不过我们更注重它创建出来的Bean。`FactoryBean` 还是Spring提供出来的SPI接口，用于扩展框架。而`ObjectFactory`是一个普通的工厂，与Spring 容器Bean的创建关系不大。在Spring 创建Bean的过程中，借助自定义`Scope` 可以控制创建对象的时机，参见`org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean`方法对自定义`Scope`的处理，自定义`Scope`可以参见`org.springframework.web.context.request.AbstractRequestAttributesScope.get`方法。
 
 `ObjectProvider` 扩展自`ObjectFactory`接口，提供了更多关于Bean的信息的方法，比如是否存在，是否唯一，提供和消费Bean，以及遍历Bean。通过这个接口，我们可以根据这些信息做更灵活的控制。
