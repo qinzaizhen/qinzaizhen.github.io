@@ -15,7 +15,7 @@ Spring底层操作Java Bean的核心接口。
 
 此接口还支持嵌套属性，允许将子属性上的属性设置为无限深度。
 
-`BeanWrapper`的`extractOldValueForEditor`默认值是`false`，以避免`getter`方法调用造成的副作用。将此选项变为`true`，以便向自定义编辑器暴露当前属性值。
+`BeanWrapper`的`extractOldValueForEditor`默认值是`false`，可以避免调用 `getter`方法。将此选项设置为`true`，可以向自定义编辑器暴露当前属性值。
 
 可以看出`BeanWrapper`是操作Java Bean 的强大利器。
 
@@ -802,8 +802,155 @@ public class CustomFormatterDemo {
 
 从打印出来的结果可以看出来已经正确将字符串转换成了`List`。不过`List`中都是字符串，我们还可以将字符串转换成数字类型。需要我们来主动转换吗？其实是不需要的，Spring 已经帮我们考虑到了此种情景，可以自动将`List`中的元素也转换成对应的类型。还记得`CollectionToCollectionConverter`这个转换器吗？不过有个细节要注意：**我们的`Formatter`返回的结果不能是`ArrayList`， 这样会丢失泛型，不能正确转换，所以我们可以返回`ArrayList`的子类`List<String> list = new ArrayList<>(){};`， 这样会保留泛型，会调用后续的`Converter`**。
 
-
-
 ## `Converter `的注册与获取
 
+主要通过`ConverterRegistry`和`FormatterRegistry`来注册以及移除`Converter`。
+
+### `ConverterRegistry`
+
+#### 方法
+
+1. void addConverter(Converter<?, ?> converter)：注册简单的`Converter`，转换类型从`Converter`的泛型中获取。
+
+2. <S, T> void addConverter(Class<S> sourceType, Class<T> targetType, Converter<? super S, ? extends T> converter)： 注册普通转换器，并且明确指定可转换类型。
+
+   可以针对多个不同转换类型的情况重用`Converter`，而不必为每个对创建`Converter`类。指定的源类型是`Converter`定义的类型的子类型，目标类型是`Converter`定义的类型的父类型。为什么要如此定义？拿Spring提供的`ObjectToStringConverter`为例，该`Converter`定义的转换类型为`Object` -> `String`，调用`Object.toString()`方法，只要是`Object`的子类，都可以调用此方法转换成`String`，因为`toString()`是共有的方法。同理，目标类型指定的类型需要是我定义的父类型，这样转换出来的一定是需要的类型。
+
+3. void addConverter(GenericConverter converter)：注册`GenericConverter `。
+
+4. void addConverterFactory(ConverterFactory<?, ?> factory)：注册`ConverterFactory`。
+
+5. void removeConvertible(Class<?> sourceType, Class<?> targetType)：移除`sourceType`到`targetType`的转换功能。
+
+### `GenericConversionService`
+
+`GenericConversionService`类实现了`ConverterRegistry`接口。现在看一下具体的注册过程。
+
+1. void addConverter(Converter<?, ?> converter)：
+
+   因为没有指定转换类型，所以只能从`Converter`的泛型中获取转换类型，如果获取不到，则会抛出异常。获取到之后，则会创建`ConverterAdapter`实例，通过`void addConverter(GenericConverter converter)`方法进行注册。
+
+   ```java
+   ResolvableType[] typeInfo = getRequiredTypeInfo(converter.getClass(), Converter.class);
+   //如果是代理对象，还需要从代理类中获取
+   if (typeInfo == null && converter instanceof DecoratingProxy) {
+       typeInfo = getRequiredTypeInfo(((DecoratingProxy) converter).getDecoratedClass(), Converter.class);
+   }
+   if (typeInfo == null) {
+       throw new IllegalArgumentException("Unable to determine source type <S> and target type <T> for your " + "Converter [" + converter.getClass().getName() + "]; does the class parameterize those types?");
+   }
+   addConverter(new ConverterAdapter(converter, typeInfo[0], typeInfo[1]));
+   ```
+   
+2. <S, T> void addConverter(Class<S> sourceType, Class<T> targetType, Converter<? super S, ? extends T> converter)：
+
+   由于指定了转换类型，直接注册就完事了。
+
+   ```java
+   addConverter(new ConverterAdapter(converter, ResolvableType.forClass(sourceType), ResolvableType.forClass(targetType)));
+   ```
+
+3. void addConverterFactory(ConverterFactory<?, ?> factory)：
+
+   也是先从泛型中推断出转换的类型，然后创建`ConverterFactoryAdapter`实例进行注册。
+
+   ```java
+   ResolvableType[] typeInfo = getRequiredTypeInfo(factory.getClass(), ConverterFactory.class);
+   if (typeInfo == null && factory instanceof DecoratingProxy) {
+       typeInfo = getRequiredTypeInfo(((DecoratingProxy) factory).getDecoratedClass(), ConverterFactory.class);
+   }
+   if (typeInfo == null) {
+       throw new IllegalArgumentException("Unable to determine source type <S> and target type <T> for your " + "ConverterFactory [" + factory.getClass().getName() + "]; does the class parameterize those types?");
+   }
+   addConverter(new ConverterFactoryAdapter(factory,  new ConvertiblePair(typeInfo[0].toClass(), typeInfo[1].toClass())));
+   ```
+   
+4. void addConverter(GenericConverter converter)：
+
+  上面几种注册方式最终都会调用此方法，也就是说会将`Converter`、`ConverterFactory`转换成`GenericConverter `。这里使用到了`适配器模式`。
+
+   ```java
+//添加到内部容器中去
+this.converters.add(converter);
+//使缓存失效
+invalidateCache();
+   ```
+
+### `ConverterAdapter`适配器
+
+实现了`ConditionalGenericConverter`接口，将`Converter`转换成`GenericConverter`。在`matches`方法去判断转换类型是否匹配。转换时直接调用内部转换器的转换方法。
+
+### `ConverterFactoryAdapter`适配器
+
+实现了`ConditionalGenericConverter`接口，将`ConverterFactoryAdapter`转换成`GenericConverter`。在`matches`方法去判断转换类型是否匹配。转换时直接调用内部`ConverterFactory`获取的转换器的转换方法。
+
+### `ConvertiblePair`
+
+该类保存了转换的源类型和目标类型，并重写了`equals`和`hashCode`方法用于比较。`GenericConverter`返回`ConvertiblePair`集合表示所支持的转换类型。
+
+### `Converters`
+
+此类用来管理所有注册的`Converter`。提供添加和删除的功能。添加时获取到此`Converter`支持的类型，如果为空并且是`ConditionalConverter`，则代表它支持所有类型。得到支持的类型后，遍历每个类型，获取到已经注册的`ConvertersForPair`，该类维护转换类型到`Converter`之间的关系，而且是一对多的关系，也就是说同一种转换类型，会存在多个`Converter`。拿到`ConvertersForPair`后，将该`Converter`添加进去，后添加的会在前面，获取时符合条件时会优先返回。
+
+```java
+public void add(GenericConverter converter) {
+    Set<ConvertiblePair> convertibleTypes = converter.getConvertibleTypes();
+    if (convertibleTypes == null) {
+        Assert.state(converter instanceof ConditionalConverter,
+                     "Only conditional converters may return null convertible types");
+        this.globalConverters.add(converter);
+    }
+    else {
+        for (ConvertiblePair convertiblePair : convertibleTypes) {
+            ConvertersForPair convertersForPair = getMatchableConverters(convertiblePair);
+            //后添加的在前面
+            convertersForPair.add(converter);
+        }
+    }
+}
+```
+
+### `FormatterRegistry`注册`	Formatter`
+
+继承自`ConverterRegistry`接口，增加了注册`Formmater`的方法。
+
+### `FormattingConversionService`
+
+该类继承自`GenericConversionService`类，并实现了`FormatterRegistry`接口。在添加`Formatter`时会将其转换为`PrinterConverter`，`ParserConverter`。在添加`AnnotationFormatterFactory`转换为`AnnotationPrinterConverter`和`AnnotationParserConverter`。可以想象到这四个类也是实现了`Converter`，最终通过`convert`方法来调用`parse`和`print`方法。
+
+### 获取`Converter`
+
+在`GenericConversionService`的转换过程中，来了一个转换类型，需要获取到对应的`Converter`。在`Converters`的`find`方法中先拿到源类型和目标类型继承的所有类型（包括接口），比如说源类型是`String`，那么获取到的就是`String`、`Serializable`、`Comparable`、`CharSequence`和`Object`，如果是枚举还将获取到`Enum`。找到之后一一进行组合去获取`Converter`，比如目标类型是`Integer`，则第一次组合就是`String`->`Integer`，如果找到了支持`String`->`Integer`的`Converter`，则会返回这个。这么做的目的是支持一个`Converter`可以转换多个类型，比如`String`-> `Enum`，通过字面量转换成枚举，如果没有这个机制，那么我们就得为每个枚举都定义一个`Converter`，但是有了这个机制，我们就可以支持所有的枚举类型。其实就是通过这个机制来支持`ConverterFactory`。这个机制可以保证子类可以通过父类转换器进行转换（这种转换方式需要注意父类无法感知子类的特殊属性），但不能保证父类可以通过子类转换器，如果可以保证`Converter`能正确转换，则可以通过`<S, T> void addConverter(Class<S> sourceType, Class<T> targetType, Converter<? super S, ? extends T> converter)`方法显式进行注册。比如我们只有`String`->`Integer`的`Converter`，但是我们需要将`String`转换为`Number`，则可以通过这个方法注册`addConverter(String.class, Number.class, StringToIntegerConverter)`。
+
+```java
+DefaultConversionService conversionService = new DefaultConversionService();
+//先去掉内置的转换器
+conversionService.removeConvertible(String.class, Number.class);
+//再注册上我们自己定义的 String -> Integer
+conversionService.addConverter(new StringToIntegerConverter());
+System.out.println(conversionService.convert("1", Number.class));
+
+//这种情况下是无法正确转换的。
+
+//但是通过这个方法显式注册之后可以正确转换
+conversionService.addConverter(String.class, Number.class, new StringToIntegerConverter());
+// 1
+```
+
+下面是查找的大致过程：
+
+![查找converter的图示](BeanWrapper/查找converter.png)
+
+
+
 # `DirectFieldAccessor`
+
+通过反射直接访问Bean实例的字段。可以直接绑定到字段，而不需要通过JavaBean set方法。
+
+从Spring 4.2开始，绝大多数`BeanWrapper`特性已经被合并到`AbstractPropertyAccessor`中，这意味着这个类也支持属性遍历以及集合和Map 访问。
+
+`DirectFieldAccessor`的`extractOldValueForEditor`属性默认为`true`，因为在读取字段的时候是直接通过反射去拿到的字段值，不需要调用`getter`方法。
+
+# `PropertyAccessorFactory`
+
+可以通过此类来获取`BeanWrapper`和`DirectFieldAccessor`。
