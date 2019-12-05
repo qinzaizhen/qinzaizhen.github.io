@@ -200,12 +200,12 @@ room1
 
 可以看出来还是很方便的。
 
-**注： 当嵌套对象为空时，默认获取嵌套对象的属性会抛出异常。**这时可以加一个设置：
+**注： 当嵌套对象为空时，默认获取嵌套对象的属性会抛出异常。**  这时可以加一个设置：
 
-> ```java
-> wrapper.setAutoGrowNestedPaths(true);
-> System.out.println("嵌套对象为空时：" + wrapper.getPropertyValue("classRoom.name"));
-> ```
+ ```java
+ wrapper.setAutoGrowNestedPaths(true);
+ System.out.println("嵌套对象为空时：" + wrapper.getPropertyValue("classRoom.name"));
+ ```
 
 该属性的意义是自动扩展嵌套属性，按照默认值来初始化属性。此处就会将`classRoom`初始化，并且里面的属性为空。
 
@@ -312,9 +312,9 @@ private void createDefaultEditors() {
 
 ```java
 if (String.class == requiredType && ClassUtils.isPrimitiveOrWrapper(convertedValue.getClass())) {
-					// We can stringify any primitive value...
-					return (T) convertedValue.toString();
-				}
+  // We can stringify any primitive value...
+  return (T) convertedValue.toString();
+}
 ```
 
 ### 自定义`PropertyEditor`
@@ -364,21 +364,21 @@ wrapper.setPropertyValue("classRoom", "room3,3");
 
 ### 方法
 
-- boolean canConvert(@Nullable Class<?> sourceType, Class<?> targetType)：如果可以将sourceType对象转换为targetType，则返回true。
+- `boolean canConvert(@Nullable Class<?> sourceType, Class<?> targetType)`：如果可以将`sourceType`对象转换为`targetType`，则返回`true`。
 
-  如果此方法返回true，则意味着`convert(Object, Class)`方法能够将`sourceType`实例转换为`targetType`。
-
-  关于集合、数组和Map类型需要特别注意：**对于集合、数组和Map类型之间的转换，此方法将返回true，即使在底层元素不可转换的情况下，转换过程仍然可能生成一个`ConversionException`。在处理集合和映射时，调用者需要处理这种特殊情况。**
-
-- boolean canConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType)：如果可以将sourceType对象转换为targetType，则返回true。`TypeDescriptor `提供关于将要发生转换的源和目标位置的附加上下文信息，通常是对象字段或属性的位置。
-
-  如果此方法返回true，则意味着`convert(Object、TypeDescriptor、TypeDescriptor)`能够将`sourceType`实例转换为`targetType`。
+  如果此方法返回`true`，则意味着`convert(Object, Class)`方法能够将`sourceType`实例转换为`targetType`。
 
   关于集合、数组和Map类型需要特别注意：**对于集合、数组和Map类型之间的转换，此方法将返回true，即使在底层元素不可转换的情况下，转换过程仍然可能生成一个`ConversionException`。在处理集合和映射时，调用者需要处理这种特殊情况。**
 
-- <T> T convert(@Nullable Object source, Class<T> targetType)：将给定的对象转换为指定的`targetType`类型对象。
+- `boolean canConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType)`：如果可以将`sourceType`对象转换为`targetType`，则返回`true`。`TypeDescriptor `提供关于将要发生转换的源和目标位置的附加上下文信息，通常是对象字段或属性的位置。
 
-- Object convert(@Nullable Object source, @Nullable TypeDescriptor sourceType, TypeDescriptor targetType)：将给定的对象转换为指定的`targetType`类型对象。`TypeDescriptor `提供关于将要发生转换的源和目标位置的附加上下文信息，通常是对象字段或属性位置。
+  如果此方法返回`true`，则意味着`convert(Object、TypeDescriptor、TypeDescriptor)`能够将`sourceType`实例转换为`targetType`。
+
+  关于集合、数组和Map类型需要特别注意：**对于集合、数组和Map类型之间的转换，此方法将返回true，即使在底层元素不可转换的情况下，转换过程仍然可能生成一个`ConversionException`。在处理集合和映射时，调用者需要处理这种特殊情况。**
+
+- `<T> T convert(@Nullable Object source, Class<T> targetType)`：将给定的对象转换为指定的`targetType`类型对象。
+
+- `Object convert(@Nullable Object source, @Nullable TypeDescriptor sourceType, TypeDescriptor targetType)`：将给定的对象转换为指定的`targetType`类型对象。`TypeDescriptor `提供关于将要发生转换的源和目标位置的附加上下文信息，通常是对象字段或属性位置。
 
 ## `Converter`
 
@@ -386,14 +386,14 @@ wrapper.setPropertyValue("classRoom", "room3,3");
 
 就提供了一个转换方法：
 
-- T convert(S source)：转换对象类型。
+- `T convert(S source)`：转换对象类型。
 
 ## `ConverterFactory`
 
 生产一种`Converter`，这种`Converter`可以将对象从`S`转换为`R`的子类型。也就是说支持多态功能。
 实现类还可以实现`ConditionalConverter`接口。
 
-- <T extends R> Converter<S, T> getConverter(Class<T> targetType)：根据目标类型`T`获取`Converter`，该`Converter`将源类型`S`转换成`R`的子类型`T`。
+- `<T extends R> Converter<S, T> getConverter(Class<T> targetType)`：根据目标类型`T`获取`Converter`，该`Converter`将源类型`S`转换成`R`的子类型`T`。
 
 ## `ConditionalConverter`
 
@@ -403,7 +403,7 @@ wrapper.setPropertyValue("classRoom", "room3,3");
 
 另外一个例子，当从字符串字段转换为`Account`字段时，如果目标`Account`类定义了公共静态`findAccount(String)`方法，则实现类`matches`方法可能返回`true`。
 
-- boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType)：是否需要转换。
+- `boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType)`：是否需要转换。
 
 ## `GenericConverter`
 
@@ -590,17 +590,17 @@ for (Object s : convert) {
 
 继承自`ConverterRegistry`接口，用来注册`Formatter`。
 
-- void addFormatter(Formatter<?> formatter)：向特定类型的字段添加`Formatter`。字段类型由`Formatter`的泛型提供。
+- `void addFormatter(Formatter<?> formatter)`：向特定类型的字段添加`Formatter`。字段类型由`Formatter`的泛型提供。
 
-- void addFormatterForFieldType(Class<?> fieldType, Formatter<?> formatter)：向给定类型的字段添加`Formatter`。
+- `void addFormatterForFieldType(Class<?> fieldType, Formatter<?> formatter)`：向给定类型的字段添加`Formatter`。
 
   在打印时，如果声明了`Formatter`的类型`T`，并且不能将`fieldType`赋值给`T`，则在打印字段值的任务委托给`Formatter`之前，将尝试强制转换为`T`。在解析时，如果`Formatter`返回的已解析对象不能分配给运行时字段类型，则在返回已解析字段值之前，将尝试强制转换为`fieldType`。例如，`DateFormatter`声明的泛型为`Date`，如果这里的`fieldType`为`DateTime`（假设存在），如果`DateTime`可以用`Date`变量接收，则意味着可以分配给`Date`，也就不需要转换。否则则需要转换为`Date`类型。具体能否分配，可以查看该方法：`org.springframework.core.convert.TypeDescriptor#isAssignableTo`。
 
-- void addFormatterForFieldType(Class<?> fieldType, Printer<?> printer, Parser<?> parser)：添加`Printer`/`Parser`对来格式化特定类型的字段，formatter 将委托给指定的`Printer`进行打印，并委托指定的`Parser`进行解析。
+- `void addFormatterForFieldType(Class<?> fieldType, Printer<?> printer, Parser<?> parser)`：添加`Printer`/`Parser`对来格式化特定类型的字段，formatter 将委托给指定的`Printer`进行打印，并委托指定的`Parser`进行解析。
 
   在打印时，如果声明了`Printer`的类型`T`，并且`fieldType`不能赋值给`T`，则在委托`Printer`打印字段值之前，将尝试转换化类型`T`。在解析时，如果`Parser`返回的对象不能分配给`fieldType`，则在返回解析后的字段值之前，将尝试转换为`fieldType`。这个方法与上一个方法的区别就是将`Formatter`拆开。
 
-- void addFormatterForFieldAnnotation(AnnotationFormatterFactory<? extends Annotation> annotationFormatterFactory)：为格式化注解标注的字段添加`Formatter`。此方法与上述方法的区别是不再以类型作为转换的依据了，而是根据注解来转换。比如某个字段上使用了`DateTimeFormat`注解，那会调用对应的`Formatter`。
+- `void addFormatterForFieldAnnotation(AnnotationFormatterFactory<? extends Annotation> annotationFormatterFactory)`：为格式化注解标注的字段添加`Formatter`。此方法与上述方法的区别是不再以类型作为转换的依据了，而是根据注解来转换。比如某个字段上使用了`DateTimeFormat`注解，那会调用对应的`Formatter`。
 
 ## `FormattingConversionService`
 
@@ -810,23 +810,23 @@ public class CustomFormatterDemo {
 
 #### 方法
 
-1. void addConverter(Converter<?, ?> converter)：注册简单的`Converter`，转换类型从`Converter`的泛型中获取。
+1. `void addConverter(Converter<?, ?> converter)`：注册简单的`Converter`，转换类型从`Converter`的泛型中获取。
 
-2. <S, T> void addConverter(Class<S> sourceType, Class<T> targetType, Converter<? super S, ? extends T> converter)： 注册普通转换器，并且明确指定可转换类型。
+2. `<S, T> void addConverter(Class<S> sourceType, Class<T> targetType, Converter<? super S, ? extends T> converter)`： 注册普通转换器，并且明确指定可转换类型。
 
    可以针对多个不同转换类型的情况重用`Converter`，而不必为每个对创建`Converter`类。指定的源类型是`Converter`定义的类型的子类型，目标类型是`Converter`定义的类型的父类型。为什么要如此定义？拿Spring提供的`ObjectToStringConverter`为例，该`Converter`定义的转换类型为`Object` -> `String`，调用`Object.toString()`方法，只要是`Object`的子类，都可以调用此方法转换成`String`，因为`toString()`是共有的方法。同理，目标类型指定的类型需要是我定义的父类型，这样转换出来的一定是需要的类型。
 
-3. void addConverter(GenericConverter converter)：注册`GenericConverter `。
+3. `void addConverter(GenericConverter converter)`：注册`GenericConverter `。
 
-4. void addConverterFactory(ConverterFactory<?, ?> factory)：注册`ConverterFactory`。
+4. `void addConverterFactory(ConverterFactory<?, ?> factory)`：注册`ConverterFactory`。
 
-5. void removeConvertible(Class<?> sourceType, Class<?> targetType)：移除`sourceType`到`targetType`的转换功能。
+5. `void removeConvertible(Class<?> sourceType, Class<?> targetType)`：移除`sourceType`到`targetType`的转换功能。
 
 ### `GenericConversionService`
 
 `GenericConversionService`类实现了`ConverterRegistry`接口。现在看一下具体的注册过程。
 
-1. void addConverter(Converter<?, ?> converter)：
+1. `void addConverter(Converter<?, ?> converter)`：
 
    因为没有指定转换类型，所以只能从`Converter`的泛型中获取转换类型，如果获取不到，则会抛出异常。获取到之后，则会创建`ConverterAdapter`实例，通过`void addConverter(GenericConverter converter)`方法进行注册。
 
@@ -842,7 +842,7 @@ public class CustomFormatterDemo {
    addConverter(new ConverterAdapter(converter, typeInfo[0], typeInfo[1]));
    ```
    
-2. <S, T> void addConverter(Class<S> sourceType, Class<T> targetType, Converter<? super S, ? extends T> converter)：
+2. `<S, T> void addConverter(Class<S> sourceType, Class<T> targetType, Converter<? super S, ? extends T> converter)`：
 
    由于指定了转换类型，直接注册就完事了。
 
@@ -850,7 +850,7 @@ public class CustomFormatterDemo {
    addConverter(new ConverterAdapter(converter, ResolvableType.forClass(sourceType), ResolvableType.forClass(targetType)));
    ```
 
-3. void addConverterFactory(ConverterFactory<?, ?> factory)：
+3. `void addConverterFactory(ConverterFactory<?, ?> factory)`：
 
    也是先从泛型中推断出转换的类型，然后创建`ConverterFactoryAdapter`实例进行注册。
 
@@ -865,7 +865,7 @@ public class CustomFormatterDemo {
    addConverter(new ConverterFactoryAdapter(factory,  new ConvertiblePair(typeInfo[0].toClass(), typeInfo[1].toClass())));
    ```
    
-4. void addConverter(GenericConverter converter)：
+4. `void addConverter(GenericConverter converter)`：
 
   上面几种注册方式最终都会调用此方法，也就是说会将`Converter`、`ConverterFactory`转换成`GenericConverter `。这里使用到了`适配器模式`。
 
