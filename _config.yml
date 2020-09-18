@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 长在山上的空心菜
+title: 秦观园
 subtitle: 程序猿，农民的儿子，山上下来的土根儿
 description: Q 的博客 | java
 author: Q
@@ -64,7 +64,7 @@ pagination_dir: page
 ## Plugins: https://hexo.io/plugins/
 #plugins: hexo-qiniu-sync
 ## Themes: https://hexo.io/themes/
-theme: Butterfly
+theme: butterfly
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
