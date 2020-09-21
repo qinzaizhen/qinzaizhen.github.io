@@ -8,7 +8,7 @@ subtitle: 程序猿，农民的儿子，山上下来的土根儿
 description: Q 的博客 | java
 author: Q
 language: zh-CN
-timezone:
+timezone: 
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
@@ -92,3 +92,18 @@ deploy:
 #     folder: js
 #   css:
 #     folder: css
+
+# offline config passed to sw-precache.
+offline:
+  maximumFileSizeToCacheInBytes: 10485760 # 缓存的最大文件大小，以字节为单位
+  staticFileGlobs:
+    - public/**/*.{js,html,css,png,jpg,gif,svg,webp,eot,ttf,woff,woff2}
+  # 静态文件合集，如果你的站点使用了例如webp格式的文件，请将文件类型添加进去。
+  stripPrefix: public
+  verbose: true
+  runtimeCaching:
+    # CDNs - should be cacheFirst, since they should be used specific versions so should not change
+    - urlPattern: /* # 如果你需要加载CDN资源，请配置该选项，如果没有，可以不配置。
+      handler: cacheFirst
+      options:
+        origin: http://qzztf.com # 可替换成你的 url

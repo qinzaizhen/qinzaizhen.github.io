@@ -30,3 +30,4 @@ build/Release
 *.swo
 *~
 public
+node_modules
