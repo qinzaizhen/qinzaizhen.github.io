@@ -1,0 +1,184 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>秦观园 - 程序猿，农民的儿子，山上下来的土根儿</title><meta name="description" content="Q 的博客 | java"><meta name="author" content="Q"><meta name="copyright" content="Q"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="http://qzztf.com/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="website"><meta property="og:title" content="秦观园"><meta property="og:url" content="http://qzztf.com/"><meta property="og:site_name" content="秦观园"><meta property="og:description" content="Q 的博客 | java"><meta property="og:image" content="http://qzztf.com/null"><meta property="article:published_time" content="2020-09-21T14:41:44.949Z"><meta property="article:modified_time" content="2020-09-21T14:41:44.949Z"><meta name="twitter:card" content="summary"><link rel="manifest" href="/image/pwa/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/image/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/image/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/image/pwa/16.png"/><link rel="mask-icon" href="/image/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.2.0',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime: '',
+  date_suffix: {"one_hour":"刚刚","hours":"小时前","day":"天前"},
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+    },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: false,
+  isHome: true,
+  isHighlightShrink: false,
+  isSidebar: false,
+  postUpdate: '2020-09-21 22:41:44'
+}</script><noscript><style type="text/css">
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  }
+}
+
+var autoChangeMode = '1'
+var t = saveToLocal.get('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (saveToLocal.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><meta name="generator" content="Hexo 5.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">76</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">106</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div id="body-wrap"><div id="web_bg" data-type="photo"></div><header class="full_page" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">秦观园</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="site-info"><h1 id="site_title">秦观园</h1><div id="site_subtitle"><span id="subtitle"></span></div></div><div id="scroll_down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout_page" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2019/11/27/%E8%87%AA%E5%AE%9A%E4%B9%89Scope/" title="自定义Scope">自定义Scope</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-11-27T09:41:46.000Z" title="发表于 2019-11-27 17:41:46">2019-11-27</time></span></div><div class="content">Bean 的生命周期所谓生命周期，即是Bean何时创建，何时生存，何时销毁。也即Bean 存在的范围。更直白点儿就是Bean的作用范围，有点儿变量的意味。
+Spring 内置了singleton、prototype两种Scope，Bean 默认为singleton，在Spring IOC 容器中，只会创建一个，并将其缓存起来。
+prototype作用域部署的bean，每一次请求（将其注入到另一个bean中，或者以程序的方式调用容器的getBean()方法）都会产生一个新的bean实例，相当与一个new的操作。对于prototype作用域的bean，有一点非常重要，那就是Spring不能对一个prototypebean的整个生命周期负责，容器在初始化、配置、装饰或者是装配完一个prototype实例后，将它交给客户端，随后就对该prototype实例不闻不问了。不管何种作用域，容器都会调用所有对象的初始化生命周期回调方法，而对prototype而言，任何配置好的析构回调方法都将不会被调用(destory-method不会被调用)，因为在注册为DisposableBean时将prototy ...</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2019/09/26/ObjectFactory%E4%B8%8EBeanFactory%E7%9A%84%E5%8C%BA%E5%88%AB/" title="ObjectFactory与BeanFactory的区别">ObjectFactory与BeanFactory的区别</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-09-26T08:24:59.000Z" title="发表于 2019-09-26 16:24:59">2019-09-26</time></span></div><div class="content">ObjectFactory 与BeanFactory 的区别Spring 体系中有一些跟 Bean获取相关的接口，比如：ObjectFactory、BeanFactory、FactoryBean、ObjectProvider等。有时候会让人不知道该使用哪一个。下面具体看一下区别。
+BeanFactory该接口是整个Spring容器的顶层接口，定义了从容器中获取Bean的方法。当我们的应用需要从容器中获取Bean的时候用此接口。在这里我们可以将整个容器看成是一个黑盒，不需要关心它是如何获取的，我们只关心结果。
+ObjectFactory此接口定义了一个简单工厂，是一个函数式接口，可以在调用时返回一个对象实例(可能是共享的或独立的)。
+这个接口类似于FactoryBean，但是后者的实现类通常被定义为BeanFactory中的SPI实例，而该类的实现通常被作为API(通过注入)提供给其他bean。因此，getObject()方法具有不同的异常处理行为。
+1234567891011@FunctionalInterfacepublic interface ObjectFactory&lt;T& ...</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2019/09/05/BeanWrapper/" title="BeanWrapper">BeanWrapper</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-09-05T07:51:12.000Z" title="发表于 2019-09-05 15:51:12">2019-09-05</time></span></div><div class="content">BeanWrapperBeanWrapper是什么Spring底层操作Java Bean的核心接口。
+通常不直接使用该接口，而是通过BeanFactory或DataBinder。
+提供分析和操作标准Java Bean的操作: 获取和设置属性值(单个或批量)、获取属性描述以及查询属性的可读性/可写性的能力。
+此接口还支持嵌套属性，允许将子属性上的属性设置为无限深度。
+BeanWrapper的extractOldValueForEditor默认值是false，可以避免调用 getter方法。将此选项设置为true，可以向自定义编辑器暴露当前属性值。
+可以看出BeanWrapper是操作Java Bean 的强大利器。
+类结构
+BeanWrapper 继承自TypeConverter，PropertyEditorRegistry，PropertyAccessor, ConfigurablePropertyAccessor接口。从名称可以看出具备了类型转换，属性编辑器注册，属性访问及配置的功能。
+使用方式接下来看看如何使用BeanWrapper来操作我们的Java Bean。
+Spring给我 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2019/08/21/Bean%E5%88%9D%E5%A7%8B%E5%8C%96/" title="Bean初始化">Bean初始化</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-08-21T08:32:23.000Z" title="发表于 2019-08-21 16:32:23">2019-08-21</time></span></div><div class="content">Bean初始化过程如果说配置文件好比菜谱，解析配置文件好比洗菜、切菜，那么Bean初始化过程就好比炒菜的过程。Spring的核心基础就建立在对Bean的管理功能上。如何定义一个Bean，如何获取一个Bean，如何初始化一个Bean，如何销毁一个Bean。
+getBean方法 – 炒菜开始的信号想象一下getBean的场景，好比是食客点了一道菜（或者说菜单是由食客提供的，厨房代加工），厨房根据菜单做菜。想象一下在这个过程中需要做哪些工作？
+
+按照菜谱准备菜 – 解析配置文件
+洗菜，切菜 - - 注册Bean定义
+炒菜 – Bean 初始化
+添加额外的佐料 – 动态注册Bean定义
+
+第1，2步可以看成是同时进行的，边准备菜，边洗菜切菜也就是边解析边注册。getBean 方法由BeanFactory接口提供。
+BeanFactoryBeanFactory接口是整个Spring容器的核心接口。提供了多个获取 Bean 的方法。
+
+Object getBean(String name) throws BeansException;
+ T getBean(String name, Class r ...</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2019/06/03/%E9%94%99%E8%AF%AF-%E6%9C%AA%E6%8A%A5%E5%91%8A%E7%9A%84%E5%BC%82%E5%B8%B8%E9%94%99%E8%AF%AFX-%E5%BF%85%E9%A1%BB%E5%AF%B9%E5%85%B6%E8%BF%9B%E8%A1%8C%E6%8D%95%E8%8E%B7%E6%88%96%E5%A3%B0%E6%98%8E%E4%BB%A5%E4%BE%BF%E6%8A%9B%E5%87%BA/" title="错误: 未报告的异常错误X; 必须对其进行捕获或声明以便抛出">错误: 未报告的异常错误X; 必须对其进行捕获或声明以便抛出</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-06-03T09:49:05.000Z" title="发表于 2019-06-03 17:49:05">2019-06-03</time></span></div><div class="content">今天在jdk8环境中碰到一个诡异的异常：
+
+错误: 未报告的异常错误X; 必须对其进行捕获或声明以便抛出
+
+jdk8方便是方便，但是有点儿不好排查问题。看提示应该是有个方法抛出了异常，只能按方法去排查了。最后在java.util.Optional#orElseThrow方法中找到了疑似代码。java.util.Optional#orElseThrow:
+12345678 public &lt;X extends Throwable&gt; T orElseThrow(Supplier&lt;? extends X&gt; exceptionSupplier) throws X &#123;    if (value != null) &#123;        return value;    &#125; else &#123;        throw exceptionSupplier.get();    &#125;&#125;
+
+方法参数为异常产生器，X是Throwable的子类。
+我的原始写法是:
+1.orElseThrow(() -&gt; &#123;throw new ...</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2019/05/13/Spring-bean%E5%AE%9A%E4%B9%89%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90/" title="Spring bean定义文件解析">Spring bean定义文件解析</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-05-13T06:36:27.000Z" title="发表于 2019-05-13 14:36:27">2019-05-13</time></span></div><div class="content">Bean 定义文件的解析初始化工厂123456// 1. 初始化一个bean 工厂DefaultListableBeanFactory factory = new DefaultListableBeanFactory();// 2. 初始化XmlBeanDefinitionReader,负责从xml文件中读取bean定义XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);// 3. 加载bean 定义的入口方法reader.loadBeanDefinitions(&quot;classpath:app.xml&quot;);
+
+上述代码使用起来很简单，创建一个工厂和阅读器，传入配置文件的位置。
+我们可以考虑一下，这些代码做了什么。
+
+XmlBeanDefinitionReader 是如何定位配置文件的?
+如何解析配置文件的？
+XmlBeanDefinitionReader的构造函数传入了一个BeanDefinitionRegistry对象，这个对象是用来注册bean定义的，那么是如何注册的呢？
+
+R ...</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2019/05/13/Spring%E8%87%AA%E5%AE%9A%E4%B9%89%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E8%A7%A3%E6%9E%90/" title="Spring自定义命名空间解析">Spring自定义命名空间解析</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-05-13T06:35:52.000Z" title="发表于 2019-05-13 14:35:52">2019-05-13</time></span></div><div class="content">自定义命名空间解析当我们想要扩展Spring 的配置时，可以定义我们自己的标签，然后解析成 bean定义，注册到Spring 容器中。这时需要用到 NamespaceHandler。Spring 框架中除了beans顶级标签外，其他的顶级标签都是自定义命名空间中的标签。如，p、 c、util命名空间。
+NamespaceHandler 命名空间解析器Spring 框架中mvc、context、tx 等功能都是通过扩展这个接口来实现的。这个接口负责将标签解析成bean 定义对象。该接口提供了parse 和decorate 方法。parse方法用来将顶级标签解析成BeanDefinition对象。decorate 方法负责对parse出来的BeanDefinition进行进一步处理，需要解析的可以是元素属性和标签。 可以返回原来的BeanDefinition，或者返回一个新的BeanDefinition。
+为了解析的方便，Spring 提供了一个抽象类NamespaceHandlerSupport，封装了一些基础功能，并提供了两个新的接口(BeanDefinitionParser和Bean ...</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2019/05/13/Spring-ApplicationContext%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B/" title="Spring ApplicationContext初始化过程">Spring ApplicationContext初始化过程</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-05-13T06:31:43.000Z" title="发表于 2019-05-13 14:31:43">2019-05-13</time></span></div><div class="content">在ApplicationContext初始化过程中各组件所处的位置。
+
+</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2019/03/18/Spring-%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3/" title="Spring 常用接口">Spring 常用接口</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-03-18T08:26:06.000Z" title="发表于 2019-03-18 16:26:06">2019-03-18</time></span></div><div class="content">Spring 常用接口Bean 工厂相关BeanFactory
+这个接口是访问Spring bean 容器的顶层接口。实现类会持有一些bean定义，每一个都有唯一的名称。根据bean定义，这个工厂将返回一个独立的（原型设计模式），或者是一个共享的实例(单例模式的强力替代品，实例在工厂的生存周期内是一个单例),返回的实例类型取决于工厂配置。
+这种方式的要点是BeanFactory是应用程序组件的注册中心，并集中配置应用的组件(例如，单个对象不再需要读取配置文件)。
+ListableBeanFactory继承自BeanFactory, 这个接口的用途是枚举所有bean 实例，而不是客户端通过名称一个个查找。
+HierarchicalBeanFactory这个接口用来实现工厂的继承关系，
+AutowireCapableBeanFactory此工厂提供bean自动注入功能。
+ConfigurableBeanFactory提供配置bean工厂的功能，但是此工厂一般是框架内部使用。
+ConfigurableListableBeanFactory提供分析和修改bean定义和预初始化单例bean的功能 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2019/01/15/%E5%B9%B4%E4%BC%9A/" title="年会">年会</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-01-15T03:05:47.000Z" title="发表于 2019-01-15 11:05:47">2019-01-15</time></span></div><div class="content">果然不出意外，今年年会又没中奖。号码为96, 这么顺的号码，依然没中。果然是没有中奖的运气，长这么大好像没中过。总共160人左右，56个奖品，中奖率35%左右。我坐的是11号桌，10个人有7个中奖了，跟我邻座的同事没中。感觉有点儿被愚弄了啊。
+</div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/null" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">Q</div><div class="author-info__description">Q 的博客 | java</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length_num">76</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length_num">106</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/qzztf"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="sticky_layout"><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">欢迎光临</div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><div class="content"><a class="title" href="/2019/11/27/%E8%87%AA%E5%AE%9A%E4%B9%89Scope/" title="自定义Scope">自定义Scope</a><time datetime="2019-11-27T09:41:46.000Z" title="发表于 2019-11-27 17:41:46">2019-11-27</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/2019/09/26/ObjectFactory%E4%B8%8EBeanFactory%E7%9A%84%E5%8C%BA%E5%88%AB/" title="ObjectFactory与BeanFactory的区别">ObjectFactory与BeanFactory的区别</a><time datetime="2019-09-26T08:24:59.000Z" title="发表于 2019-09-26 16:24:59">2019-09-26</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/2019/09/05/BeanWrapper/" title="BeanWrapper">BeanWrapper</a><time datetime="2019-09-05T07:51:12.000Z" title="发表于 2019-09-05 15:51:12">2019-09-05</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/2019/08/21/Bean%E5%88%9D%E5%A7%8B%E5%8C%96/" title="Bean初始化">Bean初始化</a><time datetime="2019-08-21T08:32:23.000Z" title="发表于 2019-08-21 16:32:23">2019-08-21</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/2019/06/03/%E9%94%99%E8%AF%AF-%E6%9C%AA%E6%8A%A5%E5%91%8A%E7%9A%84%E5%BC%82%E5%B8%B8%E9%94%99%E8%AF%AFX-%E5%BF%85%E9%A1%BB%E5%AF%B9%E5%85%B6%E8%BF%9B%E8%A1%8C%E6%8D%95%E8%8E%B7%E6%88%96%E5%A3%B0%E6%98%8E%E4%BB%A5%E4%BE%BF%E6%8A%9B%E5%87%BA/" title="错误: 未报告的异常错误X; 必须对其进行捕获或声明以便抛出">错误: 未报告的异常错误X; 必须对其进行捕获或声明以便抛出</a><time datetime="2019-06-03T09:49:05.000Z" title="发表于 2019-06-03 17:49:05">2019-06-03</time></div></div></div></div></div><div class="card-widget card-tags"><div class="card-content"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/AIO/" style="font-size: 1.1em; color: #999">AIO</a> <a href="/tags/ApplicationContext/" style="font-size: 1.1em; color: #999">ApplicationContext</a> <a href="/tags/BIO/" style="font-size: 1.1em; color: #999">BIO</a> <a href="/tags/Bean/" style="font-size: 1.23em; color: #999ea6">Bean</a> <a href="/tags/BeanFactory/" style="font-size: 1.1em; color: #999">BeanFactory</a> <a href="/tags/BeanWrapper/" style="font-size: 1.1em; color: #999">BeanWrapper</a> <a href="/tags/CLI/" style="font-size: 1.1em; color: #999">CLI</a> <a href="/tags/CompletableFuture/" style="font-size: 1.1em; color: #999">CompletableFuture</a> <a href="/tags/ConversionService/" style="font-size: 1.1em; color: #999">ConversionService</a> <a href="/tags/Converter/" style="font-size: 1.1em; color: #999">Converter</a> <a href="/tags/EndpointId/" style="font-size: 1.1em; color: #999">EndpointId</a> <a href="/tags/FactoryBean/" style="font-size: 1.1em; color: #999">FactoryBean</a> <a href="/tags/Formatter/" style="font-size: 1.1em; color: #999">Formatter</a> <a href="/tags/How-to/" style="font-size: 1.1em; color: #999">How to</a> <a href="/tags/IDEA/" style="font-size: 1.23em; color: #999ea6">IDEA</a> <a href="/tags/IO/" style="font-size: 1.1em; color: #999">IO</a> <a href="/tags/Idea/" style="font-size: 1.1em; color: #999">Idea</a> <a href="/tags/JUnit/" style="font-size: 1.1em; color: #999">JUnit</a> <a href="/tags/Java8/" style="font-size: 1.1em; color: #999">Java8</a> <a href="/tags/MAVEN/" style="font-size: 1.1em; color: #999">MAVEN</a> <a href="/tags/MvcEndpointUtil/" style="font-size: 1.1em; color: #999">MvcEndpointUtil</a> <a href="/tags/NIO/" style="font-size: 1.1em; color: #999">NIO</a> <a href="/tags/NamespaceHandler/" style="font-size: 1.1em; color: #999">NamespaceHandler</a> <a href="/tags/ObjectFactory/" style="font-size: 1.1em; color: #999">ObjectFactory</a> <a href="/tags/ObjectProvider/" style="font-size: 1.1em; color: #999">ObjectProvider</a> <a href="/tags/Resource/" style="font-size: 1.1em; color: #999">Resource</a> <a href="/tags/Scope/" style="font-size: 1.1em; color: #999">Scope</a> <a href="/tags/Spring/" style="font-size: 1.37em; color: #99a4b2">Spring</a> <a href="/tags/Spring-Boot/" style="font-size: 1.5em; color: #99a9bf">Spring Boot</a> <a href="/tags/Spring-Boot-CLI/" style="font-size: 1.1em; color: #999">Spring Boot CLI</a> <a href="/tags/Stream/" style="font-size: 1.1em; color: #999">Stream</a> <a href="/tags/activiti/" style="font-size: 1.1em; color: #999">activiti</a> <a href="/tags/alter-user/" style="font-size: 1.1em; color: #999">alter user</a> <a href="/tags/angularjs/" style="font-size: 1.1em; color: #999">angularjs</a> <a href="/tags/attr/" style="font-size: 1.1em; color: #999">attr</a> <a href="/tags/build-tool-plugin/" style="font-size: 1.1em; color: #999">build tool plugin</a> <a href="/tags/check/" style="font-size: 1.1em; color: #999">check</a> <a href="/tags/class/" style="font-size: 1.1em; color: #999">class</a> <a href="/tags/cron/" style="font-size: 1.1em; color: #999">cron</a> <a href="/tags/csv/" style="font-size: 1.1em; color: #999">csv</a></div></div></div><div class="card-widget card-archives"><div class="card-content"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/11/"><span class="card-archive-list-date">十一月 2019</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/09/"><span class="card-archive-list-date">九月 2019</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/08/"><span class="card-archive-list-date">八月 2019</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/06/"><span class="card-archive-list-date">六月 2019</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/05/"><span class="card-archive-list-date">五月 2019</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/03/"><span class="card-archive-list-date">三月 2019</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/01/"><span class="card-archive-list-date">一月 2019</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2018/12/"><span class="card-archive-list-date">十二月 2018</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item more is-center"><a class="card-archive-list-link-more" href="/archives/">
+              <span>查看更多</span><i class="fas fa-angle-right"  ></i></a></li></ul></div></div><div class="card-widget card-webinfo"><div class="card-content"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">76</div></div><div class="webinfo-item"><div class="item-name">本站总字数 :</div><div class="item-count">172.9k</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"></div></div><div class="webinfo-item"><div class="item-name">本站总访问量 :</div><div class="item-count" id="busuanzi_value_site_pv"></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2020-09-21T14:41:44.935Z"></div></div></div></div></div></div></div></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By Q</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><canvas class="fireworks"></canvas><script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script><script src="/js/third-party/fireworks.js"></script><script defer="defer" id="ribbon_piao" mobile="false" src="/js/third-party/piao.js"></script></div><script>'use strict';'serviceWorker'in navigator&&navigator.serviceWorker.register('service-worker.js').then(function(a){a.onupdatefound=function(){var b=a.installing;b.onstatechange=function(){switch(b.state){case'installed':navigator.serviceWorker.controller?console.log('New or updated content is available.'):console.log('Content is now available offline!');break;case'redundant':console.error('The installing service worker became redundant.');}}}}).catch(function(a){console.error('Error during service worker registration:',a)});
+</script></body></html>

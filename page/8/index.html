@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>秦观园 - 程序猿，农民的儿子，山上下来的土根儿</title><meta name="description" content="Q 的博客 | java"><meta name="author" content="Q"><meta name="copyright" content="Q"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="http://qzztf.com/page/8/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="website"><meta property="og:title" content="秦观园"><meta property="og:url" content="http://qzztf.com/page/8/"><meta property="og:site_name" content="秦观园"><meta property="og:description" content="Q 的博客 | java"><meta property="og:image" content="http://qzztf.com/null"><meta property="article:published_time" content="2020-09-21T14:41:45.720Z"><meta property="article:modified_time" content="2020-09-21T14:41:45.720Z"><meta name="twitter:card" content="summary"><link rel="manifest" href="/image/pwa/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/image/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/image/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/image/pwa/16.png"/><link rel="mask-icon" href="/image/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.2.0',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime: '',
+  date_suffix: {"one_hour":"刚刚","hours":"小时前","day":"天前"},
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+    },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: false,
+  isHome: true,
+  isHighlightShrink: false,
+  isSidebar: false,
+  postUpdate: '2020-09-21 22:41:45'
+}</script><noscript><style type="text/css">
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  }
+}
+
+var autoChangeMode = '1'
+var t = saveToLocal.get('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (saveToLocal.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><meta name="generator" content="Hexo 5.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">76</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">106</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div id="body-wrap"><div id="web_bg" data-type="photo"></div><header class="full_page" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">秦观园</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="site-info"><h1 id="site_title">秦观园</h1><div id="site_subtitle"><span id="subtitle"></span></div></div><div id="scroll_down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout_page" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2017/04/26/maven%E8%B7%B3%E8%BF%87%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95-maven-test-skip%E5%92%8CskipTests%E7%9A%84%E5%8C%BA%E5%88%AB/" title="maven跳过单元测试">maven跳过单元测试</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2017-04-26T08:38:45.000Z" title="发表于 2017-04-26 16:38:45">2017-04-26</time></span></div><div class="content">有两种方式可以跳过单元测试
+
+通过添加jvm参数的方式
+在项目的pom文件中配置插件
+
+通过jvm参数
+-DskipTests：不执行测试用例，但是会编绎test下的class，copy资源文件。
+-Dmaven.test.skip=true：不编绎，不执行，不copy。
+
+配置插件
+不执行test的配置
+
+123456789&lt;plugin&gt;    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;    &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;    &lt;version&gt;2.20&lt;/version&gt;    &lt;configuration&gt;        &lt;skipTests&gt;true&lt;/skipTests&gt;&lt;!--两种配置经试验效果一样--&gt;        &lt;!--&lt;skip&gt;true&lt;/skip&gt;--&gt;    &lt;/configu ...</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2017/04/25/quartz-%E5%B7%A5%E5%85%B7%E7%B1%BB/" title="quartz 工具类">quartz 工具类</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2017-04-25T01:39:47.000Z" title="发表于 2017-04-25 09:39:47">2017-04-25</time></span></div><div class="content">利用quartz实现动态创建任务，主要涉及的类有Job,JobDetail,CronScheduleBuilder,CronTrigger,Scheduler.
+
+Job:接口，对应到具体要做的事情。通常是业务代码实现。
+JobDetail:接口，封装了Job相关的信息，比如key,description,jobDataMap等。JobDataMap用来传递数据到job中。
+CronScheduleBuilder:表达式任务的builder。
+CronTrigger:支持表达式的trigger。
+
+ScheduleJob为了动态添加，我们自己也封装了一下job相关的信息，包括名称，分组，表达式以及要执行的java方法。
+12345678910111213// 任务id private String jobId;// 任务名称 private String jobName;//任务分组 private String jobGroup;// 任务状态 0禁用 1启用 2删除private String jobStatus;// 任务运行时间表达式 private String cronEx ...</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2017/04/22/Idea-%E5%88%9B%E5%BB%BA-Spring-boot%E5%BA%94%E7%94%A8/" title="Idea 创建 Spring boot应用">Idea 创建 Spring boot应用</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2017-04-22T15:23:29.000Z" title="发表于 2017-04-22 23:23:29">2017-04-22</time></span></div><div class="content">Idea 号称开发JAVA 最智能的工具，下面就利用它来创建一个Spring Boot 应用。
+创建项目
+选择 Create New Project
+
+利用Spring Initializr来初始化Spring 相关的框架网络状况好的情况下利用这个工具可以可视化地选择使用的框架，勾选即可。选择所安装的Jdk ，没有的话就New一个。
+
+配置一些项目的基本信息这里创建maven 项目（type 选择第一个，会生成完整的maven项目），输入groudId，artifactId，然后选择下一步。
+
+选择需要用到的框架  
+
+
+
+左侧是功能的分类
+中间是具体的功能
+右侧是选中后的功能，点x可以取消
+下部是相关的文档，可以打开在线文档
+左上侧可以进行搜索完成之后点击下一步
+
+
+补充项目保存的目录，以及项目名称
+确认之后创建项目。一番等待之后就会创建好整个项目，idea会生成maven相关的目录结构，会创建好一个run/debug，这取决于网速。创建好之后就可以点击运行了。
+
+</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2017/04/19/dependencies%E4%B8%8EdependencyManagement%E7%9A%84%E5%8C%BA%E5%88%AB/" title="dependencies与dependencyManagement的区别">dependencies与dependencyManagement的区别</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2017-04-19T10:12:29.000Z" title="发表于 2017-04-19 18:12:29">2017-04-19</time></span></div><div class="content">dependencyManagement 的使用场景在多模块项目中，子项目可能会需要引入同样的依赖，更改版本时需要维护多套设置，这时将依赖申明到父模块的dependencyManagement元素中，维护共同的版本，子模块在使用时就可以省略掉版本号。
+dependencies这个元素就是用来申明依赖的。会传递给子模块。
+dependencies与dependencyManagement的区别后者只申明项目中会用到的依赖，不会引入依赖。前者是实际引入依赖的元素，会传递给子项目。子项目在引入时使用不同的版本就可以覆盖dependencyManagement的配置。
+</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2017/04/18/%E5%A4%87%E4%BB%BDhexo%E4%BB%A3%E7%A0%81/" title="备份hexo代码">备份hexo代码</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2017-04-18T09:22:07.000Z" title="发表于 2017-04-18 17:22:07">2017-04-18</time></span></div><div class="content">hexo git 只会将生成的页面提交到git中，为了保存hexo所做的修改以及文章的源文件，我们需要将hexo 和文章的源文件也保存到我们的git中。
+
+创建一个hexo 分支用来保存我们的hexo和源文件，并且设置成默认分支，因为我们主要管理此分支，设为默认比较方便。创建之后选中，并点击update按钮。
+将仓库克隆下来，执行npm install hexo、hexo init、npm install 和 npm install hexo-deployer-git。 注意：hexo init会删除目录中.git文件，因此先复制到别处，执行完hexo init 后再拷备回来。
+修改博客根目录中的_config.yml。指定分支为master，这个分支用来保存发布后的页面。因为github 仓库是个人账号类型的，得放在master分支上。
+执行完成之后就可以进行常规的git操作了，如git add .、git commit 、git push。
+
+</div></div></div><div class="recent-post-item"><div class="recent-post-info"><a class="article-title" href="/2017/04/18/%E4%BD%BF%E7%94%A8httpclient-4-3%E5%8F%91%E9%80%81post%E8%AF%B7%E6%B1%82/" title="使用httpclient 4.3发送post请求">使用httpclient 4.3发送post请求</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2017-04-18T05:55:00.000Z" title="发表于 2017-04-18 13:55:00">2017-04-18</time></span></div><div class="content">单一类型的参数示例：
+123456789HttpPost httpPost = new HttpPost(&quot;http://www.baidu.com&quot;);httpPost.setHeader(&quot;Accept-Language&quot;, &quot;zh-cn,zh;q=0.5&quot;);httpPost.setHeader(&quot;Accept-Charset&quot;, &quot;GBK,utf-8;q=0.7,*;q=0.7&quot;);httpPost.setHeader(&quot;Connection&quot;, &quot;keep-alive&quot;);httpPost.addHeader(&quot;Content-type&quot;, &quot;application/json; charset=utf-8&quot;);httpPost.setHeader(&quot;Accept&quot;, &quot;application/json&quot;);httpPost.setEntity(new Stri ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/7/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/null" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">Q</div><div class="author-info__description">Q 的博客 | java</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length_num">76</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length_num">106</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/qzztf"><i class="fab fa-github"></i><span>Follow Me</span></a></div></div><div class="sticky_layout"><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">欢迎光临</div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><div class="content"><a class="title" href="/2019/11/27/%E8%87%AA%E5%AE%9A%E4%B9%89Scope/" title="自定义Scope">自定义Scope</a><time datetime="2019-11-27T09:41:46.000Z" title="发表于 2019-11-27 17:41:46">2019-11-27</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/2019/09/26/ObjectFactory%E4%B8%8EBeanFactory%E7%9A%84%E5%8C%BA%E5%88%AB/" title="ObjectFactory与BeanFactory的区别">ObjectFactory与BeanFactory的区别</a><time datetime="2019-09-26T08:24:59.000Z" title="发表于 2019-09-26 16:24:59">2019-09-26</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/2019/09/05/BeanWrapper/" title="BeanWrapper">BeanWrapper</a><time datetime="2019-09-05T07:51:12.000Z" title="发表于 2019-09-05 15:51:12">2019-09-05</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/2019/08/21/Bean%E5%88%9D%E5%A7%8B%E5%8C%96/" title="Bean初始化">Bean初始化</a><time datetime="2019-08-21T08:32:23.000Z" title="发表于 2019-08-21 16:32:23">2019-08-21</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/2019/06/03/%E9%94%99%E8%AF%AF-%E6%9C%AA%E6%8A%A5%E5%91%8A%E7%9A%84%E5%BC%82%E5%B8%B8%E9%94%99%E8%AF%AFX-%E5%BF%85%E9%A1%BB%E5%AF%B9%E5%85%B6%E8%BF%9B%E8%A1%8C%E6%8D%95%E8%8E%B7%E6%88%96%E5%A3%B0%E6%98%8E%E4%BB%A5%E4%BE%BF%E6%8A%9B%E5%87%BA/" title="错误: 未报告的异常错误X; 必须对其进行捕获或声明以便抛出">错误: 未报告的异常错误X; 必须对其进行捕获或声明以便抛出</a><time datetime="2019-06-03T09:49:05.000Z" title="发表于 2019-06-03 17:49:05">2019-06-03</time></div></div></div></div></div><div class="card-widget card-tags"><div class="card-content"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/AIO/" style="font-size: 1.1em; color: #999">AIO</a> <a href="/tags/ApplicationContext/" style="font-size: 1.1em; color: #999">ApplicationContext</a> <a href="/tags/BIO/" style="font-size: 1.1em; color: #999">BIO</a> <a href="/tags/Bean/" style="font-size: 1.23em; color: #999ea6">Bean</a> <a href="/tags/BeanFactory/" style="font-size: 1.1em; color: #999">BeanFactory</a> <a href="/tags/BeanWrapper/" style="font-size: 1.1em; color: #999">BeanWrapper</a> <a href="/tags/CLI/" style="font-size: 1.1em; color: #999">CLI</a> <a href="/tags/CompletableFuture/" style="font-size: 1.1em; color: #999">CompletableFuture</a> <a href="/tags/ConversionService/" style="font-size: 1.1em; color: #999">ConversionService</a> <a href="/tags/Converter/" style="font-size: 1.1em; color: #999">Converter</a> <a href="/tags/EndpointId/" style="font-size: 1.1em; color: #999">EndpointId</a> <a href="/tags/FactoryBean/" style="font-size: 1.1em; color: #999">FactoryBean</a> <a href="/tags/Formatter/" style="font-size: 1.1em; color: #999">Formatter</a> <a href="/tags/How-to/" style="font-size: 1.1em; color: #999">How to</a> <a href="/tags/IDEA/" style="font-size: 1.23em; color: #999ea6">IDEA</a> <a href="/tags/IO/" style="font-size: 1.1em; color: #999">IO</a> <a href="/tags/Idea/" style="font-size: 1.1em; color: #999">Idea</a> <a href="/tags/JUnit/" style="font-size: 1.1em; color: #999">JUnit</a> <a href="/tags/Java8/" style="font-size: 1.1em; color: #999">Java8</a> <a href="/tags/MAVEN/" style="font-size: 1.1em; color: #999">MAVEN</a> <a href="/tags/MvcEndpointUtil/" style="font-size: 1.1em; color: #999">MvcEndpointUtil</a> <a href="/tags/NIO/" style="font-size: 1.1em; color: #999">NIO</a> <a href="/tags/NamespaceHandler/" style="font-size: 1.1em; color: #999">NamespaceHandler</a> <a href="/tags/ObjectFactory/" style="font-size: 1.1em; color: #999">ObjectFactory</a> <a href="/tags/ObjectProvider/" style="font-size: 1.1em; color: #999">ObjectProvider</a> <a href="/tags/Resource/" style="font-size: 1.1em; color: #999">Resource</a> <a href="/tags/Scope/" style="font-size: 1.1em; color: #999">Scope</a> <a href="/tags/Spring/" style="font-size: 1.37em; color: #99a4b2">Spring</a> <a href="/tags/Spring-Boot/" style="font-size: 1.5em; color: #99a9bf">Spring Boot</a> <a href="/tags/Spring-Boot-CLI/" style="font-size: 1.1em; color: #999">Spring Boot CLI</a> <a href="/tags/Stream/" style="font-size: 1.1em; color: #999">Stream</a> <a href="/tags/activiti/" style="font-size: 1.1em; color: #999">activiti</a> <a href="/tags/alter-user/" style="font-size: 1.1em; color: #999">alter user</a> <a href="/tags/angularjs/" style="font-size: 1.1em; color: #999">angularjs</a> <a href="/tags/attr/" style="font-size: 1.1em; color: #999">attr</a> <a href="/tags/build-tool-plugin/" style="font-size: 1.1em; color: #999">build tool plugin</a> <a href="/tags/check/" style="font-size: 1.1em; color: #999">check</a> <a href="/tags/class/" style="font-size: 1.1em; color: #999">class</a> <a href="/tags/cron/" style="font-size: 1.1em; color: #999">cron</a> <a href="/tags/csv/" style="font-size: 1.1em; color: #999">csv</a></div></div></div><div class="card-widget card-archives"><div class="card-content"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/11/"><span class="card-archive-list-date">十一月 2019</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/09/"><span class="card-archive-list-date">九月 2019</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/08/"><span class="card-archive-list-date">八月 2019</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/06/"><span class="card-archive-list-date">六月 2019</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/05/"><span class="card-archive-list-date">五月 2019</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/03/"><span class="card-archive-list-date">三月 2019</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2019/01/"><span class="card-archive-list-date">一月 2019</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2018/12/"><span class="card-archive-list-date">十二月 2018</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item more is-center"><a class="card-archive-list-link-more" href="/archives/">
+              <span>查看更多</span><i class="fas fa-angle-right"  ></i></a></li></ul></div></div><div class="card-widget card-webinfo"><div class="card-content"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">76</div></div><div class="webinfo-item"><div class="item-name">本站总字数 :</div><div class="item-count">172.9k</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"></div></div><div class="webinfo-item"><div class="item-name">本站总访问量 :</div><div class="item-count" id="busuanzi_value_site_pv"></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2020-09-21T14:41:44.935Z"></div></div></div></div></div></div></div></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By Q</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><canvas class="fireworks"></canvas><script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script><script src="/js/third-party/fireworks.js"></script><script defer="defer" id="ribbon_piao" mobile="false" src="/js/third-party/piao.js"></script></div></body></html>
