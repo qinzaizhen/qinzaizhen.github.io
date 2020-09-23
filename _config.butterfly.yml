@@ -149,7 +149,7 @@ post_meta:
   page: # Home Page
     date_type: created # created or updated or both 主頁文章日期是創建日或者更新日或都顯示
     categories: true # true or false 主頁是否顯示分類
-    tags: false # true or false 主頁是否顯示標籤
+    tags: true # true or false 主頁是否顯示標籤
     label: true # true or false 顯示描述性文字
   post:
     date_type: both # created or updated or both 文章頁日期是創建日或者更新日或都顯示
@@ -205,7 +205,7 @@ related_post:
   date_type: created # or created or updated 文章日期顯示創建日或者更新日
 
 # figcaption (圖片描述文字)
-photofigcaption: false
+photofigcaption: true
 
 # anchor
 # when you scroll in post, the URL will update according to header id.
@@ -387,7 +387,7 @@ footer:
 
 # Baidu Analytics
 # https://tongji.baidu.com/web/welcome/login
-baidu_analytics:
+baidu_analytics: 86553a0f289bcfb307062507dc247eb2
 
 # Google Analytics
 # https://analytics.google.com/analytics/web/
@@ -431,7 +431,7 @@ bing_site_verification:
 
 # Baidu Webmaster tools verification setting
 # See: https://ziyuan.baidu.com/site/
-baidu_site_verification:
+baidu_site_verification: code-KqGpKXbibj
 
 # 360 Webmaster tools verification setting
 # see http://zhanzhang.so.com/
@@ -785,7 +785,7 @@ lazyload:
 # ---------------
 pwa:
   enable: true
-  manifest: /image/pwa/manifest.json
+  manifest: /manifest.json
   apple_touch_icon: /image/pwa/apple-touch-icon.png
   favicon_32_32: /image/pwa/32.png
   favicon_16_16: /image/pwa/16.png
