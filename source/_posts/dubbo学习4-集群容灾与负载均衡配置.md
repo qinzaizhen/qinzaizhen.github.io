@@ -1,7 +1,11 @@
 ---
 title: dubbo学习4-集群容灾与负载均衡配置
+tags:
+  - dubbo
+  - 集群
+  - 负载均衡
+abbrlink: 154c
 date: 2017-07-27 21:38:39
-tags: [dubbo, 集群, 负载均衡]
 ---
 
 #### 集群配置

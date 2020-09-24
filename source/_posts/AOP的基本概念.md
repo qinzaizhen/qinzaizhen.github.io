@@ -1,7 +1,8 @@
 ---
 title: AOP的基本概念
+tags: 'Spring, AOP'
+abbrlink: 35c5
 date: 2020-09-23 10:22:00
-tags: Spring, AOP
 ---
 
 任何技术的出现都是为了解决某类问题。

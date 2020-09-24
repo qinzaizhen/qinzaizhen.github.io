@@ -1,7 +1,10 @@
 ---
 title: Spring Boot 五-Spring Boot执行器 - 生产就绪特性
+tags:
+  - Spring Boot
+  - 生产
+abbrlink: 60cf
 date: 2017-09-13 21:10:39
-tags: [Spring Boot, 生产]
 ---
 
 Spring Boot包括一些额外的功能，可帮助你在应用程序推送到生产时监视和管理它。你可以选择使用HTTP端点或JMX来管理和监视应用程序。审计，健康和指标收集可以自动应用于你的应用程序。

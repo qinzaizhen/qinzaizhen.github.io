@@ -1,7 +1,10 @@
 ---
 title: windows 编绎spring-framework源代码遇到的问题
+tags:
+  - Spring
+  - schemaZip
+abbrlink: 53da
 date: 2017-07-25 12:57:44
-tags: [Spring, schemaZip]
 ---
 1. schemaZip 找不到问题
 ```java 

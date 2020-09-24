@@ -1,7 +1,10 @@
 ---
 title: Spring Boot 学习2-项目结构
+tags:
+  - Spring Boot
+  - 项目结构
+abbrlink: fba8
 date: 2017-11-22 11:54:33
-tags: [Spring Boot, 项目结构]
 ---
 # 避免使用“default”包
 当默认包中的类中有`@ComponentScan`, `@EntityScan` , `@SpringBootApplication`注解时，Spring Boot容易引起特殊的问题。因为会读取每个jar包中的所有类。这样很明显会耗费更多的时间跟资源。

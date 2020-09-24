@@ -1,7 +1,11 @@
 ---
 title: Spring Boot 六 - 部署Spring Boot应用
+tags:
+  - Spring Boot
+  - 部署
+  - 云
+abbrlink: 64fe
 date: 2017-10-09 18:16:54
-tags: [Spring Boot, 部署, 云]
 ---
 
 在部署应用时，Spring Boot 灵活的打包选项提供了大量的选择。你可以轻松地将Spring Boot 应用部署到各种云平台、容器镜像(例如Docker)或虚拟/真实机器上。

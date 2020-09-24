@@ -1,7 +1,11 @@
 ---
 title: jQuery prop与attr的区别
+tags:
+  - jquery
+  - prop
+  - attr
+abbrlink: 8b63
 date: 2018-04-25 16:35:34
-tags: [jquery,prop,attr]
 ---
 
 ### 问题

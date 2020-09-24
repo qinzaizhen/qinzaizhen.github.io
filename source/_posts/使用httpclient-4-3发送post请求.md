@@ -1,7 +1,10 @@
 ---
 title: 使用httpclient 4.3发送post请求
+tags:
+  - java
+  - httpclient4
+abbrlink: a7d9
 date: 2017-04-18 13:55:00
-tags: [java, httpclient4]
 ---
 
 ###  单一类型的参数

@@ -1,7 +1,11 @@
 ---
 title: Spring自定义命名空间解析
+tags:
+  - 自定义
+  - 命名空间
+  - NamespaceHandler
+abbrlink: 75b6
 date: 2019-05-13 14:35:52
-tags: [自定义, 命名空间, NamespaceHandler]
 ---
 
 # 自定义命名空间解析

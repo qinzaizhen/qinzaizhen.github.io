@@ -1,7 +1,12 @@
 ---
 title: 'Java IO 之BIO,NIO,AIO'
+tags:
+  - IO
+  - BIO
+  - NIO
+  - AIO
+abbrlink: f34a
 date: 2018-03-28 11:04:25
-tags: [IO,BIO,NIO,AIO]
 ---
 # Java IO概要
 Java 的核心库java.io提供了全面的IO接口。包括：文件读写、标准设备输入输出等。JAVA中IO是以流为基础进行输入输出的，所有数据被串行化写入输出流，或者从输入流中读入。

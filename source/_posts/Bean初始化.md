@@ -1,7 +1,11 @@
 ---
 title: Bean初始化
+tags:
+  - Spring
+  - Bean
+  - 初始化
+abbrlink: 72a3
 date: 2019-08-21 16:32:23
-tags: [Spring,Bean,初始化]
 ---
 
 # Bean初始化过程

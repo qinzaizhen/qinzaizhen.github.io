@@ -1,7 +1,10 @@
 ---
 title: Idea 创建 Spring boot应用
+tags:
+  - Idea
+  - Spring Boot
+abbrlink: 361c
 date: 2017-04-22 23:23:29
-tags: [Idea, Spring Boot]
 ---
 Idea 号称开发JAVA 最智能的工具，下面就利用它来创建一个`Spring Boot` 应用。
 #### 创建项目

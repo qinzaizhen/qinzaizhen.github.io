@@ -1,7 +1,10 @@
 ---
 title: dubbo学习5-restfull接口
+tags:
+  - dubbo
+  - restfull
+abbrlink: dc62
 date: 2017-08-04 22:23:25
-tags: [dubbo, restfull]
 ---
 #### 使用jax-rs和dubbo来搭建restfull接口
 ##### 需要用到的框架：

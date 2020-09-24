@@ -1,7 +1,10 @@
 ---
 title: dubbo学习1- 配置
+tags:
+  - dubbo
+  - 配置
+abbrlink: c1b3
 date: 2017-08-03 22:58:47
-tags: [dubbo,配置]
 ---
 ### XML配置
 dubbo通过spring的xml文件进行配置，可以方便地与spring进行集成。

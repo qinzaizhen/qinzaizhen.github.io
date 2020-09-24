@@ -1,7 +1,10 @@
 ---
 title: Spring bean定义文件解析
+tags:
+  - Bean
+  - 解析
+abbrlink: 172b
 date: 2019-05-13 14:36:27
-tags: [Bean,解析]
 ---
 
 # Bean 定义文件的解析

@@ -1,7 +1,11 @@
 ---
 title: dubbo学习3-启动时检查
+tags:
+  - dubbo
+  - 启动检查
+  - check
+abbrlink: dbef
 date: 2017-07-26 16:36:26
-tags: [dubbo, 启动检查, check]
 ---
 
 #### 启动时检查

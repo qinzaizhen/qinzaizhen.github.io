@@ -1,7 +1,11 @@
 ---
 title: angularjs 改变样式
+tags:
+  - angularjs
+  - 样式
+  - class
+abbrlink: 71fe
 date: 2017-07-17 17:33:28
-tags: [angularjs, 样式, class]
 ---
 #### angularjs 改变样式主要有三种方式
 1. 直接使用变量绑定

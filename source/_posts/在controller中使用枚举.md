@@ -1,5 +1,6 @@
 ---
 title: 在controller 参数中使用枚举
+abbrlink: '4085'
 date: 2018-11-11 16:47:49
 tags:
 ---

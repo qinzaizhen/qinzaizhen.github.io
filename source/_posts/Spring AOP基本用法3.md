@@ -1,7 +1,8 @@
 ---
 title: Spring AOP基本用法3
+tags: 'Spring, AOP'
+abbrlink: 39fc
 date: 2020-09-23 10:26:55
-tags: Spring, AOP
 ---
 
 前面讲到了使用XML 配置`ProxyFactoryBean`，结合注解配置`@Bean`也可以实现代码配置。还讲到了代码配置`ProxyFactory`。前者与Spring IOC 容器结合的更紧密，不需要自己调用`getProxy()`方法，从IOC 容器中获取的Bean 已经是最终的代理对象。

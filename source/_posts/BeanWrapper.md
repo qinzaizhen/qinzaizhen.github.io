@@ -1,7 +1,13 @@
 ---
 title: BeanWrapper
+tags:
+  - BeanWrapper
+  - Converter
+  - Formatter
+  - ConversionService
+  - 类型转换
+abbrlink: 504e
 date: 2019-09-05 15:51:12
-tags: [BeanWrapper,Converter,Formatter,ConversionService,类型转换]
 ---
 # BeanWrapper
 

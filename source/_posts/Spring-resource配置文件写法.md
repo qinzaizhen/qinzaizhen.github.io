@@ -1,7 +1,10 @@
 ---
 title: Spring resource配置文件写法
+tags:
+  - Spring
+  - Resource
+abbrlink: b3b1
 date: 2018-06-15 18:34:38
-tags: [Spring,Resource]
 ---
 为了管理方便，通常将Spring 的配置文件拆成多个，但也带来了复杂性的问题，不晓得它是如何加载的。
 

@@ -1,7 +1,12 @@
 ---
 title: ObjectFactory与BeanFactory的区别
+tags:
+  - BeanFactory
+  - ObjectFactory
+  - FactoryBean
+  - ObjectProvider
+abbrlink: '4819'
 date: 2019-09-26 16:24:59
-tags: [BeanFactory,ObjectFactory,FactoryBean,ObjectProvider]
 ---
 
 # ObjectFactory 与BeanFactory 的区别

@@ -1,7 +1,9 @@
 ---
 title: 自定义Scope
+tags:
+  - Scope
+abbrlink: fe03
 date: 2019-11-27 17:41:46
-tags: [Scope]
 ---
 
 # Bean 的生命周期

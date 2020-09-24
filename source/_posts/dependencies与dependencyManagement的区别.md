@@ -1,7 +1,8 @@
 ---
 title: dependencies与dependencyManagement的区别
-date: 2017-04-19 18:12:29
 tags: maven
+abbrlink: a9cd
+date: 2017-04-19 18:12:29
 ---
 #### dependencyManagement 的使用场景
 在多模块项目中，子项目可能会需要引入同样的依赖，更改版本时需要维护多套设置，这时将依赖申明到父模块的`dependencyManagement`元素中，维护共同的版本，子模块在使用时就可以省略掉版本号。

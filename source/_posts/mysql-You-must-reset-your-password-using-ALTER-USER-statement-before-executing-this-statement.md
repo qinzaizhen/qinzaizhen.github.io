@@ -2,8 +2,11 @@
 title: >-
   mysql - You must reset your password using ALTER USER statement before
   executing this statement
+tags:
+  - mysql
+  - alter user
+abbrlink: '7521'
 date: 2018-08-28 10:54:00
-tags: [mysql, alter user]
 ---
 
 新安装的mysql服务器，执行任何命令都报以下错误：

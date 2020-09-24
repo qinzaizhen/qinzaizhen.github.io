@@ -1,7 +1,10 @@
 ---
 title: Spring Boot 九 - “How-to” 指南
+tags:
+  - Spring Boot
+  - How to
+abbrlink: 6b4e
 date: 2017-10-18 21:39:45
-tags: [Spring Boot, How to]
 ---
 
 本节提供了一些常见的“如何做...”类型的问题的答案，这些问题在使用Spring Boot时经常出现。 这绝对不是详尽的列表，但它确实涵盖了很多。

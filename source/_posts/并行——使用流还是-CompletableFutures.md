@@ -1,7 +1,10 @@
 ---
 title: 并行——使用流还是 CompletableFutures?
+tags:
+  - Stream
+  - CompletableFuture
+abbrlink: '743'
 date: 2018-08-20 20:40:46
-tags: [Stream, CompletableFuture]
 ---
 #### 并行——使用流还是 CompletableFutures ?
 目前为止,你已经知道对集合进行并行计算有两种方式:要么将其转化为并行流,利用 `map`这样的操作开展工作,要么枚举出集合中的每一个元素,创建新的线程,在 `CompletableFuture` 内对其进行操作。后者提供了更多的灵活性,你可以调整线程池的大小,而这能帮助你确保整体的计算不会因为线程都在等待I/O而发生阻塞。

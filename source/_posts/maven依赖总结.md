@@ -1,7 +1,10 @@
 ---
 title: maven依赖总结
+tags:
+  - MAVEN
+  - 依赖
+abbrlink: 14f5
 date: 2018-05-23 14:12:58
-tags: [MAVEN,依赖]
 ---
 
 假设`A` 有两个`1.0` 和`2.0`两个版本。

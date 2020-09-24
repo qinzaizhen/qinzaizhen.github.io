@@ -1,7 +1,10 @@
 ---
 title: Spring Boot 十 - 附录
+tags:
+  - Spring Boot
+  - 附录
+abbrlink: d1f6
 date: 2017-11-09 15:15:26
-tags: [Spring Boot , 附录]
 ---
 
 ## 附录 A. 常用应用属性

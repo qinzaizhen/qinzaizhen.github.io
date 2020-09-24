@@ -1,7 +1,10 @@
 ---
 title: 修改mysql的默认编码
+tags:
+  - mysql
+  - 编码
+abbrlink: 25a6
 date: 2017-06-05 15:35:28
-tags: [mysql,编码]
 ---
 ```shell
 vi /etc/my.cnf

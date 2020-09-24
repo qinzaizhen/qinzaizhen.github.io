@@ -1,7 +1,10 @@
 ---
 title: The valid characters are defined in RFC 7230 and RFC 3986
+tags:
+  - encodeURIComponent
+  - encodeURI
+abbrlink: 4e8e
 date: 2017-07-26 11:16:27
-tags: [encodeURIComponent, encodeURI]
 ---
 今天在使用tomcat的过程中遇到了这个问题。表现为400错误以及空白页面。
 ```java

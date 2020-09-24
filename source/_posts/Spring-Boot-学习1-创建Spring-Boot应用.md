@@ -1,7 +1,9 @@
 ---
 title: Spring Boot 学习1-创建Spring Boot应用
+tags:
+  - Spring Boot
+abbrlink: e2d8
 date: 2017-11-18 17:48:00
-tags: [Spring Boot]
 ---
 如果使用Maven, 确保先安装好[Maven](http://maven.apache.org/)再继续。
 

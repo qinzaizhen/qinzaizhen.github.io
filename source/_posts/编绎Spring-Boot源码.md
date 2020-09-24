@@ -1,7 +1,10 @@
 ---
 title: 编绎Spring Boot源码
+tags:
+  - Spring Boot
+  - 源码
+abbrlink: 977d
 date: 2017-10-16 15:32:39
-tags: [Spring Boot ,源码]
 ---
 
 1. 在spring-boot 根目录执行`./mvnw clean install -DskipTests ` 

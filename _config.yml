@@ -14,7 +14,12 @@ timezone: Asia/Chongqing
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: http://qzztf.com
 root: /
-permalink: :year/:month/:day/:title/
+permalink:  post/:abbrlink/
+abbrlink:
+  alg: crc16  # 算法：crc16(default) and crc32
+  rep: hex    # 进制：dec(default) and hex
+# 使用crc16已经能生成65535篇文章了，对于个人博客感觉已经够用了
+# 使用hex是因为我觉得带字母好看一点
 permalink_defaults:
 
 # Directory

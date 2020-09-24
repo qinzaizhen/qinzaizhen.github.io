@@ -1,7 +1,11 @@
 ---
 title: Spring Boot 七 - Spring Boot CLI
+tags:
+  - Spring Boot
+  - Spring Boot CLI
+  - CLI
+abbrlink: 29bc
 date: 2017-10-13 19:17:04
-tags: [Spring Boot,Spring Boot CLI,CLI]
 ---
 
 Spring Boot CLI是一个命令行工具，可以使用Spring来快速开发。它允许你运行Groovy脚本，这意味着你具有熟悉的类似Java的语法，没有太多的样板代码。您还可以引导新项目或为其编写自己的命令。

@@ -1,7 +1,10 @@
 ---
 title: activiti 表
+tags:
+  - activiti
+  - table
+abbrlink: c5d6
 date: 2018-09-10 20:23:21
-tags: [activiti, table]
 ---
 
 - ACT_RE_*: RE stands for `repository`. Tables with this prefix contain static information such as process definitions and process resources (images, rules, etc.).

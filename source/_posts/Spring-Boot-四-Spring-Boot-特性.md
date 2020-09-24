@@ -1,7 +1,10 @@
 ---
 title: Spring Boot 四-Spring Boot 特性
+tags:
+  - Spring Boot
+  - 特性
+abbrlink: 29b6
 date: 2017-08-15 21:13:56
-tags: [Spring Boot,特性]
 ---
 本节将深入介绍Spring Boot的细节。在这里，你可以了解你想要使用和定制的关键特性。如果还没有，你可能需要阅读第2部分，“[开始](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#getting-started)”和第3部分，“[使用Spring引导](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#using-boot)”部分，这样你就可以很好地了解基础知识。
 

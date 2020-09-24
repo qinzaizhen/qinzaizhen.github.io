@@ -1,7 +1,10 @@
 ---
 title: quartz表达式
+tags:
+  - quartz
+  - cron
+abbrlink: '14'
 date: 2017-04-26 18:12:15
-tags: [quartz ,cron]
 ---
 
 字段之间用空格来格开

@@ -1,7 +1,10 @@
 ---
 title: opencsv读取csv文件
+tags:
+  - csv
+  - opencsv
+abbrlink: b5b5
 date: 2017-06-01 14:16:36
-tags: [csv ,opencsv]
 ---
 
 最近的工作中需要读取到csv文件，其实csv文件就是一种纯文本文件，数据之间通过`,`隔开，可以使用io包中的Reader来读取，读取一行之后就按`,`分隔就能得到数据。

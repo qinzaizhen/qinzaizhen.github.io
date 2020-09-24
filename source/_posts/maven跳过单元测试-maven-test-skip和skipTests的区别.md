@@ -1,7 +1,10 @@
 ---
 title: maven跳过单元测试
+tags:
+  - maven
+  - test
+abbrlink: 9dc2
 date: 2017-04-26 16:38:45
-tags: [maven, test]
 ---
 
 有两种方式可以跳过单元测试

@@ -1,7 +1,9 @@
 ---
 title: Spring 常用接口
+tags:
+  - Spring
+abbrlink: dac1
 date: 2019-03-18 16:26:06
-tags: [Spring]
 ---
 
 # Spring 常用接口

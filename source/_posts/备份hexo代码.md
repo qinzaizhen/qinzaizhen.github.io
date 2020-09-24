@@ -1,7 +1,9 @@
 ---
 title: 备份hexo代码
+tags:
+  - hexo
+abbrlink: '2746'
 date: 2017-04-18 17:22:07
-tags: [hexo]
 ---
 
 hexo git 只会将生成的页面提交到git中，为了保存hexo所做的修改以及文章的源文件，我们需要将hexo 和文章的源文件也保存到我们的git中。

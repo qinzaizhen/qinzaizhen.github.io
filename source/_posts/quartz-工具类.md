@@ -1,7 +1,9 @@
 ---
 title: quartz 工具类
+tags:
+  - quartz
+abbrlink: '482'
 date: 2017-04-25 09:39:47
-tags: [quartz]
 ---
 
 利用quartz实现动态创建任务，主要涉及的类有`Job`,`JobDetail`,`CronScheduleBuilder`,`CronTrigger`,`Scheduler`.

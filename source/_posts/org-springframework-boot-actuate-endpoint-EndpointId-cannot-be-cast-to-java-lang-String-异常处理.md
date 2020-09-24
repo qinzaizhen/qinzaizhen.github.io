@@ -2,8 +2,13 @@
 title: >-
   org.springframework.boot.actuate.endpoint.EndpointId cannot be cast to
   java.lang.String 异常处理
+tags:
+  - EndpointId
+  - MvcEndpointUtil
+  - 异常
+  - jrebel
+abbrlink: b2e0
 date: 2018-12-28 11:57:26
-tags: [EndpointId, MvcEndpointUtil, 异常, jrebel]
 ---
 
 用了`spring-boot-starter-actuator` 之后出现异常: `java.lang.ClassCastException:	org.springframework.boot.actuate.endpoint.EndpointId cannot be cast to java.lang.String`.

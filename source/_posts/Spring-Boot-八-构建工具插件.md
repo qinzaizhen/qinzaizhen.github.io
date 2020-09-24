@@ -1,7 +1,10 @@
 ---
 title: Spring Boot 八- 构建工具插件
+tags:
+  - Spring Boot
+  - build tool plugin
+abbrlink: '4406'
 date: 2017-10-16 16:05:47
-tags: [Spring Boot,build tool plugin]
 ---
 
 Spring Boot提供Maven和Gradle的构建工具插件。插件提供了各种功能，包括可执行jar的打包。 本节提供有关这两个插件的更多详细信息，以及如果需要扩展不受支持的构建系统的一些帮助。 如果你刚刚开始，你可能需要先阅读[第三部分“使用Spring Boot”](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#using-boot)一节中的[“第13章，构建系统”](http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#using-boot-build-systems)。

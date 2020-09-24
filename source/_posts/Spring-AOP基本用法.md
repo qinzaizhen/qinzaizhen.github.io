@@ -1,7 +1,8 @@
 ---
 title: Spring AOP基本用法
+tags: 'Spring, AOP'
+abbrlink: fc6f
 date: 2020-09-23 10:24:56
-tags: Spring, AOP
 ---
 
 # Spring AOP 用法

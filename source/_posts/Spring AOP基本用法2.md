@@ -1,7 +1,8 @@
 ---
 title: Spring AOP基本用法2
+tags: 'Spring, AOP'
+abbrlink: f93d
 date: 2020-09-23 10:25:58
-tags: Spring, AOP
 ---
 
 # Spring AOP 用法二
