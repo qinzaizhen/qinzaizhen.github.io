@@ -374,11 +374,11 @@ public Object getProxy(@Nullable ClassLoader classLoader) {
 
 创建代理的过程总结如下图：
 
-![ProxyFactoryBean创建代理对象流程](ProxyFactoryBean创建代理对象流程.png)
+![ProxyFactoryBean创建代理对象流程](./Spring-AOP基本用法/ProxyFactoryBean创建代理对象流程.png)
 
 执行过程如下：
 
-![调用过程](代理调用过程.png)
+![调用过程](./Spring-AOP基本用法/代理调用过程.png)
 
 ## 代理属性配置
 
