@@ -78,7 +78,9 @@ theme: butterfly
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/qinzaizhen/qinzaizhen.github.io.git
+  repo:
+    gitee: https://gitee.com/qzz/blog.git
+    github: https://github.com/qinzaizhen/qinzaizhen.github.io.git
   branch: master
 
 # qiniu:
