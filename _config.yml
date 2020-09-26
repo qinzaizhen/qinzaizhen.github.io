@@ -79,8 +79,8 @@ theme: butterfly
 deploy:
   type: git
   repo:
-    gitee: https://gitee.com/qzz/blog.git
-    github: https://github.com/qinzaizhen/qinzaizhen.github.io.git
+    gitee: git@gitee.com:qzz/blog.git
+    github: git@github.com:qinzaizhen/qinzaizhen.github.io.git
   branch: master
 
 # qiniu:
