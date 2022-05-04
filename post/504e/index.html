@@ -1,137 +1,187 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BeanWrapper | 秦观园</title><meta name="description" content="BeanWrapperBeanWrapper是什么Spring底层操作Java Bean的核心接口。 通常不直接使用该接口，而是通过BeanFactory或DataBinder。 提供分析和操作标准Java Bean的操作: 获取和设置属性值(单个或批量)、获取属性描述以及查询属性的可读性&#x2F;可写性的能力。 此接口还支持嵌套属性，允许将子属性上的属性设置为无限深度。 BeanWrapper的extr"><meta name="keywords" content="BeanWrapper,Converter,Formatter,ConversionService,类型转换"><meta name="author" content="Q"><meta name="copyright" content="Q"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="http://qzztf.com/post/504e/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preconnect" href="//zz.bdstatic.com"/><meta name="baidu-site-verification" content="code-KqGpKXbibj"/><meta property="og:type" content="article"><meta property="og:title" content="BeanWrapper"><meta property="og:url" content="http://qzztf.com/post/504e/"><meta property="og:site_name" content="秦观园"><meta property="og:description" content="BeanWrapperBeanWrapper是什么Spring底层操作Java Bean的核心接口。 通常不直接使用该接口，而是通过BeanFactory或DataBinder。 提供分析和操作标准Java Bean的操作: 获取和设置属性值(单个或批量)、获取属性描述以及查询属性的可读性&#x2F;可写性的能力。 此接口还支持嵌套属性，允许将子属性上的属性设置为无限深度。 BeanWrapper的extr"><meta property="og:image" content="http://qzztf.com/null"><meta property="article:published_time" content="2019-09-05T07:51:12.000Z"><meta property="article:modified_time" content="2020-09-25T13:20:22.833Z"><meta name="twitter:card" content="summary"><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/image/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/image/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/image/pwa/16.png"/><link rel="mask-icon" href="/image/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var _hmt = _hmt || [];
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>BeanWrapper | 秦观园</title><meta name="keywords" content="BeanWrapper,Converter,Formatter,ConversionService,类型转换"><meta name="author" content="Q"><meta name="copyright" content="Q"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="BeanWrapperBeanWrapper是什么Spring底层操作Java Bean的核心接口。 通常不直接使用该接口，而是通过BeanFactory或DataBinder。 提供分析和操作标准Java Bean的操作: 获取和设置属性值(单个或批量)、获取属性描述以及查询属性的可读性&#x2F;可写性的能力。 此接口还支持嵌套属性，允许将子属性上的属性设置为无限深度。 BeanWrapper的extr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BeanWrapper">
+<meta property="og:url" content="http://qzztf.com/post/504e/index.html">
+<meta property="og:site_name" content="秦观园">
+<meta property="og:description" content="BeanWrapperBeanWrapper是什么Spring底层操作Java Bean的核心接口。 通常不直接使用该接口，而是通过BeanFactory或DataBinder。 提供分析和操作标准Java Bean的操作: 获取和设置属性值(单个或批量)、获取属性描述以及查询属性的可读性&#x2F;可写性的能力。 此接口还支持嵌套属性，允许将子属性上的属性设置为无限深度。 BeanWrapper的extr">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://qzztf.com/post/504e/BeanWrapper/BeanWrapper%E7%B1%BB%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="http://qzztf.com/post/504e/BeanWrapper/ConversionService%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="http://qzztf.com/post/504e/BeanWrapper/Formatter%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="http://qzztf.com/post/504e/BeanWrapper/%E6%9F%A5%E6%89%BEconverter.png">
+<meta property="article:published_time" content="2019-09-05T07:51:12.000Z">
+<meta property="article:modified_time" content="2020-09-25T13:20:22.833Z">
+<meta property="article:author" content="Q">
+<meta property="article:tag" content="BeanWrapper">
+<meta property="article:tag" content="Converter">
+<meta property="article:tag" content="Formatter">
+<meta property="article:tag" content="ConversionService">
+<meta property="article:tag" content="类型转换">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://qzztf.com/post/504e/BeanWrapper/BeanWrapper%E7%B1%BB%E7%BB%93%E6%9E%84.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="http://qzztf.com/post/504e/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/image/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/image/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/image/pwa/16.png"/><link rel="mask-icon" href="/image/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
 (function() {
   var hm = document.createElement("script");
   hm.src = "https://hm.baidu.com/hm.js?86553a0f289bcfb307062507dc247eb2";
   var s = document.getElementsByTagName("script")[0]; 
   s.parentNode.insertBefore(hm, s);
 })();
-</script><script>var GLOBAL_CONFIG = { 
+</script><script>const GLOBAL_CONFIG = { 
   root: '/',
-  hexoversion: '5.2.0',
   algolia: undefined,
   localSearch: undefined,
   translate: undefined,
   noticeOutdate: undefined,
-  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
   copy: {
     success: '复制成功',
     error: '复制错误',
     noSupport: '浏览器不支持'
   },
-  bookmark: {
-    message_prev: '按',
-    message_next: '键将本页加入书签'
+  relativeDate: {
+    homepage: false,
+    post: false
   },
   runtime: '',
-  date_suffix: {"one_hour":"刚刚","hours":"小时前","day":"天前"},
-  copyright: undefined,
-  ClickShowText: undefined,
-  medium_zoom: false,
-  fancybox: true,
-  Snackbar: undefined,
-  justifiedGallery: {
-    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
-    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
   },
-  baiduPush: true,
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
   isPhotoFigcaption: true,
   islazyload: true,
-  isanchor: false
-};
-
-var saveToLocal = {
-  set: function setWithExpiry(key, value, ttl) {
-    const now = new Date()
-    const expiryDay = ttl * 86400000
-    const item = {
-      value: value,
-      expiry: now.getTime() + expiryDay,
-    }
-    localStorage.setItem(key, JSON.stringify(item))
-    },
-
-  get: function getWithExpiry(key) {
-    const itemStr = localStorage.getItem(key)
-
-    if (!itemStr) {
-      return undefined
-    }
-    const item = JSON.parse(itemStr)
-    const now = new Date()
-
-    if (now.getTime() > item.expiry) {
-      localStorage.removeItem(key)
-      return undefined
-    }
-    return item.value
-  }
-}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'BeanWrapper',
   isPost: true,
   isHome: false,
   isHighlightShrink: false,
-  isSidebar: true,
+  isToc: true,
   postUpdate: '2020-09-25 21:20:22'
 }</script><noscript><style type="text/css">
-#nav {
-  opacity: 1
-}
-.justified-gallery img {
-  opacity: 1
-}
-</style></noscript><script>var activateDarkMode = function () {
-  document.documentElement.setAttribute('data-theme', 'dark')
-  if (document.querySelector('meta[name="theme-color"]') !== null) {
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  #nav {
+    opacity: 1
   }
-}
-var activateLightMode = function () {
-  document.documentElement.setAttribute('data-theme', 'light')
-  if (document.querySelector('meta[name="theme-color"]') !== null) {
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  .justified-gallery img {
+    opacity: 1
   }
-}
 
-var autoChangeMode = '1'
-var t = saveToLocal.get('theme')
-if (autoChangeMode === '1') {
-  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
-  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
-  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
 
-  if (t === undefined) {
-    if (isLightMode) activateLightMode()
-    else if (isDarkMode) activateDarkMode()
-    else if (isNotSpecified || hasNoSupport) {
-      var now = new Date()
-      var hour = now.getHours()
-      var isNight = hour <= 6 || hour >= 18
-      isNight ? activateDarkMode() : activateLightMode()
-    }
-    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
-      if (saveToLocal.get('theme') === undefined) {
-        e.matches ? activateDarkMode() : activateLightMode()
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
       }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
     })
-  } else if (t === 'light') activateLightMode()
-  else activateDarkMode()
-} else if (autoChangeMode === '2') {
-  now = new Date()
-  hour = now.getHours()
-  isNight = hour <= 6 || hour >= 18
-  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
-  else if (t === 'light') activateLightMode()
-  else activateDarkMode()
-} else {
-  if (t === 'dark') activateDarkMode()
-  else if (t === 'light') activateLightMode()
-}</script><meta name="generator" content="Hexo 5.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">81</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">108</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div id="body-wrap"><div id="web_bg" data-type="photo"></div><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BeanWrapper"><span class="toc-number">1.</span> <span class="toc-text">BeanWrapper</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#BeanWrapper%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.1.</span> <span class="toc-text">BeanWrapper是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E7%BB%93%E6%9E%84"><span class="toc-number">1.2.</span> <span class="toc-text">类结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">1.3.</span> <span class="toc-text">使用方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%B1%9E%E6%80%A7"><span class="toc-number">1.3.1.</span> <span class="toc-text">获取属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B5%8C%E5%A5%97%E5%B1%9E%E6%80%A7"><span class="toc-number">1.3.1.1.</span> <span class="toc-text">嵌套属性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="toc-number">1.3.2.</span> <span class="toc-text">获取属性值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="toc-number">1.3.3.</span> <span class="toc-text">设置属性值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PropertyEditor"><span class="toc-number">1.4.</span> <span class="toc-text">PropertyEditor</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89PropertyEditor"><span class="toc-number">1.4.1.</span> <span class="toc-text">自定义PropertyEditor</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConversionService"><span class="toc-number">1.5.</span> <span class="toc-text">ConversionService</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95"><span class="toc-number">1.5.1.</span> <span class="toc-text">方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Converter"><span class="toc-number">1.6.</span> <span class="toc-text">Converter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConverterFactory"><span class="toc-number">1.7.</span> <span class="toc-text">ConverterFactory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConditionalConverter"><span class="toc-number">1.8.</span> <span class="toc-text">ConditionalConverter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GenericConverter"><span class="toc-number">1.9.</span> <span class="toc-text">GenericConverter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConverterRegistry"><span class="toc-number">1.10.</span> <span class="toc-text">ConverterRegistry</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConversionService%E7%BB%84%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="toc-number">1.11.</span> <span class="toc-text">ConversionService组件结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GenericConversionService%E7%B1%BB"><span class="toc-number">1.12.</span> <span class="toc-text">GenericConversionService类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DefaultConversionService%E7%B1%BB"><span class="toc-number">1.13.</span> <span class="toc-text">DefaultConversionService类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spring-%E6%8F%90%E4%BE%9B%E7%9A%84Converter"><span class="toc-number">1.14.</span> <span class="toc-text">Spring 提供的Converter</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#StringToBooleanConverter"><span class="toc-number">1.14.1.</span> <span class="toc-text">StringToBooleanConverter</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89Converter"><span class="toc-number">1.15.</span> <span class="toc-text">自定义Converter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Formatter"><span class="toc-number">1.16.</span> <span class="toc-text">Formatter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FormatterRegistry"><span class="toc-number">1.17.</span> <span class="toc-text">FormatterRegistry</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FormattingConversionService"><span class="toc-number">1.18.</span> <span class="toc-text">FormattingConversionService</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DefaultFormattingConversionService"><span class="toc-number">1.19.</span> <span class="toc-text">DefaultFormattingConversionService</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Spring%E6%8F%90%E4%BE%9B%E7%9A%84Formatter"><span class="toc-number">1.19.1.</span> <span class="toc-text">Spring提供的Formatter</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.20.</span> <span class="toc-text">使用示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89Formatter"><span class="toc-number">1.21.</span> <span class="toc-text">自定义Formatter</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89StringFormat%E6%B3%A8%E8%A7%A3"><span class="toc-number">1.21.1.</span> <span class="toc-text">定义StringFormat注解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89StringFormatAnnotationFormatterFactory"><span class="toc-number">1.21.2.</span> <span class="toc-text">定义StringFormatAnnotationFormatterFactory</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-StringFormatFormatter"><span class="toc-number">1.21.3.</span> <span class="toc-text">自定义 StringFormatFormatter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-number">1.21.4.</span> <span class="toc-text">使用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Converter%E7%9A%84%E6%B3%A8%E5%86%8C%E4%B8%8E%E8%8E%B7%E5%8F%96"><span class="toc-number">1.22.</span> <span class="toc-text">Converter的注册与获取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ConverterRegistry-1"><span class="toc-number">1.22.1.</span> <span class="toc-text">ConverterRegistry</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%95-1"><span class="toc-number">1.22.1.1.</span> <span class="toc-text">方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GenericConversionService"><span class="toc-number">1.22.2.</span> <span class="toc-text">GenericConversionService</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConverterAdapter%E9%80%82%E9%85%8D%E5%99%A8"><span class="toc-number">1.22.3.</span> <span class="toc-text">ConverterAdapter适配器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConverterFactoryAdapter%E9%80%82%E9%85%8D%E5%99%A8"><span class="toc-number">1.22.4.</span> <span class="toc-text">ConverterFactoryAdapter适配器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConvertiblePair"><span class="toc-number">1.22.5.</span> <span class="toc-text">ConvertiblePair</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Converters"><span class="toc-number">1.22.6.</span> <span class="toc-text">Converters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FormatterRegistry%E6%B3%A8%E5%86%8CFormatter"><span class="toc-number">1.22.7.</span> <span class="toc-text">FormatterRegistry注册Formatter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FormattingConversionService-1"><span class="toc-number">1.22.8.</span> <span class="toc-text">FormattingConversionService</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96Converter"><span class="toc-number">1.22.9.</span> <span class="toc-text">获取Converter</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DirectFieldAccessor"><span class="toc-number">2.</span> <span class="toc-text">DirectFieldAccessor</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PropertyAccessorFactory"><span class="toc-number">3.</span> <span class="toc-text">PropertyAccessorFactory</span></a></li></ol></div></div></div><header class="post-bg" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">秦观园</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">BeanWrapper</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-09-05T07:51:12.000Z" title="发表于 2019-09-05 15:51:12">2019-09-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-09-25T13:20:22.833Z" title="更新于 2020-09-25 21:20:22">2020-09-25</time></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">8.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>33分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h1 id="BeanWrapper"><a href="#BeanWrapper" class="headerlink" title="BeanWrapper"></a>BeanWrapper</h1><h2 id="BeanWrapper是什么"><a href="#BeanWrapper是什么" class="headerlink" title="BeanWrapper是什么"></a>BeanWrapper是什么</h2><p>Spring底层操作Java Bean的核心接口。</p>
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">81</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">秦观园</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">BeanWrapper</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-09-05T07:51:12.000Z" title="发表于 2019-09-05 15:51:12">2019-09-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-09-25T13:20:22.833Z" title="更新于 2020-09-25 21:20:22">2020-09-25</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">8.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>33分钟</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="BeanWrapper"><a href="#BeanWrapper" class="headerlink" title="BeanWrapper"></a>BeanWrapper</h1><h2 id="BeanWrapper是什么"><a href="#BeanWrapper是什么" class="headerlink" title="BeanWrapper是什么"></a>BeanWrapper是什么</h2><p>Spring底层操作Java Bean的核心接口。</p>
 <p>通常不直接使用该接口，而是通过<code>BeanFactory</code>或<code>DataBinder</code>。</p>
 <p>提供分析和操作标准Java Bean的操作: 获取和设置属性值(单个或批量)、获取属性描述以及查询属性的可读性/可写性的能力。</p>
 <p>此接口还支持嵌套属性，允许将子属性上的属性设置为无限深度。</p>
 <p><code>BeanWrapper</code>的<code>extractOldValueForEditor</code>默认值是<code>false</code>，可以避免调用 <code>getter</code>方法。将此选项设置为<code>true</code>，可以向自定义编辑器暴露当前属性值。</p>
 <p>可以看出<code>BeanWrapper</code>是操作Java Bean 的强大利器。</p>
-<h2 id="类结构"><a href="#类结构" class="headerlink" title="类结构"></a>类结构</h2><p><img src= "/img/loading.gif" data-lazy-src="BeanWrapper/BeanWrapper%E7%B1%BB%E7%BB%93%E6%9E%84.png" alt="BeanWrapper类结构"></p>
+<h2 id="类结构"><a href="#类结构" class="headerlink" title="类结构"></a>类结构</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src= "/img/loading.gif" data-lazy-src="BeanWrapper/BeanWrapper%E7%B1%BB%E7%BB%93%E6%9E%84.png" alt="BeanWrapper类结构"></p>
 <p>BeanWrapper 继承自<code>TypeConverter</code>，<code>PropertyEditorRegistry</code>，<code>PropertyAccessor</code>, <code>ConfigurablePropertyAccessor</code>接口。从名称可以看出具备了类型转换，属性编辑器注册，属性访问及配置的功能。</p>
 <h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><p>接下来看看如何使用BeanWrapper来操作我们的Java Bean。</p>
 <p>Spring给我们提供了一个实现类<code>BeanWrapperImpl</code>，我们就用这个类来展示。</p>
@@ -242,7 +292,7 @@ if (autoChangeMode === '1') {
 <li>Set<ConvertiblePair> getConvertibleTypes()：返回此<code>Converter</code>可以在源类型和目标类型之间转换的类型。<br>Set中每条都是一个可转换的源到目标类型对。<code>ConvertiblePair</code>保存源类型与目标类型的映射关系。<br>对于<code>ConditionalConverter</code>，此方法可能返回<code>null</code>，意味着该<code>GenericConverter</code>适用于所有源与目标类型对。未实现<code>ConditionalConverter</code>接口的实现类，此方法不能返回<code>null</code>。</li>
 </ul>
 <h2 id="ConverterRegistry"><a href="#ConverterRegistry" class="headerlink" title="ConverterRegistry"></a><code>ConverterRegistry</code></h2><p>用来注册<code>Converter</code>。</p>
-<h2 id="ConversionService组件结构"><a href="#ConversionService组件结构" class="headerlink" title="ConversionService组件结构"></a><code>ConversionService</code>组件结构</h2><p><img src= "/img/loading.gif" data-lazy-src="BeanWrapper/ConversionService%E7%BB%93%E6%9E%84.png" alt="ConversionService结构"></p>
+<h2 id="ConversionService组件结构"><a href="#ConversionService组件结构" class="headerlink" title="ConversionService组件结构"></a><code>ConversionService</code>组件结构</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src= "/img/loading.gif" data-lazy-src="BeanWrapper/ConversionService%E7%BB%93%E6%9E%84.png" alt="ConversionService结构"></p>
 <p><code>ConversionService</code>提供转换功能的统一入口，<code>ConverterRegistry</code>提供<code>Converter</code>注册功能，将<code>Converter</code>集中起来，转换时从中查出对应的<code>Converter</code>。<code>Converter</code>负责具体的转换过程。<code>ConfigurableConversionService</code>继承自<code>ConversionService</code>和<code>ConverterRegistry</code>，集成转换和注册功能。</p>
 <p>下面看一下具体的实现类。</p>
 <h2 id="GenericConversionService类"><a href="#GenericConversionService类" class="headerlink" title="GenericConversionService类"></a><code>GenericConversionService</code>类</h2><p>基础转换服务实现，适用于大部分情况。直接实现<code>ConfigurableConversionService</code>接口，实现了注册与转换功能。在注册<code>Converter</code>、<code>ConverterFactory</code>时，会将其转换成<code>GenericConverter</code>。</p>
@@ -574,7 +624,7 @@ if (autoChangeMode === '1') {
 <h2 id="Formatter"><a href="#Formatter" class="headerlink" title="Formatter"></a><code>Formatter</code></h2><p>在前后端交互时，通常会遇到日期格式这样的问题，<code>Converter</code>虽然说也能解决这个问题，在转换时获取到正确的格式然后进行转换。但是这样无法灵活控制我们的格式，我们得把所有格式都写在我们的<code>Converter</code>里，换一种格式，又得改一次这个类。这时候<code>Formatter</code>接口出现了。</p>
 <p><code>Formatter</code>接口位于<code>context</code>包中。</p>
 <p>先看一下<code>Formatter</code>类，从<code>Parser</code>和<code>Printer</code>接口继承而来，实现了<code>String</code> &lt;-&gt; <code>Object</code>转换的功能。</p>
-<p><img src= "/img/loading.gif" data-lazy-src="BeanWrapper/Formatter%E7%BB%93%E6%9E%84.png" alt="Formatter结构"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src= "/img/loading.gif" data-lazy-src="BeanWrapper/Formatter%E7%BB%93%E6%9E%84.png" alt="Formatter结构"></p>
 <h2 id="FormatterRegistry"><a href="#FormatterRegistry" class="headerlink" title="FormatterRegistry"></a><code>FormatterRegistry</code></h2><p>继承自<code>ConverterRegistry</code>接口，用来注册<code>Formatter</code>。</p>
 <ul>
 <li><p><code>void addFormatter(Formatter&lt;?&gt; formatter)</code>：向特定类型的字段添加<code>Formatter</code>。字段类型由<code>Formatter</code>的泛型提供。</p>
@@ -716,16 +766,23 @@ if (autoChangeMode === '1') {
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">DefaultConversionService conversionService = <span class="keyword">new</span> DefaultConversionService();</span><br><span class="line"><span class="comment">//先去掉内置的转换器</span></span><br><span class="line">conversionService.removeConvertible(String.class, Number.class);</span><br><span class="line"><span class="comment">//再注册上我们自己定义的 String -&gt; Integer</span></span><br><span class="line">conversionService.addConverter(<span class="keyword">new</span> StringToIntegerConverter());</span><br><span class="line">System.out.println(conversionService.convert(<span class="string">&quot;1&quot;</span>, Number.class));</span><br><span class="line"></span><br><span class="line"><span class="comment">//这种情况下是无法正确转换的。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//但是通过这个方法显式注册之后可以正确转换</span></span><br><span class="line">conversionService.addConverter(String.class, Number.class, <span class="keyword">new</span> StringToIntegerConverter());</span><br><span class="line"><span class="comment">// 1</span></span><br></pre></td></tr></table></figure>
 
 <p>下面是查找的大致过程：</p>
-<p><img src= "/img/loading.gif" data-lazy-src="BeanWrapper/%E6%9F%A5%E6%89%BEconverter.png" alt="查找converter的图示"></p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src= "/img/loading.gif" data-lazy-src="BeanWrapper/%E6%9F%A5%E6%89%BEconverter.png" alt="查找converter的图示"></p>
 <h1 id="DirectFieldAccessor"><a href="#DirectFieldAccessor" class="headerlink" title="DirectFieldAccessor"></a><code>DirectFieldAccessor</code></h1><p>通过反射直接访问Bean实例的字段。可以直接绑定到字段，而不需要通过JavaBean set方法。</p>
 <p>从Spring 4.2开始，绝大多数<code>BeanWrapper</code>特性已经被合并到<code>AbstractPropertyAccessor</code>中，这意味着这个类也支持属性遍历以及集合和Map 访问。</p>
 <p><code>DirectFieldAccessor</code>的<code>extractOldValueForEditor</code>属性默认为<code>true</code>，因为在读取字段的时候是直接通过反射去拿到的字段值，不需要调用<code>getter</code>方法。</p>
 <h1 id="PropertyAccessorFactory"><a href="#PropertyAccessorFactory" class="headerlink" title="PropertyAccessorFactory"></a><code>PropertyAccessorFactory</code></h1><p>可以通过此类来获取<code>BeanWrapper</code>和<code>DirectFieldAccessor</code>。</p>
-</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Q</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://qzztf.com/post/504e/">http://qzztf.com/post/504e/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://qzztf.com" target="_blank">秦观园</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/BeanWrapper/">BeanWrapper</a><a class="post-meta__tags" href="/tags/Converter/">Converter</a><a class="post-meta__tags" href="/tags/Formatter/">Formatter</a><a class="post-meta__tags" href="/tags/ConversionService/">ConversionService</a><a class="post-meta__tags" href="/tags/%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/">类型转换</a></div><div class="post_share"><div class="social-share" data-image="/null" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/post/4819/"><img class="prev-cover" data-lazy-src="/null" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">ObjectFactory与BeanFactory的区别</div></div></a></div><div class="next-post pull-right"><a href="/post/72a3/"><img class="next-cover" data-lazy-src="/null" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Bean初始化</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By Q</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script>var endLoading = function () {
-  document.body.style.overflow = 'auto';
-  document.getElementById('loading-box').classList.add("loaded")
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://qzztf.com">Q</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://qzztf.com/post/504e/">http://qzztf.com/post/504e/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://qzztf.com" target="_blank">秦观园</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/BeanWrapper/">BeanWrapper</a><a class="post-meta__tags" href="/tags/Converter/">Converter</a><a class="post-meta__tags" href="/tags/Formatter/">Formatter</a><a class="post-meta__tags" href="/tags/ConversionService/">ConversionService</a><a class="post-meta__tags" href="/tags/%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/">类型转换</a></div><div class="post_share"><div class="social-share" data-image="/null" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/gh/overtrue/share.js@master/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/post/4819/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/null" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">ObjectFactory与BeanFactory的区别</div></div></a></div><div class="next-post pull-right"><a href="/post/72a3/"><img class="next-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/null" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Bean初始化</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/null" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Q</div><div class="author-info__description">Q 的博客 | java</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">81</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/qzztf"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎光临</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BeanWrapper"><span class="toc-number">1.</span> <span class="toc-text">BeanWrapper</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#BeanWrapper%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.1.</span> <span class="toc-text">BeanWrapper是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E7%BB%93%E6%9E%84"><span class="toc-number">1.2.</span> <span class="toc-text">类结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">1.3.</span> <span class="toc-text">使用方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%B1%9E%E6%80%A7"><span class="toc-number">1.3.1.</span> <span class="toc-text">获取属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B5%8C%E5%A5%97%E5%B1%9E%E6%80%A7"><span class="toc-number">1.3.1.1.</span> <span class="toc-text">嵌套属性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="toc-number">1.3.2.</span> <span class="toc-text">获取属性值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="toc-number">1.3.3.</span> <span class="toc-text">设置属性值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PropertyEditor"><span class="toc-number">1.4.</span> <span class="toc-text">PropertyEditor</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89PropertyEditor"><span class="toc-number">1.4.1.</span> <span class="toc-text">自定义PropertyEditor</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConversionService"><span class="toc-number">1.5.</span> <span class="toc-text">ConversionService</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95"><span class="toc-number">1.5.1.</span> <span class="toc-text">方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Converter"><span class="toc-number">1.6.</span> <span class="toc-text">Converter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConverterFactory"><span class="toc-number">1.7.</span> <span class="toc-text">ConverterFactory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConditionalConverter"><span class="toc-number">1.8.</span> <span class="toc-text">ConditionalConverter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GenericConverter"><span class="toc-number">1.9.</span> <span class="toc-text">GenericConverter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConverterRegistry"><span class="toc-number">1.10.</span> <span class="toc-text">ConverterRegistry</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConversionService%E7%BB%84%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="toc-number">1.11.</span> <span class="toc-text">ConversionService组件结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GenericConversionService%E7%B1%BB"><span class="toc-number">1.12.</span> <span class="toc-text">GenericConversionService类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DefaultConversionService%E7%B1%BB"><span class="toc-number">1.13.</span> <span class="toc-text">DefaultConversionService类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spring-%E6%8F%90%E4%BE%9B%E7%9A%84Converter"><span class="toc-number">1.14.</span> <span class="toc-text">Spring 提供的Converter</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#StringToBooleanConverter"><span class="toc-number">1.14.1.</span> <span class="toc-text">StringToBooleanConverter</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89Converter"><span class="toc-number">1.15.</span> <span class="toc-text">自定义Converter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Formatter"><span class="toc-number">1.16.</span> <span class="toc-text">Formatter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FormatterRegistry"><span class="toc-number">1.17.</span> <span class="toc-text">FormatterRegistry</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FormattingConversionService"><span class="toc-number">1.18.</span> <span class="toc-text">FormattingConversionService</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DefaultFormattingConversionService"><span class="toc-number">1.19.</span> <span class="toc-text">DefaultFormattingConversionService</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Spring%E6%8F%90%E4%BE%9B%E7%9A%84Formatter"><span class="toc-number">1.19.1.</span> <span class="toc-text">Spring提供的Formatter</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.20.</span> <span class="toc-text">使用示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89Formatter"><span class="toc-number">1.21.</span> <span class="toc-text">自定义Formatter</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89StringFormat%E6%B3%A8%E8%A7%A3"><span class="toc-number">1.21.1.</span> <span class="toc-text">定义StringFormat注解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89StringFormatAnnotationFormatterFactory"><span class="toc-number">1.21.2.</span> <span class="toc-text">定义StringFormatAnnotationFormatterFactory</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-StringFormatFormatter"><span class="toc-number">1.21.3.</span> <span class="toc-text">自定义 StringFormatFormatter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-number">1.21.4.</span> <span class="toc-text">使用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Converter%E7%9A%84%E6%B3%A8%E5%86%8C%E4%B8%8E%E8%8E%B7%E5%8F%96"><span class="toc-number">1.22.</span> <span class="toc-text">Converter的注册与获取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ConverterRegistry-1"><span class="toc-number">1.22.1.</span> <span class="toc-text">ConverterRegistry</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%95-1"><span class="toc-number">1.22.1.1.</span> <span class="toc-text">方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GenericConversionService"><span class="toc-number">1.22.2.</span> <span class="toc-text">GenericConversionService</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConverterAdapter%E9%80%82%E9%85%8D%E5%99%A8"><span class="toc-number">1.22.3.</span> <span class="toc-text">ConverterAdapter适配器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConverterFactoryAdapter%E9%80%82%E9%85%8D%E5%99%A8"><span class="toc-number">1.22.4.</span> <span class="toc-text">ConverterFactoryAdapter适配器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConvertiblePair"><span class="toc-number">1.22.5.</span> <span class="toc-text">ConvertiblePair</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Converters"><span class="toc-number">1.22.6.</span> <span class="toc-text">Converters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FormatterRegistry%E6%B3%A8%E5%86%8CFormatter"><span class="toc-number">1.22.7.</span> <span class="toc-text">FormatterRegistry注册Formatter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FormattingConversionService-1"><span class="toc-number">1.22.8.</span> <span class="toc-text">FormattingConversionService</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96Converter"><span class="toc-number">1.22.9.</span> <span class="toc-text">获取Converter</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DirectFieldAccessor"><span class="toc-number">2.</span> <span class="toc-text">DirectFieldAccessor</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PropertyAccessorFactory"><span class="toc-number">3.</span> <span class="toc-text">PropertyAccessorFactory</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><div class="content"><a class="title" href="/post/undefined/" title="Spring AOP 调用同一个对象的方法">Spring AOP 调用同一个对象的方法</a><time datetime="2020-12-05T14:55:47.000Z" title="发表于 2020-12-05 22:55:47">2020-12-05</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/post/39fc/" title="Spring AOP基本用法3">Spring AOP基本用法3</a><time datetime="2020-09-23T02:26:55.000Z" title="发表于 2020-09-23 10:26:55">2020-09-23</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/post/f93d/" title="Spring AOP基本用法2">Spring AOP基本用法2</a><time datetime="2020-09-23T02:25:58.000Z" title="发表于 2020-09-23 10:25:58">2020-09-23</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/post/fc6f/" title="Spring AOP基本用法">Spring AOP基本用法</a><time datetime="2020-09-23T02:24:56.000Z" title="发表于 2020-09-23 10:24:56">2020-09-23</time></div></div><div class="aside-list-item"><div class="content"><a class="title" href="/post/35c5/" title="AOP的基本概念">AOP的基本概念</a><time datetime="2020-09-23T02:22:00.000Z" title="发表于 2020-09-23 10:22:00">2020-09-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By Q</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
 }
-window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>function addGitalkSource () {
   const ele = document.createElement('link')
   ele.rel = 'stylesheet'
   ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
@@ -734,27 +791,23 @@ window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>
 
 function loadGitalk () {
   function initGitalk () {
-    var gitalk = new Gitalk({
+    var gitalk = new Gitalk(Object.assign({
       clientID: '0de3031f6a90e873ab14',
       clientSecret: '2f2e5f0a65e12fddfc3bdcdd7c3f5ce6dd5c7b7e',
       repo: 'qinzaizhen.github.io',
       owner: 'qinzaizhen',
       admin: ['qinzaizhen'],
       id: '49794525d4f8866ff3d9f11358450d30',
-      language: 'zh-CN',
-      perPage: 10,
-      distractionFreeMode: true,
-      pagerDirection: 'last',
-      createIssueManually: false,
       updateCountCallback: commentCount
-    })
+    },null))
+
     gitalk.render('gitalk-container')
   }
 
   if (typeof Gitalk === 'function') initGitalk()
   else {
     addGitalkSource()
-    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+    getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js').then(initGitalk)
   }
 }
 
@@ -772,4 +825,4 @@ if ('Gitalk' === 'Gitalk' || !false) {
   function loadOtherComment () {
     loadGitalk()
   }
-}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><canvas class="fireworks"></canvas><script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script><script src="/js/third-party/fireworks.js"></script><script defer="defer" id="ribbon_piao" mobile="false" src="/js/third-party/piao.js"></script></div></body></html>
+}</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/fireworks.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
