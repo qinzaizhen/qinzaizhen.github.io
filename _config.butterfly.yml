@@ -286,7 +286,8 @@ gitalk:
   client_secret: a9c539e71782374d81eb91ad932288cd41809575
   repo: blog-s-gitalk
   owner: qinzaizhen
-  admin: ['qinzaizhen','qzztf']
+  admin: 
+    - qzztf
   language: zh-CN # en, zh-CN, zh-TW, es-ES, fr, ru
   perPage: 10 # Pagination size, with maximum 100.
   distractionFreeMode: true # Facebook-like distraction free mode.
