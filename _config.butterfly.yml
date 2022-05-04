@@ -282,16 +282,16 @@ livere:
 # gitalk
 # https://github.com/gitalk/gitalk
 gitalk:
-  client_id: 0de3031f6a90e873ab14
-  client_secret: 2f2e5f0a65e12fddfc3bdcdd7c3f5ce6dd5c7b7e
-  repo: qinzaizhen.github.io
+  client_id: 248e3cebde8537449dbb
+  client_secret: a9c539e71782374d81eb91ad932288cd41809575
+  repo: blog-s-gitalk
   owner: qinzaizhen
   admin: qinzaizhen
   language: zh-CN # en, zh-CN, zh-TW, es-ES, fr, ru
   perPage: 10 # Pagination size, with maximum 100.
   distractionFreeMode: true # Facebook-like distraction free mode.
   pagerDirection: last # Comment sorting direction, available values are last and first.
-  createIssueManually: true # Gitalk will create a corresponding github issue for your every single page automatically
+  createIssueManually: false # Gitalk will create a corresponding github issue for your every single page automatically
 
 # valine
 # https://valine.js.org
