@@ -1,0 +1,184 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>org.springframework.boot.actuate.endpoint.EndpointId cannot be cast to java.lang.String 异常处理 | 秦观园</title><meta name="description" content="用了spring-boot-starter-actuator 之后出现异常: java.lang.ClassCastException:    org.springframework.boot.actuate.endpoint.EndpointId cannot be cast to java.lang.String.详细的异常如下： 1234567891011121314151617181920"><meta name="keywords" content="EndpointId,MvcEndpointUtil,异常,jrebel"><meta name="author" content="Q"><meta name="copyright" content="Q"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="http://qzztf.com/post/b2e0/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="preconnect" href="//zz.bdstatic.com"/><meta name="baidu-site-verification" content="code-KqGpKXbibj"/><meta property="og:type" content="article"><meta property="og:title" content="org.springframework.boot.actuate.endpoint.EndpointId cannot be cast to java.lang.String 异常处理"><meta property="og:url" content="http://qzztf.com/post/b2e0/"><meta property="og:site_name" content="秦观园"><meta property="og:description" content="用了spring-boot-starter-actuator 之后出现异常: java.lang.ClassCastException:    org.springframework.boot.actuate.endpoint.EndpointId cannot be cast to java.lang.String.详细的异常如下： 1234567891011121314151617181920"><meta property="og:image" content="http://qzztf.com/null"><meta property="article:published_time" content="2018-12-28T03:57:26.000Z"><meta property="article:modified_time" content="2020-09-25T13:20:22.853Z"><meta name="twitter:card" content="summary"><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/image/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/image/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/image/pwa/16.png"/><link rel="mask-icon" href="/image/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?86553a0f289bcfb307062507dc247eb2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.2.0',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime: '',
+  date_suffix: {"one_hour":"刚刚","hours":"小时前","day":"天前"},
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: true,
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+    },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: false,
+  postUpdate: '2020-09-25 21:20:22'
+}</script><noscript><style type="text/css">
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  }
+}
+
+var autoChangeMode = '1'
+var t = saveToLocal.get('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (saveToLocal.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><meta name="generator" content="Hexo 5.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">81</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">108</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div id="body-wrap"><div id="web_bg" data-type="photo"></div><header class="post-bg" id="page-header"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">秦观园</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">org.springframework.boot.actuate.endpoint.EndpointId cannot be cast to java.lang.String 异常处理</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2018-12-28T03:57:26.000Z" title="发表于 2018-12-28 11:57:26">2018-12-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-09-25T13:20:22.853Z" title="更新于 2020-09-25 21:20:22">2020-09-25</time></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">644</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><p>用了<code>spring-boot-starter-actuator</code> 之后出现异常: <code>java.lang.ClassCastException:    org.springframework.boot.actuate.endpoint.EndpointId cannot be cast to java.lang.String</code>.<br>详细的异常如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">Failed to instantiate [org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar]: Factory method <span class="string">&#x27;servletEndpointRegistrar&#x27;</span> threw exception; nested exception is java.lang.ClassCastException: org.springframework.boot.actuate.endpoint.EndpointId cannot be cast to java.lang.String</span><br><span class="line">	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:<span class="number">185</span>) ~[spring-beans-<span class="number">5.1</span>.<span class="number">3.</span>RELEASE.jar:<span class="number">5.1</span>.<span class="number">3.</span>RELEASE]</span><br><span class="line">	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:<span class="number">622</span>) ~[spring-beans-<span class="number">5.1</span>.<span class="number">3.</span>RELEASE.jar:<span class="number">5.1</span>.<span class="number">3.</span>RELEASE]</span><br><span class="line">	... <span class="number">55</span> common frames omitted</span><br><span class="line">Caused by: java.lang.ClassCastException: org.springframework.boot.actuate.endpoint.EndpointId cannot be cast to java.lang.String</span><br><span class="line">	at org.springframework.boot.MvcEndpointUtil.filterCanonicalEndpoints(MvcEndpointUtil.java:<span class="number">102</span>) ~[MvcEndpointUtil.class:<span class="number">2.1</span>.<span class="number">1.</span>RELEASE]</span><br><span class="line">	at org.springframework.boot.MvcEndpointUtil.filterEndpoints(MvcEndpointUtil.java:<span class="number">73</span>) ~[MvcEndpointUtil.class:<span class="number">2.1</span>.<span class="number">1.</span>RELEASE]</span><br><span class="line">	at org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer.discoverEndpoints(EndpointDiscoverer.java:<span class="number">125</span>) ~[spring-boot-actuator-<span class="number">2.1</span>.<span class="number">1.</span>RELEASE.jar:<span class="number">2.1</span>.<span class="number">1.</span>RELEASE]</span><br><span class="line">	at org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer.getEndpoints(EndpointDiscoverer.java:<span class="number">119</span>) ~[spring-boot-actuator-<span class="number">2.1</span>.<span class="number">1.</span>RELEASE.jar:<span class="number">2.1</span>.<span class="number">1.</span>RELEASE]</span><br><span class="line">	at org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration$WebMvcServletEndpointManagementContextConfiguration.servletEndpointRegistrar(ServletEndpointManagementContextConfiguration.java:<span class="number">76</span>) ~[spring-boot-actuator-autoconfigure-<span class="number">2.1</span>.<span class="number">1.</span>RELEASE.jar:<span class="number">2.1</span>.<span class="number">1.</span>RELEASE]</span><br><span class="line">	at org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration$WebMvcServletEndpointManagementContextConfiguration$$EnhancerBySpringCGLIB$$<span class="number">1005825f</span>.CGLIB$servletEndpointRegistrar$<span class="number">0</span>(&lt;generated&gt;) ~[spring-boot-actuator-autoconfigure-<span class="number">2.1</span>.<span class="number">1.</span>RELEASE.jar:<span class="number">2.1</span>.<span class="number">1.</span>RELEASE]</span><br><span class="line">	at org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration$WebMvcServletEndpointManagementContextConfiguration$$EnhancerBySpringCGLIB$$<span class="number">1005825f</span>$$FastClassBySpringCGLIB$$<span class="number">1</span>c44d4f2.invoke(&lt;generated&gt;) ~[spring-boot-actuator-autoconfigure-<span class="number">2.1</span>.<span class="number">1.</span>RELEASE.jar:<span class="number">2.1</span>.<span class="number">1.</span>RELEASE]</span><br><span class="line">	at org.springframework.cglib.proxy.MethodProxy.invokeSuper(MethodProxy.java:<span class="number">244</span>) ~[spring-core-<span class="number">5.1</span>.<span class="number">3.</span>RELEASE.jar:<span class="number">5.1</span>.<span class="number">3.</span>RELEASE]</span><br><span class="line">	at org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor.intercept(ConfigurationClassEnhancer.java:<span class="number">363</span>) ~[spring-context-<span class="number">5.1</span>.<span class="number">3.</span>RELEASE.jar:<span class="number">5.1</span>.<span class="number">3.</span>RELEASE]</span><br><span class="line">	at org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration$WebMvcServletEndpointManagementContextConfiguration$$EnhancerBySpringCGLIB$$<span class="number">1005825f</span>.servletEndpointRegistrar(&lt;generated&gt;) ~[spring-boot-actuator-autoconfigure-<span class="number">2.1</span>.<span class="number">1.</span>RELEASE.jar:<span class="number">2.1</span>.<span class="number">1.</span>RELEASE]</span><br><span class="line">	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:<span class="number">1.8</span>.<span class="number">0_111</span>]</span><br><span class="line">	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:<span class="number">62</span>) ~[na:<span class="number">1.8</span>.<span class="number">0_111</span>]</span><br><span class="line">	at sun.reflect.DelegatingMethodAccessorImpl.__invoke(DelegatingMethodAccessorImpl.java:<span class="number">43</span>) ~[na:<span class="number">1.8</span>.<span class="number">0_111</span>]</span><br><span class="line">	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<span class="number">45009</span>) ~[na:<span class="number">1.8</span>.<span class="number">0_111</span>]</span><br><span class="line">	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:<span class="number">45012</span>) ~[na:<span class="number">1.8</span>.<span class="number">0_111</span>]</span><br><span class="line">	at java.lang.reflect.Method.invoke(Method.java:<span class="number">498</span>) ~[na:<span class="number">1.8</span>.<span class="number">0_111</span>]</span><br><span class="line">	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:<span class="number">154</span>) ~[spring-beans-<span class="number">5.1</span>.<span class="number">3.</span>RELEASE.jar:<span class="number">5.1</span>.<span class="number">3.</span>RELEASE]</span><br><span class="line">	... <span class="number">56</span> common frames omitted</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>很奇怪的异常，看EndpointId的代码也重写了<code>toString()</code>方法，更奇怪的是找不到<code>MvcEndpointUtil</code>的代码出处。困扰了好几天，关键是百度了好久也没到有用的信息，也在群里问了一下，没有人回复。今天用google搜了一下，本来也不太抱希望。最后无意中发现了一篇文章(异常处理)[<a target="_blank" rel="noopener" href="http://www.codeleading.com/article/8276162799/]，">http://www.codeleading.com/article/8276162799/]，</a> 发现跟我碰到同一个问题，最后解决方法不显眼，但还是被我发现了。</p>
+<p><strong>更新 IDEA Jreble 插件</strong></p>
+<p>果断试了一下不用jrebel来启动，果然可以了。不晓得jrebel在这个过程中做了什么操作。 </p>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Q</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://qzztf.com/post/b2e0/">http://qzztf.com/post/b2e0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://qzztf.com" target="_blank">秦观园</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/EndpointId/">EndpointId</a><a class="post-meta__tags" href="/tags/MvcEndpointUtil/">MvcEndpointUtil</a><a class="post-meta__tags" href="/tags/%E5%BC%82%E5%B8%B8/">异常</a><a class="post-meta__tags" href="/tags/jrebel/">jrebel</a></div><div class="post_share"><div class="social-share" data-image="/null" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/post/b6a/"><img class="prev-cover" data-lazy-src="/null" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">创建my-jpa初衷</div></div></a></div><div class="next-post pull-right"><a href="/post/4085/"><img class="next-cover" data-lazy-src="/null" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">在controller 参数中使用枚举</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts-list"><div><a href="/post/e88/" title="错误: 未报告的异常错误X; 必须对其进行捕获或声明以便抛出"><img class="cover" data-lazy-src="/null"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-06-03</div><div class="title">错误: 未报告的异常错误X; 必须对其进行捕获或声明以便抛出</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By Q</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '0de3031f6a90e873ab14',
+      clientSecret: '2f2e5f0a65e12fddfc3bdcdd7c3f5ce6dd5c7b7e',
+      repo: 'qinzaizhen.github.io',
+      owner: 'qinzaizhen',
+      admin: ['qinzaizhen'],
+      id: 'eb998171732b7bfb59bf142c9d043808',
+      language: 'zh-CN',
+      perPage: 10,
+      distractionFreeMode: true,
+      pagerDirection: 'last',
+      createIssueManually: false,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><canvas class="fireworks"></canvas><script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script><script src="/js/third-party/fireworks.js"></script><script defer="defer" id="ribbon_piao" mobile="false" src="/js/third-party/piao.js"></script></div></body></html>
