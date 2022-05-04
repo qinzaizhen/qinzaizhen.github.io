@@ -1,7 +1,10 @@
 ---
 title: Spring AOP 调用同一个对象的方法
+tags:
+  - Spring
+  - AOP
+abbrlink: 9fa5
 date: 2020-12-05 22:55:47
-tags: [Spring,AOP]
 ---
 
 经过前面的学习，我们了解了Spring AOP的执行过程。
