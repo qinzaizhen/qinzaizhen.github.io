@@ -64,10 +64,10 @@ algolia_search:
 
 # Local search
 local_search:
-  enable: false
+  enable: true
   labels:
-    input_placeholder: Search for Posts
-    hits_empty: "We didn't find any results for the search: ${query}" # if there are no result
+    input_placeholder: Search for Mind
+    hits_empty: "不好意思，你要查找的内容我还没写: ${query}" # if there are no result
 
 # Math (數學)
 # --------------------------------------
@@ -95,7 +95,7 @@ favicon: favicon.ico
 
 # Avatar (頭像)
 avatar:
-  img:
+  img: /image/avatar.webp
   effect: false
 
 # the banner image of home page
@@ -526,7 +526,7 @@ activate_power_mode:
 
 # Mouse click effects: fireworks (鼠標點擊效果: 煙火特效)
 fireworks:
-  enable: true
+  enable: false
   zIndex: 9999 # -1 or 9999
 
 # Mouse click effects: Heart symbol (鼠標點擊效果: 愛心)
