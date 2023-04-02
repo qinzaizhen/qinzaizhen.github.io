@@ -17,7 +17,7 @@
     "hexo-generator-search": "^2.4.3",
     "hexo-generator-sitemap": "1.1.2",
     "hexo-generator-tag": "^0.2.0",
-    "hexo-offline": "^1.0.0",
+    "hexo-offline": "^2.0.1",
     "hexo-renderer-ejs": "^0.2.0",
     "hexo-renderer-marked": "^3.2.0",
     "hexo-renderer-pug": "^1.0.0",
