@@ -1,0 +1,809 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>BeanWrapper | 水娃火娃石榴娃</title><meta name="author" content="水娃"><meta name="copyright" content="水娃"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="BeanWrapperBeanWrapper是什么Spring底层操作Java Bean的核心接口。 通常不直接使用该接口，而是通过BeanFactory或DataBinder。 提供分析和操作标准Java Bean的操作: 获取和设置属性值(单个或批量)、获取属性描述以及查询属性的可读性&amp;#x2F;可写性的"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="http://qzztf.com/post/504e/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/image/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/image/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/image/pwa/16.png"/><link rel="mask-icon" href="/image/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?86553a0f289bcfb307062507dc247eb2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'BeanWrapper',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-06-16 15:25:26'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="水娃火娃石榴娃"><span class="site-name">水娃火娃石榴娃</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">BeanWrapper</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-09-05T07:51:12.000Z" title="发表于 2019-09-05 15:51:12">2019-09-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-06-16T07:25:26.140Z" title="更新于 2024-06-16 15:25:26">2024-06-16</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">8.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>33分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="BeanWrapper"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="BeanWrapper"><a href="#BeanWrapper" class="headerlink" title="BeanWrapper"></a>BeanWrapper</h1><h2 id="BeanWrapper是什么"><a href="#BeanWrapper是什么" class="headerlink" title="BeanWrapper是什么"></a>BeanWrapper是什么</h2><p>Spring底层操作Java Bean的核心接口。</p>
+<p>通常不直接使用该接口，而是通过<code>BeanFactory</code>或<code>DataBinder</code>。</p>
+<p>提供分析和操作标准Java Bean的操作: 获取和设置属性值(单个或批量)、获取属性描述以及查询属性的可读性/可写性的能力。</p>
+<p>此接口还支持嵌套属性，允许将子属性上的属性设置为无限深度。</p>
+<p><code>BeanWrapper</code>的<code>extractOldValueForEditor</code>默认值是<code>false</code>，可以避免调用 <code>getter</code>方法。将此选项设置为<code>true</code>，可以向自定义编辑器暴露当前属性值。</p>
+<p>可以看出<code>BeanWrapper</code>是操作Java Bean 的强大利器。</p>
+<h2 id="类结构"><a href="#类结构" class="headerlink" title="类结构"></a>类结构</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/post/504e/BeanWrapper%E7%B1%BB%E7%BB%93%E6%9E%84.png" alt="BeanWrapper类结构"></p>
+<p>BeanWrapper 继承自<code>TypeConverter</code>，<code>PropertyEditorRegistry</code>，<code>PropertyAccessor</code>, <code>ConfigurablePropertyAccessor</code>接口。从名称可以看出具备了类型转换，属性编辑器注册，属性访问及配置的功能。</p>
+<h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><p>接下来看看如何使用BeanWrapper来操作我们的Java Bean。</p>
+<p>Spring给我们提供了一个实现类<code>BeanWrapperImpl</code>，我们就用这个类来展示。</p>
+<h3 id="获取属性"><a href="#获取属性" class="headerlink" title="获取属性"></a>获取属性</h3><p>Bean对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String age;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ClassRoom classRoom;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(String age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ClassRoom <span class="title">getClassRoom</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> classRoom;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setClassRoom</span><span class="params">(ClassRoom classRoom)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.classRoom = classRoom;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义了<em>3</em>个属性，看一下使用方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Student student = <span class="keyword">new</span> Student();</span><br><span class="line">BeanWrapper wrapper = <span class="keyword">new</span> BeanWrapperImpl(student);</span><br><span class="line">System.out.println(<span class="string">&quot;展示bean 的属性&quot;</span>);</span><br><span class="line">Arrays.stream(wrapper.getPropertyDescriptors()).forEach(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<p>结果如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">展示bean 的属性</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=age]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=class]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=classRoom]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=name]</span><br></pre></td></tr></table></figure>
+
+<p>可以看出将有<code>get</code>方法的属性已经打印出来了。同时可以看到多打印了一个<code>class</code>属性，但是我们的类里面没有定义这个属性，<code>Object</code>类中有<code>getClass</code>的方法。我们大胆猜测Spring会遵循Java Bean的设计原则，通过<code>get</code>方法来获取属性。 </p>
+<p>现在将<code>age</code>改成<code>age1</code>，<code>getAge</code>方法不变，看一下结果。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">展示bean 的属性</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=age]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=class]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=classRoom]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=name]</span><br></pre></td></tr></table></figure>
+
+<p>打印出来的属性名一样。现在交换一下，将<code>getAge</code>改成<code>getAge1</code>，属性<code>age1</code>改成<code>age</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">展示bean 的属性</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=age1]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=class]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=classRoom]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=name]</span><br></pre></td></tr></table></figure>
+
+<p>可以看到获取到的属性已经变成了<code>age1</code>。这充分验证了我们的猜想。</p>
+<p>我们可以看一下Spring的代码，里面使用了<code>java.beans</code>包下<code>Introspector</code>类来获取Bean的信息。</p>
+<h4 id="嵌套属性"><a href="#嵌套属性" class="headerlink" title="嵌套属性"></a>嵌套属性</h4><p>上面的结果中，我们并没有获取到ClassRoom的属性。BeanWrapper并不支持这种操作，我们可以扩展一下，比如判断属性，如果是自定义的类型，那么就再调用一次BeanWrapper的方法。这有个前提是这个属性不为<code>null</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Student student = <span class="keyword">new</span> Student();</span><br><span class="line">student.setClassRoom(<span class="keyword">new</span> ClassRoom());</span><br><span class="line">BeanWrapper wrapper = <span class="keyword">new</span> BeanWrapperImpl(student);</span><br><span class="line"></span><br><span class="line">System.out.println(<span class="string">&quot;展示bean 的属性&quot;</span>);</span><br><span class="line">Arrays.stream(wrapper.getPropertyDescriptors()).forEach(System.out::println);</span><br><span class="line"></span><br><span class="line">System.out.println(<span class="string">&quot;展示bean 的嵌套属性&quot;</span>);</span><br><span class="line">wrapper = <span class="keyword">new</span> PowerfulBeanWrapper(student);</span><br><span class="line">Arrays.stream(wrapper.getPropertyDescriptors()).forEach(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<p>先上结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">展示bean 的属性</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=age]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=class]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=classRoom]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=name]</span><br><span class="line">展示bean 的嵌套属性</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=age]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=class]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=classRoom]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=name]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=class]</span><br><span class="line">org.springframework.beans.GenericTypeAwarePropertyDescriptor[name=name]</span><br></pre></td></tr></table></figure>
+
+<p>ClassRoom类只有一个name 属性，这里看到也打印出来了。证明思路是对的，只是这个结构还需要组织一下，现在是扁平的。</p>
+<p>下面看一下<code>PowerfulBeanWrapper</code>的实现方式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PowerfulBeanWrapper</span> <span class="keyword">extends</span> <span class="title">BeanWrapperImpl</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PowerfulBeanWrapper</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(o);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> PropertyDescriptor[] getPropertyDescriptors() &#123;</span><br><span class="line">        PropertyDescriptor[] propertyDescriptors = <span class="keyword">super</span>.getPropertyDescriptors();</span><br><span class="line">        List&lt;PropertyDescriptor&gt; propertyDescriptorList = <span class="keyword">new</span> ArrayList&lt;&gt;(Arrays.asList(propertyDescriptors));</span><br><span class="line">        Arrays.stream(propertyDescriptors).forEach(propertyDescriptor -&gt; &#123;</span><br><span class="line">            Object value = getPropertyValue(propertyDescriptor.getName());</span><br><span class="line">            <span class="keyword">if</span> (value != <span class="keyword">null</span> &amp;&amp; !(value <span class="keyword">instanceof</span> Class) &amp;&amp; !value.getClass().isPrimitive()) &#123;</span><br><span class="line">                propertyDescriptorList.addAll(Arrays.asList(<span class="keyword">new</span> BeanWrapperImpl(value).getPropertyDescriptors()));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">return</span> propertyDescriptorList.toArray(<span class="keyword">new</span> PropertyDescriptor[<span class="number">0</span>]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>直接继承自<code>BeanWrapperImpl</code>类，覆盖了<code>getPropertyDescriptors</code>方法。遍历属性值，如果不为空并且不是Class，则再获取一次这个属性的属性。这里只获取了2层属性，可以在获取嵌套属性时换成我们的<code>PowerfulBeanWrapper</code>类既可支持无限层。</p>
+<h3 id="获取属性值"><a href="#获取属性值" class="headerlink" title="获取属性值"></a>获取属性值</h3><p>可以使用BeanWrapper的<code>getPropertyValue</code>方法来获取属性值。上面的代码中已经展示过了。</p>
+<p>支持获取嵌套属性：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Student student = <span class="keyword">new</span> Student();</span><br><span class="line">ClassRoom classRoom = <span class="keyword">new</span> ClassRoom();</span><br><span class="line">classRoom.setName(<span class="string">&quot;room1&quot;</span>);</span><br><span class="line">student.setClassRoom(classRoom);</span><br><span class="line">BeanWrapper wrapper = <span class="keyword">new</span> BeanWrapperImpl(student);</span><br><span class="line">System.out.println(wrapper.getPropertyValue(<span class="string">&quot;name&quot;</span>));</span><br><span class="line">System.out.println(wrapper.getPropertyValue(<span class="string">&quot;classRoom.name&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">null</span></span><br><span class="line">room1</span><br></pre></td></tr></table></figure>
+
+<p>可以看出来还是很方便的。</p>
+<p><strong>注： 当嵌套对象为空时，默认获取嵌套对象的属性会抛出异常。</strong>  这时可以加一个设置：</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wrapper.setAutoGrowNestedPaths(<span class="keyword">true</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;嵌套对象为空时：&quot;</span> + wrapper.getPropertyValue(<span class="string">&quot;classRoom.name&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<p>该属性的意义是自动扩展嵌套属性，按照默认值来初始化属性。此处就会将<code>classRoom</code>初始化，并且里面的属性为空。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">嵌套对象为空时：<span class="keyword">null</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="设置属性值"><a href="#设置属性值" class="headerlink" title="设置属性值"></a>设置属性值</h3><p>可以通过<code>setPropertyValue</code>方法来设置属性值。同上，当嵌套对象为空时，不能设置嵌套对象的属性，设置<code>wrapper.setAutoGrowNestedPaths(true)</code>即可。</p>
+<p>注意以下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> String age;</span><br><span class="line"></span><br><span class="line">wrapper.setPropertyValue(<span class="string">&quot;age&quot;</span>,<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>在这里设置属性值的时候是整数型，但是<code>age</code>声明的时候是String。BeanWrapper是如何正确的赋值的呢？</p>
+<p><code>BeanWrapperImpl</code>内部会委托给<code>TypeConverterDelegate</code>类，先查找自定义<code>PropertyEditor</code>, 如果没有找到的话，则查找<code>ConversionService</code>，没有的话查找默认的<code>PropertyEditor</code>,再没有的话使用内部定义好的转换策略（按类型去判断，然后去转换）。</p>
+<h2 id="PropertyEditor"><a href="#PropertyEditor" class="headerlink" title="PropertyEditor"></a>PropertyEditor</h2><p><code>PropertyEditor</code>属于Java Bean规范里面的类，可以给GUI程序设置对象属性值提供方便，所以接口里有一些和GUI相关的方法，显然目前已经过时了。同时，官方文档上解释，它是线程不安全的。必须得有一个默认构造函数。可以想象一下，在界面上填入一个值，这个值一般来说都是<code>String</code>类型的，填入之后这个值能自动设置到对应的对象中（ 这里纯粹是我意淫的，对<code>awt</code>并不是很熟，不知道是不是这样）。了解安卓编程的朋友可能知道，我们要取界面上填的值，通常要拿到界面元素，然后再拿到值，然后再设置到对象中去。当界面上有很多个输入控件时，这样繁琐的操作，简直要人命。所以安卓后来出了数据绑定。这里有一篇<a target="_blank" rel="noopener" href="https://www.iteye.com/blog/stamen-1525668">文章</a>讲得很好。</p>
+<p>BeanWrapperImpl内置了一些 <code>PropertyEditor</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">createDefaultEditors</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors = <span class="keyword">new</span> HashMap&lt;&gt;(<span class="number">64</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Simple editors, without parameterization capabilities.</span></span><br><span class="line">		<span class="comment">// The JDK does not contain a default editor for any of these target types.</span></span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Charset.class, <span class="keyword">new</span> CharsetEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Class.class, <span class="keyword">new</span> ClassEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Class[].class, <span class="keyword">new</span> ClassArrayEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Currency.class, <span class="keyword">new</span> CurrencyEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(File.class, <span class="keyword">new</span> FileEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(InputStream.class, <span class="keyword">new</span> InputStreamEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(InputSource.class, <span class="keyword">new</span> InputSourceEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Locale.class, <span class="keyword">new</span> LocaleEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Path.class, <span class="keyword">new</span> PathEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Pattern.class, <span class="keyword">new</span> PatternEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Properties.class, <span class="keyword">new</span> PropertiesEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Reader.class, <span class="keyword">new</span> ReaderEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Resource[].class, <span class="keyword">new</span> ResourceArrayPropertyEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(TimeZone.class, <span class="keyword">new</span> TimeZoneEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(URI.class, <span class="keyword">new</span> URIEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(URL.class, <span class="keyword">new</span> URLEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(UUID.class, <span class="keyword">new</span> UUIDEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(ZoneId.class, <span class="keyword">new</span> ZoneIdEditor());</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Default instances of collection editors.</span></span><br><span class="line">		<span class="comment">// Can be overridden by registering custom instances of those as custom editors.</span></span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Collection.class, <span class="keyword">new</span> CustomCollectionEditor(Collection.class));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Set.class, <span class="keyword">new</span> CustomCollectionEditor(Set.class));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(SortedSet.class, <span class="keyword">new</span> CustomCollectionEditor(SortedSet.class));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(List.class, <span class="keyword">new</span> CustomCollectionEditor(List.class));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(SortedMap.class, <span class="keyword">new</span> CustomMapEditor(SortedMap.class));</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Default editors for primitive arrays.</span></span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(<span class="keyword">byte</span>[].class, <span class="keyword">new</span> ByteArrayPropertyEditor());</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(<span class="keyword">char</span>[].class, <span class="keyword">new</span> CharArrayPropertyEditor());</span><br><span class="line"></span><br><span class="line">		<span class="comment">// The JDK does not contain a default editor for char!</span></span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(<span class="keyword">char</span>.class, <span class="keyword">new</span> CharacterEditor(<span class="keyword">false</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Character.class, <span class="keyword">new</span> CharacterEditor(<span class="keyword">true</span>));</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Spring&#x27;s CustomBooleanEditor accepts more flag values than the JDK&#x27;s default editor.</span></span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(<span class="keyword">boolean</span>.class, <span class="keyword">new</span> CustomBooleanEditor(<span class="keyword">false</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Boolean.class, <span class="keyword">new</span> CustomBooleanEditor(<span class="keyword">true</span>));</span><br><span class="line"></span><br><span class="line">		<span class="comment">// The JDK does not contain default editors for number wrapper types!</span></span><br><span class="line">		<span class="comment">// Override JDK primitive number editors with our own CustomNumberEditor.</span></span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(<span class="keyword">byte</span>.class, <span class="keyword">new</span> CustomNumberEditor(Byte.class, <span class="keyword">false</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Byte.class, <span class="keyword">new</span> CustomNumberEditor(Byte.class, <span class="keyword">true</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(<span class="keyword">short</span>.class, <span class="keyword">new</span> CustomNumberEditor(Short.class, <span class="keyword">false</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Short.class, <span class="keyword">new</span> CustomNumberEditor(Short.class, <span class="keyword">true</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(<span class="keyword">int</span>.class, <span class="keyword">new</span> CustomNumberEditor(Integer.class, <span class="keyword">false</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Integer.class, <span class="keyword">new</span> CustomNumberEditor(Integer.class, <span class="keyword">true</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(<span class="keyword">long</span>.class, <span class="keyword">new</span> CustomNumberEditor(Long.class, <span class="keyword">false</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Long.class, <span class="keyword">new</span> CustomNumberEditor(Long.class, <span class="keyword">true</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(<span class="keyword">float</span>.class, <span class="keyword">new</span> CustomNumberEditor(Float.class, <span class="keyword">false</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Float.class, <span class="keyword">new</span> CustomNumberEditor(Float.class, <span class="keyword">true</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(<span class="keyword">double</span>.class, <span class="keyword">new</span> CustomNumberEditor(Double.class, <span class="keyword">false</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(Double.class, <span class="keyword">new</span> CustomNumberEditor(Double.class, <span class="keyword">true</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(BigDecimal.class, <span class="keyword">new</span> CustomNumberEditor(BigDecimal.class, <span class="keyword">true</span>));</span><br><span class="line">		<span class="keyword">this</span>.defaultEditors.put(BigInteger.class, <span class="keyword">new</span> CustomNumberEditor(BigInteger.class, <span class="keyword">true</span>));</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Only register config value editors if explicitly requested.</span></span><br><span class="line">		<span class="keyword">if</span> (<span class="keyword">this</span>.configValueEditorsActive) &#123;</span><br><span class="line">			StringArrayPropertyEditor sae = <span class="keyword">new</span> StringArrayPropertyEditor();</span><br><span class="line">			<span class="keyword">this</span>.defaultEditors.put(String[].class, sae);</span><br><span class="line">			<span class="keyword">this</span>.defaultEditors.put(<span class="keyword">short</span>[].class, sae);</span><br><span class="line">			<span class="keyword">this</span>.defaultEditors.put(<span class="keyword">int</span>[].class, sae);</span><br><span class="line">			<span class="keyword">this</span>.defaultEditors.put(<span class="keyword">long</span>[].class, sae);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里没有注册<code>String</code>, 所以走的是内置方案，直接调用<code>toString</code>方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (String.class == requiredType &amp;&amp; ClassUtils.isPrimitiveOrWrapper(convertedValue.getClass())) &#123;</span><br><span class="line">  <span class="comment">// We can stringify any primitive value...</span></span><br><span class="line">  <span class="keyword">return</span> (T) convertedValue.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义PropertyEditor"><a href="#自定义PropertyEditor" class="headerlink" title="自定义PropertyEditor"></a>自定义<code>PropertyEditor</code></h3><p>当Spring提供的<code>PropertyEditor</code>无法满足我们的需求时，我们可以自定义<code>PropertyEditor</code>。</p>
+<p>一般不直接实现接口，而是继承<code>PropertyEditorSupport</code>类。Spring中大多数场景都是将传入的字符串转换成对应的属性值，需要重写<code>setAsText</code>方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 转换String -&gt; ClassRoom;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassRoomPropertyEditor</span> <span class="keyword">extends</span> <span class="title">PropertyEditorSupport</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAsText</span><span class="params">(String text)</span> <span class="keyword">throws</span> IllegalArgumentException </span>&#123;</span><br><span class="line">        <span class="comment">//将逗号分隔的值转换成对象的属性值：room3,3</span></span><br><span class="line">        String[] strings = Optional.ofNullable(text).orElseGet(String::<span class="keyword">new</span>).split(<span class="string">&quot;,&quot;</span>);</span><br><span class="line">        ClassRoom classRoom = <span class="keyword">new</span> ClassRoom();</span><br><span class="line">        classRoom.setName(strings[<span class="number">0</span>]);</span><br><span class="line">        classRoom.setSize(Integer.parseInt(strings[<span class="number">1</span>]));</span><br><span class="line">        setValue(classRoom);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码中，将字符串进行分隔，第一个值作为<code>ClassRoom</code>的<code>name</code>值，第二个值作为<code>size</code>。如何使用这个<code>PropertyEditor</code>?</p>
+<p>先注册这个类，再设置<code>Student</code>的<code>classRoom</code>属性：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">wrapper = <span class="keyword">new</span> BeanWrapperImpl(student);</span><br><span class="line"><span class="comment">//注解自定义PropertyEditor</span></span><br><span class="line">wrapper.registerCustomEditor(ClassRoom.class, <span class="keyword">new</span> ClassRoomPropertyEditor());</span><br><span class="line">wrapper.setPropertyValue(<span class="string">&quot;classRoom&quot;</span>, <span class="string">&quot;room3,3&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这样就给<code>Student</code>类的<code>classRoom</code>属性进行了初始化。</p>
+<h2 id="ConversionService"><a href="#ConversionService" class="headerlink" title="ConversionService"></a><code>ConversionService</code></h2><p><code>ConversionService</code>是Spring提供的一套通用的类型转换机制的入口，相比<code>PropertyEditor</code>来说：</p>
+<ol>
+<li>支持的类型转换范围更广。</li>
+<li>支持从父类型转换为子类型，即多态。</li>
+<li>省去了Java GUI相关的概念。</li>
+<li>线程安全。</li>
+</ol>
+<h3 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h3><ul>
+<li><p><code>boolean canConvert(@Nullable Class&lt;?&gt; sourceType, Class&lt;?&gt; targetType)</code>：如果可以将<code>sourceType</code>对象转换为<code>targetType</code>，则返回<code>true</code>。</p>
+<p>如果此方法返回<code>true</code>，则意味着<code>convert(Object, Class)</code>方法能够将<code>sourceType</code>实例转换为<code>targetType</code>。</p>
+<p>关于集合、数组和Map类型需要特别注意：<strong>对于集合、数组和Map类型之间的转换，此方法将返回true，即使在底层元素不可转换的情况下，转换过程仍然可能生成一个<code>ConversionException</code>。在处理集合和映射时，调用者需要处理这种特殊情况。</strong></p>
+</li>
+<li><p><code>boolean canConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType)</code>：如果可以将<code>sourceType</code>对象转换为<code>targetType</code>，则返回<code>true</code>。<code>TypeDescriptor </code>提供关于将要发生转换的源和目标位置的附加上下文信息，通常是对象字段或属性的位置。</p>
+<p>如果此方法返回<code>true</code>，则意味着<code>convert(Object、TypeDescriptor、TypeDescriptor)</code>能够将<code>sourceType</code>实例转换为<code>targetType</code>。</p>
+<p>关于集合、数组和Map类型需要特别注意：<strong>对于集合、数组和Map类型之间的转换，此方法将返回true，即使在底层元素不可转换的情况下，转换过程仍然可能生成一个<code>ConversionException</code>。在处理集合和映射时，调用者需要处理这种特殊情况。</strong></p>
+</li>
+<li><p><code>&lt;T&gt; T convert(@Nullable Object source, Class&lt;T&gt; targetType)</code>：将给定的对象转换为指定的<code>targetType</code>类型对象。</p>
+</li>
+<li><p><code>Object convert(@Nullable Object source, @Nullable TypeDescriptor sourceType, TypeDescriptor targetType)</code>：将给定的对象转换为指定的<code>targetType</code>类型对象。<code>TypeDescriptor </code>提供关于将要发生转换的源和目标位置的附加上下文信息，通常是对象字段或属性位置。</p>
+</li>
+</ul>
+<h2 id="Converter"><a href="#Converter" class="headerlink" title="Converter"></a><code>Converter</code></h2><p><code>Converter</code>是具体的某类转换器接口，负责将某个类型的对象转成另外一个类型的对象。并且是一个函数式接口。</p>
+<p>就提供了一个转换方法：</p>
+<ul>
+<li><code>T convert(S source)</code>：转换对象类型。</li>
+</ul>
+<h2 id="ConverterFactory"><a href="#ConverterFactory" class="headerlink" title="ConverterFactory"></a><code>ConverterFactory</code></h2><p>生产一种<code>Converter</code>，这种<code>Converter</code>可以将对象从<code>S</code>转换为<code>R</code>的子类型。也就是说支持多态功能。<br>实现类还可以实现<code>ConditionalConverter</code>接口。</p>
+<ul>
+<li><code>&lt;T extends R&gt; Converter&lt;S, T&gt; getConverter(Class&lt;T&gt; targetType)</code>：根据目标类型<code>T</code>获取<code>Converter</code>，该<code>Converter</code>将源类型<code>S</code>转换成<code>R</code>的子类型<code>T</code>。</li>
+</ul>
+<h2 id="ConditionalConverter"><a href="#ConditionalConverter" class="headerlink" title="ConditionalConverter"></a><code>ConditionalConverter</code></h2><p>该接口可以根据源和目标<code>TypeDescriptor</code>的属性选择性地执行<code>Converter</code>、<code>GenericConverter</code>或<code>ConverterFactory</code>。</p>
+<p>通常用于根据字段或类特征(如注解或方法)的存在选择性地匹配自定义转换逻辑。例如，当从<code>String</code>字段转换为<code>Date</code>字段时，如果目标字段还有<code>@DateTimeFormat</code>注解，则实现类<code>matches</code>方法可能返回<code>true</code>，也就是说如果目标字段上没有<code>@DateTimeFormat</code>注解，那么可能不会应用该转换，该接口可以控制需不需要转换。</p>
+<p>另外一个例子，当从字符串字段转换为<code>Account</code>字段时，如果目标<code>Account</code>类定义了公共静态<code>findAccount(String)</code>方法，则实现类<code>matches</code>方法可能返回<code>true</code>。</p>
+<ul>
+<li><code>boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType)</code>：是否需要转换。</li>
+</ul>
+<h2 id="GenericConverter"><a href="#GenericConverter" class="headerlink" title="GenericConverter"></a><code>GenericConverter</code></h2><p>这是最灵活的转换器SPI接口，也是最复杂的。它的灵活性在于<code>GenericConverter</code>可以支持多个源/目标类型对之间的转换(参见<code>getConvertibleTypes()</code>方法)。此外，<code>GenericConverter</code>实现类在类型转换过程中可以访问源/目标字段上下文，允许解析源和目标字段元数据，如注解和泛型信息，这些信息可用于复杂转换逻辑。</p>
+<p>当比较简单的<code>Converter</code>或<code>ConverterFactory</code>接口够用时，通常不应使用此接口。<br>实现类还可以实现<code>ConditionalConverter</code>接口。</p>
+<ul>
+<li>Set<ConvertiblePair> getConvertibleTypes()：返回此<code>Converter</code>可以在源类型和目标类型之间转换的类型。<br>Set中每条都是一个可转换的源到目标类型对。<code>ConvertiblePair</code>保存源类型与目标类型的映射关系。<br>对于<code>ConditionalConverter</code>，此方法可能返回<code>null</code>，意味着该<code>GenericConverter</code>适用于所有源与目标类型对。未实现<code>ConditionalConverter</code>接口的实现类，此方法不能返回<code>null</code>。</ConvertiblePair></li>
+</ul>
+<h2 id="ConverterRegistry"><a href="#ConverterRegistry" class="headerlink" title="ConverterRegistry"></a><code>ConverterRegistry</code></h2><p>用来注册<code>Converter</code>。</p>
+<h2 id="ConversionService组件结构"><a href="#ConversionService组件结构" class="headerlink" title="ConversionService组件结构"></a><code>ConversionService</code>组件结构</h2><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/post/504e/ConversionService%E7%BB%93%E6%9E%84.png" alt="ConversionService结构"></p>
+<p><code>ConversionService</code>提供转换功能的统一入口，<code>ConverterRegistry</code>提供<code>Converter</code>注册功能，将<code>Converter</code>集中起来，转换时从中查出对应的<code>Converter</code>。<code>Converter</code>负责具体的转换过程。<code>ConfigurableConversionService</code>继承自<code>ConversionService</code>和<code>ConverterRegistry</code>，集成转换和注册功能。</p>
+<p>下面看一下具体的实现类。</p>
+<h2 id="GenericConversionService类"><a href="#GenericConversionService类" class="headerlink" title="GenericConversionService类"></a><code>GenericConversionService</code>类</h2><p>基础转换服务实现，适用于大部分情况。直接实现<code>ConfigurableConversionService</code>接口，实现了注册与转换功能。在注册<code>Converter</code>、<code>ConverterFactory</code>时，会将其转换成<code>GenericConverter</code>。</p>
+<h2 id="DefaultConversionService类"><a href="#DefaultConversionService类" class="headerlink" title="DefaultConversionService类"></a><code>DefaultConversionService</code>类</h2><p>继承自<code>GenericConversionService</code>，配置了适合大多数环境的<code>Converter</code>。<br>该类使用时可以直接实例化，暴露出静态方法<code>addDefaultConverters(ConverterRegistry)</code>，用于对某个<code>ConverterRegistry</code>实例进行特殊处理，也就是说当某个<code>ConverterRegistry</code>需要增加一个默认的<code>Converter</code>时，可以调用这个方法。</p>
+<p>这里我们可以直接使用<code>DefaultConversionService</code>类，Spring已经配置了一些<code>Converter</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">student = <span class="keyword">new</span> Student();</span><br><span class="line">wrapper = <span class="keyword">new</span> BeanWrapperImpl(student);</span><br><span class="line">wrapper.setAutoGrowNestedPaths(<span class="keyword">true</span>);</span><br><span class="line"><span class="comment">//注册ConversionService</span></span><br><span class="line">wrapper.setConversionService(<span class="keyword">new</span> DefaultConversionService());</span><br><span class="line">wrapper.setPropertyValue(<span class="string">&quot;classRoom.size&quot;</span>, <span class="string">&quot;3&quot;</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;ConversionService, 设置嵌套对象的属性 size：&quot;</span> + wrapper.getPropertyValue(<span class="string">&quot;classRoom.size&quot;</span>));</span><br><span class="line"><span class="comment">//这里将字符串转换成数字</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Spring-提供的Converter"><a href="#Spring-提供的Converter" class="headerlink" title="Spring 提供的Converter"></a>Spring 提供的<code>Converter</code></h2><p>在Spring 的<code>org.springframework.core.convert.support</code>包中内置了一些转换器，提供数组、集合、字符串、数字、枚举、对象、Map、Boolean等之间的转换功能。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Array</th>
+<th>Collection</th>
+<th>Stream</th>
+<th>ByteBuffer</th>
+<th>String(Character)</th>
+<th>Number(Integer)</th>
+<th>Object</th>
+<th>Enum</th>
+<th>Map</th>
+<th>Boolean</th>
+<th>Charset</th>
+<th>Currency</th>
+<th>Locale</th>
+<th>Properties</th>
+<th>TimeZone</th>
+<th>UUID</th>
+<th>Calendar</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Array</td>
+<td><code>ArrayToArrayConverter</code></td>
+<td><code>ArrayToCollectionConverter</code></td>
+<td><code>StreamConverter</code></td>
+<td><code>ByteBufferConverter</code></td>
+<td><code>ArrayToStringConverter</code></td>
+<td></td>
+<td><code>ArrayToObjectConverter</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Collection</td>
+<td><code>CollectionToArrayConverter</code></td>
+<td><code>CollectionToCollectionConverter</code></td>
+<td><code>StreamConverter</code></td>
+<td></td>
+<td><code>CollectionToStringConverter</code></td>
+<td></td>
+<td><code>CollectionToObjectConverter</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Stream</td>
+<td><code>StreamConverter</code></td>
+<td><code>StreamConverter</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>String(Character)</td>
+<td><code>StringToArrayConverter</code></td>
+<td><code>StringToCollectionConverter</code></td>
+<td></td>
+<td></td>
+<td><code>StringToCharacterConverter</code></td>
+<td><code>StringToNumberConverterFactory</code></td>
+<td></td>
+<td><code>StringToEnumConverterFactory</code></td>
+<td></td>
+<td><code>StringToBooleanConverter</code></td>
+<td><code>StringToCharsetConverter</code></td>
+<td><code>StringToCurrencyConverter</code></td>
+<td><code>StringToLocaleConverter</code></td>
+<td><code>StringToPropertiesConverter</code></td>
+<td><code>StringToTimeZoneConverter</code></td>
+<td><code>StringToUUIDConverter</code></td>
+<td></td>
+</tr>
+<tr>
+<td>ByteBuffer</td>
+<td><code>ByteBufferConverter</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><code>ByteBufferConverter</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Number(Integer)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><code>NumberToCharacterConverter</code></td>
+<td><code>NumberToNumberConverterFactory</code></td>
+<td></td>
+<td><code>IntegerToEnumConverterFactory</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Object</td>
+<td><code>ObjectToArrayConverter</code></td>
+<td><code>ObjectToCollectionConverter</code></td>
+<td></td>
+<td><code>ByteBufferConverter</code></td>
+<td><code>ObjectToStringConverter</code></td>
+<td></td>
+<td><code>ObjectToObjectConverter</code>,<code>IdToEntityConverter</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Enum</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><code>EnumToStringConverter</code></td>
+<td><code>EnumToIntegerConverter</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Map</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><code>MapToMapConverter</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Boolean</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Properties</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><code>PropertiesToStringConverter</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ZoneId</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><code>ZoneIdToTimeZoneConverter</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ZonedDateTime</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><code>ZonedDateTimeToCalendarConverter</code></td>
+</tr>
+</tbody></table>
+<h3 id="StringToBooleanConverter"><a href="#StringToBooleanConverter" class="headerlink" title="StringToBooleanConverter"></a><code>StringToBooleanConverter</code></h3><p>将<code>String</code>转换成<code>Boolean</code>。<code>true</code>、<code>on、yes、1</code> 转换成<code>Boolean.TRUE</code>。<code>false、off</code> 、no<code> 、</code>0 <code>转换成</code>Boolean.FALSE`。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wrapper.setPropertyValue(<span class="string">&quot;good&quot;</span>, <span class="string">&quot;1&quot;</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;ConversionService, 设置bool值。 good：&quot;</span> + wrapper.getPropertyValue(<span class="string">&quot;good&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">//-------</span></span><br><span class="line"><span class="comment">//输出：</span></span><br><span class="line"><span class="comment">//ConversionService, 设置bool值。 good：true</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="自定义Converter"><a href="#自定义Converter" class="headerlink" title="自定义Converter"></a>自定义<code>Converter</code></h2><p>当Spring提供的转换器无法满足我们需要时，我们可以自定义转换逻辑。</p>
+<p>上面提到的<code>Converter</code>、<code>GenericConverter</code>和<code>ConverterFactory</code>三个接口都可以用来实现转换逻辑。该如何选择？</p>
+<ul>
+<li><p><code>Converter</code>：单值。从<code>S</code>-&gt;<code>T</code>。一对一转换。</p>
+</li>
+<li><p><code>ConverterFactory</code>：从<code>S</code> -&gt; <code>T extends R</code>。一对多转换。 </p>
+</li>
+<li><p><code>GenericConverter</code> ：功能最复杂。实现多个类型对的转换。多对多转换。</p>
+</li>
+</ul>
+<p>在自定义<code>PropertyEditor</code>示例中，我们实现了从<code>String</code>转换到<code>ClassRoom</code>的功能。在这里通过<code>Converter</code>来实现此功能。</p>
+<ol>
+<li><p><code>StringToClassRoomConverter实现</code>String<code>转换到</code>ClassRoom`的功能。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringToClassRoomConverter</span> <span class="keyword">implements</span> <span class="title">Converter</span>&lt;<span class="title">String</span>, <span class="title">ClassRoom</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ClassRoom <span class="title">convert</span><span class="params">(String source)</span> </span>&#123;</span><br><span class="line">        String[] strings = Optional.ofNullable(source).orElseGet(String::<span class="keyword">new</span>).split(<span class="string">&quot;,&quot;</span>);</span><br><span class="line">        ClassRoom classRoom = <span class="keyword">new</span> ClassRoom();</span><br><span class="line">        classRoom.setName(strings[<span class="number">0</span>]);</span><br><span class="line">        classRoom.setSize(Integer.parseInt(strings[<span class="number">1</span>]));</span><br><span class="line">        <span class="keyword">return</span> classRoom;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将此<code>StringToClassRoomConverter</code>注册到我们使用的<code>ConversionService</code>中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DefaultConversionService conversionService = <span class="keyword">new</span> DefaultConversionService();</span><br><span class="line">conversionService.addConverter(<span class="keyword">new</span> StringToClassRoomConverter());</span><br><span class="line">wrapper.setConversionService(conversionService);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>BeanWrapper</code>使用此<code>ConversionService</code>设置Bean属性。这里不一定用<code>BeanWrapper</code> 来操作，可以直接调用<code>ConversionService</code>来转换。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">wrapper.setPropertyValue(<span class="string">&quot;classRoom&quot;</span>, <span class="string">&quot;room4,4&quot;</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;自定义Converter, 设置嵌套对象的属性 name：&quot;</span> + wrapper.getPropertyValue(<span class="string">&quot;classRoom.name&quot;</span>));</span><br><span class="line">System.out.println(<span class="string">&quot;自定义Converter, 设置嵌套对象的属性 size：&quot;</span> + wrapper.getPropertyValue(<span class="string">&quot;classRoom.size&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">//---------</span></span><br><span class="line"><span class="comment">//自定义Converter, 设置嵌套对象的属性 name：room4</span></span><br><span class="line"><span class="comment">//自定义Converter, 设置嵌套对象的属性 size：4</span></span><br></pre></td></tr></table></figure>
+
+<p>从输出结果来看，已经成功转换成功。</p>
+</li>
+</ol>
+<p>当我们想从一个类型转换成某些类型时，可以实现<code>ConverterFactory</code>接口，因为我们也不知道总共有哪些类型，不可能每个类型都写一个<code>ConverterFactory</code>。比如说从<code>String</code>转换成枚举类型，前端传枚举类型的字面值，转换成具体的枚举类型。Spring 内置了<code>StringToEnumConverterFactory</code>来实现此功能。直接调用Enum的静态方法<code>Enum.valueOf(this.enumType, source.trim())</code>来实现转换。同理还有<code>IntegerToEnumConverterFactory</code>通过枚举的序号来转换。</p>
+<p>当我们遇到容器型的转换需求时，因为容器内部保存的类型可能是多种多样的，比如说List里面既有String，也有int，我们要统一转成Long型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">DefaultConversionService conversionService = <span class="keyword">new</span> DefaultConversionService();</span><br><span class="line">List source = <span class="keyword">new</span> ArrayList();</span><br><span class="line">source.add(<span class="string">&quot;1&quot;</span>);</span><br><span class="line">source.add(<span class="number">2</span>);</span><br><span class="line"><span class="comment">//这里要注意初始化成内部类，才能正确获取泛型，不然不会转换。因为这个例子中，如果不写成内部类，源类型和目标类型其实是一致的，CollectionToCollectionConverter（这个转换器支持集合之间的转换） 内部不会去做转换。</span></span><br><span class="line">List&lt;Long&gt; longList = <span class="keyword">new</span> ArrayList&lt;&gt;()&#123;&#125;;</span><br><span class="line"><span class="keyword">for</span> (Object s : source) &#123;</span><br><span class="line">    System.out.println(s.getClass() + <span class="string">&quot; , &quot;</span> + s);</span><br><span class="line">&#125;</span><br><span class="line">List convert = conversionService.convert(source, longList.getClass());</span><br><span class="line"><span class="keyword">for</span> (Object s : convert) &#123;</span><br><span class="line">    System.out.println(s.getClass() + <span class="string">&quot; , &quot;</span> + s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//-----------------</span></span><br><span class="line"><span class="comment">//不是内部类，不转换</span></span><br><span class="line"><span class="comment">//class java.lang.String , 1</span></span><br><span class="line"><span class="comment">//class java.lang.Integer , 2</span></span><br><span class="line"><span class="comment">//class java.lang.String , 1</span></span><br><span class="line"><span class="comment">//class java.lang.Integer , 2</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//-------------</span></span><br><span class="line"><span class="comment">//正确转换</span></span><br><span class="line"><span class="comment">//class java.lang.String , 1</span></span><br><span class="line"><span class="comment">//class java.lang.Integer , 2</span></span><br><span class="line"><span class="comment">//class java.lang.Long , 1</span></span><br><span class="line"><span class="comment">//class java.lang.Long , 2</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>如果有多个<code>Converter</code>可以处理同一个转换需求，那么则看注意的先后顺序了，会取第一个符合条件的转换器。这里可以优化一下。</p>
+<h2 id="Formatter"><a href="#Formatter" class="headerlink" title="Formatter"></a><code>Formatter</code></h2><p>在前后端交互时，通常会遇到日期格式这样的问题，<code>Converter</code>虽然说也能解决这个问题，在转换时获取到正确的格式然后进行转换。但是这样无法灵活控制我们的格式，我们得把所有格式都写在我们的<code>Converter</code>里，换一种格式，又得改一次这个类。这时候<code>Formatter</code>接口出现了。</p>
+<p><code>Formatter</code>接口位于<code>context</code>包中。</p>
+<p>先看一下<code>Formatter</code>类，从<code>Parser</code>和<code>Printer</code>接口继承而来，实现了<code>String</code> &lt;-&gt; <code>Object</code>转换的功能。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/post/504e/Formatter%E7%BB%93%E6%9E%84.png" alt="Formatter结构"></p>
+<h2 id="FormatterRegistry"><a href="#FormatterRegistry" class="headerlink" title="FormatterRegistry"></a><code>FormatterRegistry</code></h2><p>继承自<code>ConverterRegistry</code>接口，用来注册<code>Formatter</code>。</p>
+<ul>
+<li><p><code>void addFormatter(Formatter&lt;?&gt; formatter)</code>：向特定类型的字段添加<code>Formatter</code>。字段类型由<code>Formatter</code>的泛型提供。</p>
+</li>
+<li><p><code>void addFormatterForFieldType(Class&lt;?&gt; fieldType, Formatter&lt;?&gt; formatter)</code>：向给定类型的字段添加<code>Formatter</code>。</p>
+<p>在打印时，如果声明了<code>Formatter</code>的类型<code>T</code>，并且不能将<code>fieldType</code>赋值给<code>T</code>，则在打印字段值的任务委托给<code>Formatter</code>之前，将尝试强制转换为<code>T</code>。在解析时，如果<code>Formatter</code>返回的已解析对象不能分配给运行时字段类型，则在返回已解析字段值之前，将尝试强制转换为<code>fieldType</code>。例如，<code>DateFormatter</code>声明的泛型为<code>Date</code>，如果这里的<code>fieldType</code>为<code>DateTime</code>（假设存在），如果<code>DateTime</code>可以用<code>Date</code>变量接收，则意味着可以分配给<code>Date</code>，也就不需要转换。否则则需要转换为<code>Date</code>类型。具体能否分配，可以查看该方法：<code>org.springframework.core.convert.TypeDescriptor#isAssignableTo</code>。</p>
+</li>
+<li><p><code>void addFormatterForFieldType(Class&lt;?&gt; fieldType, Printer&lt;?&gt; printer, Parser&lt;?&gt; parser)</code>：添加<code>Printer</code>/<code>Parser</code>对来格式化特定类型的字段，formatter 将委托给指定的<code>Printer</code>进行打印，并委托指定的<code>Parser</code>进行解析。</p>
+<p>在打印时，如果声明了<code>Printer</code>的类型<code>T</code>，并且<code>fieldType</code>不能赋值给<code>T</code>，则在委托<code>Printer</code>打印字段值之前，将尝试转换化类型<code>T</code>。在解析时，如果<code>Parser</code>返回的对象不能分配给<code>fieldType</code>，则在返回解析后的字段值之前，将尝试转换为<code>fieldType</code>。这个方法与上一个方法的区别就是将<code>Formatter</code>拆开。</p>
+</li>
+<li><p><code>void addFormatterForFieldAnnotation(AnnotationFormatterFactory&lt;? extends Annotation&gt; annotationFormatterFactory)</code>：为格式化注解标注的字段添加<code>Formatter</code>。此方法与上述方法的区别是不再以类型作为转换的依据了，而是根据注解来转换。比如某个字段上使用了<code>DateTimeFormat</code>注解，那会调用对应的<code>Formatter</code>。</p>
+</li>
+</ul>
+<h2 id="FormattingConversionService"><a href="#FormattingConversionService" class="headerlink" title="FormattingConversionService"></a><code>FormattingConversionService</code></h2><p><code>FormattingConversionService</code>类是Spring提供的支持<code>Formatter</code>接口的实现类，继承自<code>GenericConversionService</code>类，实现了<code>FormatterRegistry</code>和<code>EmbeddedValueResolverAware</code>接口，在<code>GenericConversionService</code>类的基础上增加了注册<code>Formatter</code>的功能。<code>EmbeddedValueResolverAware</code>接口用来解决字符串占位符、国际化等问题。注册<code>Formatter</code>时，会将<code>Formatter</code>转换成<code>GenericConverter</code>，调用此<code>GenericConverter</code>的<code>convert</code>方法时，将会调用<code>Formatter</code>的<code>print</code>或<code>parse</code>方法，由此可以看出我们需要格式化时，还是调用<code>FormattingConversionService</code>的<code>convert</code>方法即可。</p>
+<h2 id="DefaultFormattingConversionService"><a href="#DefaultFormattingConversionService" class="headerlink" title="DefaultFormattingConversionService"></a><code>DefaultFormattingConversionService</code></h2><p>Spring 内部提供了一些<code>Formatter</code>，会通过<code>DefaultFormattingConversionService</code>注册，我们无不特殊要求，可以直接使用此类，再在此基础上注册我们自定义的<code>Formatter</code>。</p>
+<h3 id="Spring提供的Formatter"><a href="#Spring提供的Formatter" class="headerlink" title="Spring提供的Formatter"></a>Spring提供的<code>Formatter</code></h3><table>
+<thead>
+<tr>
+<th><code>Formatter</code>或<code>FormatterRegistrar</code></th>
+<th><code>DefaultFormattingConversionService</code>是否注册</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NumberFormatAnnotationFormatterFactory</code></td>
+<td>Y</td>
+<td>用于支持<code>@NumberFormat</code>注解</td>
+</tr>
+<tr>
+<td><code>CurrencyUnitFormatter</code></td>
+<td>JSR-354相关的jar包出现在classpath时注册</td>
+<td><code>javax.money.CurrencyUnit</code></td>
+</tr>
+<tr>
+<td><code>MonetaryAmountFormatter</code></td>
+<td>JSR-354相关的jar包出现在classpath时注册</td>
+<td><code>javax.money.MonetaryAmount</code></td>
+</tr>
+<tr>
+<td><code>Jsr354NumberFormatAnnotationFormatterFactory</code></td>
+<td>JSR-354相关的jar包出现在classpath时注册</td>
+<td><code>@NumberFormat</code>注解</td>
+</tr>
+<tr>
+<td><code>DateTimeFormatterRegistrar</code></td>
+<td></td>
+<td>用来注册<code>JSR-310</code>新版日期和时间相关</td>
+</tr>
+<tr>
+<td><code>JodaTimeFormatterRegistrar</code></td>
+<td></td>
+<td>如果使用了<code>Joda</code>包，则会注册相关的``</td>
+</tr>
+<tr>
+<td><code>DateFormatterRegistrar</code></td>
+<td></td>
+<td>注册<code>@DateTimeFormat</code>注解的<code>AnnotationFormatterFactory</code>用于<code>Date</code>，<code>Calendar</code>，<code>Long</code>之间格式化以及<code>Date</code>，<code>Calendar</code>，<code>Long</code>之间的转换的<code>Converter</code>。默认不会注册用于直接转换的<code>DateFormatter</code>，不需要<code>@DateTimeFormat</code>注解，我们可以手动注册。</td>
+</tr>
+</tbody></table>
+<h2 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h2><ol>
+<li>以日期为例，如果不用注解的话，我们需要手动注册一下<code>Formatter</code>。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">DefaultFormattingConversionService conversionService = <span class="keyword">new</span> DefaultFormattingConversionService();</span><br><span class="line">conversionService.addFormatter(<span class="keyword">new</span> DateFormatter());</span><br><span class="line">Date date = <span class="keyword">new</span> Date();</span><br><span class="line">System.out.println(conversionService.convert(date, String.class));</span><br><span class="line"></span><br><span class="line"><span class="comment">//----------------</span></span><br><span class="line"><span class="comment">// 2019年9月3日</span></span><br></pre></td></tr></table></figure>
+
+<p><code>DateFormatter</code>还支持指定格式。可以通过构造函数传入。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">conversionService.addFormatter(<span class="keyword">new</span> DateFormatter(<span class="string">&quot;yyyy-MM-dd&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">//-------</span></span><br><span class="line"><span class="comment">// 2019-09-03</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p>还是以日期为例，使用Spring提供的<code>@DateTimeFormat</code>注解。</p>
+<p>先创建一个类，里面有个日期字段使用<code>@DateTimeFormat</code>注解。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Question</span> </span>&#123;</span><br><span class="line">    <span class="meta">@DateTimeFormat(pattern = &quot;yyyy-MM-dd&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Date createTime;</span><br></pre></td></tr></table></figure>
+
+<p>指定格式为<code>yyyy-MM-dd</code>，这里我们借助<code>BeanWrapper</code>来触发格式化的动作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">DefaultFormattingConversionService conversionService = <span class="keyword">new</span> DefaultFormattingConversionService();</span><br><span class="line"></span><br><span class="line">Question question = <span class="keyword">new</span> Question();</span><br><span class="line">BeanWrapper beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(question);</span><br><span class="line">beanWrapper.setConversionService(conversionService);</span><br><span class="line">beanWrapper.setPropertyValue(<span class="string">&quot;createTime&quot;</span>, <span class="string">&quot;2019-09-03&quot;</span>);</span><br><span class="line">System.out.println(question.getCreateTime());</span><br><span class="line"></span><br><span class="line"><span class="comment">//-----------</span></span><br><span class="line"><span class="comment">// Tue Sep 03 00:00:00 CST 2019</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 将时间格式化 字符串</span></span><br><span class="line">System.out.println(<span class="string">&quot;注解格式化日期：&quot;</span> + conversionService.convert(question.getCreateTime(), <span class="keyword">new</span> TypeDescriptor(question.getClass().getDeclaredField(<span class="string">&quot;createTime&quot;</span>)), TypeDescriptor.valueOf(String.class)));</span><br><span class="line"></span><br><span class="line"><span class="comment">//---------</span></span><br><span class="line"><span class="comment">//注解格式化日期：2019-09-03</span></span><br></pre></td></tr></table></figure>
+
+<p>通过打印的信息，可以看到已经成功将字符串<code>parse</code>为<code>Date</code>，并将日期<code>format</code>为字符串。由于注解在字段上，我们只提供了<code>Date</code>的值，所以还需要通过<code>TypeDescriptor</code>将字段的附加信息传递进去，这样才能正确识别到字段上的注解。</p>
+</li>
+</ol>
+<h2 id="自定义Formatter"><a href="#自定义Formatter" class="headerlink" title="自定义Formatter"></a>自定义<code>Formatter</code></h2><p>除了Spring 给我们提供的这些<code>Formatter</code>之外，我们还可以自定义来实现特殊功能。</p>
+<p>比如前台传过来一段字符串，我们根据正则表达式截取部分字符。</p>
+<h3 id="定义StringFormat注解"><a href="#定义StringFormat注解" class="headerlink" title="定义StringFormat注解"></a>定义<code>StringFormat</code>注解</h3><p>此注解用来标注该字段需要用我们的自定义逻辑。可以指定具体的正则表达式。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Target(&#123; ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> StringFormat &#123;</span><br><span class="line">    <span class="function">String <span class="title">pattern</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="定义StringFormatAnnotationFormatterFactory"><a href="#定义StringFormatAnnotationFormatterFactory" class="headerlink" title="定义StringFormatAnnotationFormatterFactory"></a>定义<code>StringFormatAnnotationFormatterFactory</code></h3><p>此类实现<code>AnnotationFormatterFactory</code>接口，规定<code>StringFormat</code>注解支持的字段类型。我们使用正则分隔字符串，那么可能得到多个目标串，所以<code>getFieldTypes</code>返回<code>List</code>来接收目标类型。<code>getParser</code>方法返回我们的自定义<code>StringFormatFormatter</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The types of fields that may be annotated with the &amp;lt;A&amp;gt; annotation.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Set&lt;Class&lt;?&gt;&gt; getFieldTypes() &#123;</span><br><span class="line">        <span class="keyword">return</span> Set.of(List.class, String.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Get the Printer to print the value of a field of &#123;<span class="doctag">@code</span> fieldType&#125; annotated with</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@code</span> annotation&#125;.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the type T the printer accepts is not assignable to &#123;<span class="doctag">@code</span> fieldType&#125;, a</span></span><br><span class="line"><span class="comment">     * coercion from &#123;<span class="doctag">@code</span> fieldType&#125; to T will be attempted before the Printer is invoked.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> annotation the annotation instance</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> fieldType  the type of field that was annotated</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the printer</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Printer&lt;?&gt; getPrinter(StringFormat annotation, Class&lt;?&gt; fieldType) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> StringFormatFormatter(annotation.pattern());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Get the Parser to parse a submitted value for a field of &#123;<span class="doctag">@code</span> fieldType&#125;</span></span><br><span class="line"><span class="comment">     * annotated with &#123;<span class="doctag">@code</span> annotation&#125;.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If the object the parser returns is not assignable to &#123;<span class="doctag">@code</span> fieldType&#125;,</span></span><br><span class="line"><span class="comment">     * a coercion to &#123;<span class="doctag">@code</span> fieldType&#125; will be attempted before the field is set.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> annotation the annotation instance</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> fieldType  the type of field that was annotated</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the parser</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Parser&lt;?&gt; getParser(StringFormat annotation, Class&lt;?&gt; fieldType) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> StringFormatFormatter(annotation.pattern());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义-StringFormatFormatter"><a href="#自定义-StringFormatFormatter" class="headerlink" title="自定义 StringFormatFormatter"></a>自定义 <code>StringFormatFormatter</code></h3><p>该类实现<code>Formatter</code>。用来负责具体的解析逻辑。该类需要使用到注解中定义的正则表达式，这样我们就可以灵活控制每个字段的转换规则了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">StringFormatFormatter</span> <span class="keyword">implements</span> <span class="title">Formatter</span>&lt;<span class="title">Collection</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> Pattern pattern;</span><br><span class="line">         StringFormatFormatter(String pattern) &#123;</span><br><span class="line">            <span class="keyword">this</span>.pattern = Pattern.compile(pattern);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Parse a text String to produce a T.</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> text   the text string</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> locale the current user locale</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span> an instance of T</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@throws</span> ParseException           when a parse exception occurs in a java.text parsing library</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@throws</span> IllegalArgumentException when a parse exception occurs</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Collection <span class="title">parse</span><span class="params">(String text, Locale locale)</span> <span class="keyword">throws</span> ParseException </span>&#123;</span><br><span class="line">            List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">            Matcher matcher = pattern.matcher(text);</span><br><span class="line">            <span class="keyword">while</span> (matcher.find()) &#123;</span><br><span class="line">                list.add(matcher.group());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> list;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>将我们的<code>Formatter</code>注册到<code>FormattingConversionService</code>，遇到对应的转换，则会调用我们的<code>Formatter</code>。下面的例子中<code>StringFormatEntity</code>类使用到了自定义的<code>StringFormat</code>注解。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@StringFormat(pattern = &quot;\\d+&quot;)</span></span><br><span class="line"><span class="keyword">private</span> List&lt;String&gt; formats;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomFormatterDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> NoSuchFieldException </span>&#123;</span><br><span class="line">        <span class="comment">//注册 StringFormatAnnotationFormatterFactory </span></span><br><span class="line">        DefaultFormattingConversionService conversionService = <span class="keyword">new</span> 	DefaultFormattingConversionService();</span><br><span class="line">        conversionService.addFormatterForFieldAnnotation(<span class="keyword">new</span> StringFormatAnnotationFormatterFactory());</span><br><span class="line">        StringFormatEntity formatEntity = <span class="keyword">new</span> StringFormatEntity();</span><br><span class="line">        System.out.println(<span class="string">&quot;自定义注解格式化：&quot;</span> + conversionService.convert(<span class="string">&quot;fff43ffd344&quot;</span>, 	TypeDescriptor.valueOf(String.class) , <span class="keyword">new</span> TypeDescriptor(formatEntity.getClass().getDeclaredField(<span class="string">&quot;formats&quot;</span>))));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义注解格式化：[43, 344]</span></span><br></pre></td></tr></table></figure>
+
+<p>从打印出来的结果可以看出来已经正确将字符串转换成了<code>List</code>。不过<code>List</code>中都是字符串，我们还可以将字符串转换成数字类型。需要我们来主动转换吗？其实是不需要的，Spring 已经帮我们考虑到了此种情景，可以自动将<code>List</code>中的元素也转换成对应的类型。还记得<code>CollectionToCollectionConverter</code>这个转换器吗？不过有个细节要注意：**我们的<code>Formatter</code>返回的结果不能是<code>ArrayList</code>， 这样会丢失泛型，不能正确转换，所以我们可以返回<code>ArrayList</code>的子类<code>List&lt;String&gt; list = new ArrayList&lt;&gt;()&#123;&#125;;</code>， 这样会保留泛型，会调用后续的<code>Converter</code>**。</p>
+<h2 id="Converter-的注册与获取"><a href="#Converter-的注册与获取" class="headerlink" title="Converter 的注册与获取"></a><code>Converter </code>的注册与获取</h2><p>主要通过<code>ConverterRegistry</code>和<code>FormatterRegistry</code>来注册以及移除<code>Converter</code>。</p>
+<h3 id="ConverterRegistry-1"><a href="#ConverterRegistry-1" class="headerlink" title="ConverterRegistry"></a><code>ConverterRegistry</code></h3><h4 id="方法-1"><a href="#方法-1" class="headerlink" title="方法"></a>方法</h4><ol>
+<li><p><code>void addConverter(Converter&lt;?, ?&gt; converter)</code>：注册简单的<code>Converter</code>，转换类型从<code>Converter</code>的泛型中获取。</p>
+</li>
+<li><p><code>&lt;S, T&gt; void addConverter(Class&lt;S&gt; sourceType, Class&lt;T&gt; targetType, Converter&lt;? super S, ? extends T&gt; converter)</code>： 注册普通转换器，并且明确指定可转换类型。</p>
+<p>可以针对多个不同转换类型的情况重用<code>Converter</code>，而不必为每个对创建<code>Converter</code>类。指定的源类型是<code>Converter</code>定义的类型的子类型，目标类型是<code>Converter</code>定义的类型的父类型。为什么要如此定义？拿Spring提供的<code>ObjectToStringConverter</code>为例，该<code>Converter</code>定义的转换类型为<code>Object</code> -&gt; <code>String</code>，调用<code>Object.toString()</code>方法，只要是<code>Object</code>的子类，都可以调用此方法转换成<code>String</code>，因为<code>toString()</code>是共有的方法。同理，目标类型指定的类型需要是我定义的父类型，这样转换出来的一定是需要的类型。</p>
+</li>
+<li><p><code>void addConverter(GenericConverter converter)</code>：注册<code>GenericConverter </code>。</p>
+</li>
+<li><p><code>void addConverterFactory(ConverterFactory&lt;?, ?&gt; factory)</code>：注册<code>ConverterFactory</code>。</p>
+</li>
+<li><p><code>void removeConvertible(Class&lt;?&gt; sourceType, Class&lt;?&gt; targetType)</code>：移除<code>sourceType</code>到<code>targetType</code>的转换功能。</p>
+</li>
+</ol>
+<h3 id="GenericConversionService"><a href="#GenericConversionService" class="headerlink" title="GenericConversionService"></a><code>GenericConversionService</code></h3><p><code>GenericConversionService</code>类实现了<code>ConverterRegistry</code>接口。现在看一下具体的注册过程。</p>
+<ol>
+<li><p><code>void addConverter(Converter&lt;?, ?&gt; converter)</code>：</p>
+<p>因为没有指定转换类型，所以只能从<code>Converter</code>的泛型中获取转换类型，如果获取不到，则会抛出异常。获取到之后，则会创建<code>ConverterAdapter</code>实例，通过<code>void addConverter(GenericConverter converter)</code>方法进行注册。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ResolvableType[] typeInfo = getRequiredTypeInfo(converter.getClass(), Converter.class);</span><br><span class="line"><span class="comment">//如果是代理对象，还需要从代理类中获取</span></span><br><span class="line"><span class="keyword">if</span> (typeInfo == <span class="keyword">null</span> &amp;&amp; converter <span class="keyword">instanceof</span> DecoratingProxy) &#123;</span><br><span class="line">    typeInfo = getRequiredTypeInfo(((DecoratingProxy) converter).getDecoratedClass(), Converter.class);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (typeInfo == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Unable to determine source type &lt;S&gt; and target type &lt;T&gt; for your &quot;</span> + <span class="string">&quot;Converter [&quot;</span> + converter.getClass().getName() + <span class="string">&quot;]; does the class parameterize those types?&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line">addConverter(<span class="keyword">new</span> ConverterAdapter(converter, typeInfo[<span class="number">0</span>], typeInfo[<span class="number">1</span>]));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>&lt;S, T&gt; void addConverter(Class&lt;S&gt; sourceType, Class&lt;T&gt; targetType, Converter&lt;? super S, ? extends T&gt; converter)</code>：</p>
+<p>由于指定了转换类型，直接注册就完事了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">addConverter(<span class="keyword">new</span> ConverterAdapter(converter, ResolvableType.forClass(sourceType), ResolvableType.forClass(targetType)));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>void addConverterFactory(ConverterFactory&lt;?, ?&gt; factory)</code>：</p>
+<p>也是先从泛型中推断出转换的类型，然后创建<code>ConverterFactoryAdapter</code>实例进行注册。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ResolvableType[] typeInfo = getRequiredTypeInfo(factory.getClass(), ConverterFactory.class);</span><br><span class="line"><span class="keyword">if</span> (typeInfo == <span class="keyword">null</span> &amp;&amp; factory <span class="keyword">instanceof</span> DecoratingProxy) &#123;</span><br><span class="line">    typeInfo = getRequiredTypeInfo(((DecoratingProxy) factory).getDecoratedClass(), ConverterFactory.class);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (typeInfo == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Unable to determine source type &lt;S&gt; and target type &lt;T&gt; for your &quot;</span> + <span class="string">&quot;ConverterFactory [&quot;</span> + factory.getClass().getName() + <span class="string">&quot;]; does the class parameterize those types?&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line">addConverter(<span class="keyword">new</span> ConverterFactoryAdapter(factory,  <span class="keyword">new</span> ConvertiblePair(typeInfo[<span class="number">0</span>].toClass(), typeInfo[<span class="number">1</span>].toClass())));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>void addConverter(GenericConverter converter)</code>：</p>
+<p>上面几种注册方式最终都会调用此方法，也就是说会将<code>Converter</code>、<code>ConverterFactory</code>转换成<code>GenericConverter </code>。这里使用到了<code>适配器模式</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//添加到内部容器中去</span></span><br><span class="line"><span class="keyword">this</span>.converters.add(converter);</span><br><span class="line"><span class="comment">//使缓存失效</span></span><br><span class="line">invalidateCache();</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="ConverterAdapter适配器"><a href="#ConverterAdapter适配器" class="headerlink" title="ConverterAdapter适配器"></a><code>ConverterAdapter</code>适配器</h3><p>实现了<code>ConditionalGenericConverter</code>接口，将<code>Converter</code>转换成<code>GenericConverter</code>。在<code>matches</code>方法去判断转换类型是否匹配。转换时直接调用内部转换器的转换方法。</p>
+<h3 id="ConverterFactoryAdapter适配器"><a href="#ConverterFactoryAdapter适配器" class="headerlink" title="ConverterFactoryAdapter适配器"></a><code>ConverterFactoryAdapter</code>适配器</h3><p>实现了<code>ConditionalGenericConverter</code>接口，将<code>ConverterFactoryAdapter</code>转换成<code>GenericConverter</code>。在<code>matches</code>方法去判断转换类型是否匹配。转换时直接调用内部<code>ConverterFactory</code>获取的转换器的转换方法。</p>
+<h3 id="ConvertiblePair"><a href="#ConvertiblePair" class="headerlink" title="ConvertiblePair"></a><code>ConvertiblePair</code></h3><p>该类保存了转换的源类型和目标类型，并重写了<code>equals</code>和<code>hashCode</code>方法用于比较。<code>GenericConverter</code>返回<code>ConvertiblePair</code>集合表示所支持的转换类型。</p>
+<h3 id="Converters"><a href="#Converters" class="headerlink" title="Converters"></a><code>Converters</code></h3><p>此类用来管理所有注册的<code>Converter</code>。提供添加和删除的功能。添加时获取到此<code>Converter</code>支持的类型，如果为空并且是<code>ConditionalConverter</code>，则代表它支持所有类型。得到支持的类型后，遍历每个类型，获取到已经注册的<code>ConvertersForPair</code>，该类维护转换类型到<code>Converter</code>之间的关系，而且是一对多的关系，也就是说同一种转换类型，会存在多个<code>Converter</code>。拿到<code>ConvertersForPair</code>后，将该<code>Converter</code>添加进去，后添加的会在前面，获取时符合条件时会优先返回。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(GenericConverter converter)</span> </span>&#123;</span><br><span class="line">    Set&lt;ConvertiblePair&gt; convertibleTypes = converter.getConvertibleTypes();</span><br><span class="line">    <span class="keyword">if</span> (convertibleTypes == <span class="keyword">null</span>) &#123;</span><br><span class="line">        Assert.state(converter <span class="keyword">instanceof</span> ConditionalConverter,</span><br><span class="line">                     <span class="string">&quot;Only conditional converters may return null convertible types&quot;</span>);</span><br><span class="line">        <span class="keyword">this</span>.globalConverters.add(converter);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (ConvertiblePair convertiblePair : convertibleTypes) &#123;</span><br><span class="line">            ConvertersForPair convertersForPair = getMatchableConverters(convertiblePair);</span><br><span class="line">            <span class="comment">//后添加的在前面</span></span><br><span class="line">            convertersForPair.add(converter);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="FormatterRegistry注册-Formatter"><a href="#FormatterRegistry注册-Formatter" class="headerlink" title="FormatterRegistry注册    Formatter"></a><code>FormatterRegistry</code>注册<code>    Formatter</code></h3><p>继承自<code>ConverterRegistry</code>接口，增加了注册<code>Formmater</code>的方法。</p>
+<h3 id="FormattingConversionService-1"><a href="#FormattingConversionService-1" class="headerlink" title="FormattingConversionService"></a><code>FormattingConversionService</code></h3><p>该类继承自<code>GenericConversionService</code>类，并实现了<code>FormatterRegistry</code>接口。在添加<code>Formatter</code>时会将其转换为<code>PrinterConverter</code>，<code>ParserConverter</code>。在添加<code>AnnotationFormatterFactory</code>转换为<code>AnnotationPrinterConverter</code>和<code>AnnotationParserConverter</code>。可以想象到这四个类也是实现了<code>Converter</code>，最终通过<code>convert</code>方法来调用<code>parse</code>和<code>print</code>方法。</p>
+<h3 id="获取Converter"><a href="#获取Converter" class="headerlink" title="获取Converter"></a>获取<code>Converter</code></h3><p>在<code>GenericConversionService</code>的转换过程中，来了一个转换类型，需要获取到对应的<code>Converter</code>。在<code>Converters</code>的<code>find</code>方法中先拿到源类型和目标类型继承的所有类型（包括接口），比如说源类型是<code>String</code>，那么获取到的就是<code>String</code>、<code>Serializable</code>、<code>Comparable</code>、<code>CharSequence</code>和<code>Object</code>，如果是枚举还将获取到<code>Enum</code>。找到之后一一进行组合去获取<code>Converter</code>，比如目标类型是<code>Integer</code>，则第一次组合就是<code>String</code>-&gt;<code>Integer</code>，如果找到了支持<code>String</code>-&gt;<code>Integer</code>的<code>Converter</code>，则会返回这个。这么做的目的是支持一个<code>Converter</code>可以转换多个类型，比如<code>String</code>-&gt; <code>Enum</code>，通过字面量转换成枚举，如果没有这个机制，那么我们就得为每个枚举都定义一个<code>Converter</code>，但是有了这个机制，我们就可以支持所有的枚举类型。其实就是通过这个机制来支持<code>ConverterFactory</code>。这个机制可以保证子类可以通过父类转换器进行转换（这种转换方式需要注意父类无法感知子类的特殊属性），但不能保证父类可以通过子类转换器，如果可以保证<code>Converter</code>能正确转换，则可以通过<code>&lt;S, T&gt; void addConverter(Class&lt;S&gt; sourceType, Class&lt;T&gt; targetType, Converter&lt;? super S, ? extends T&gt; converter)</code>方法显式进行注册。比如我们只有<code>String</code>-&gt;<code>Integer</code>的<code>Converter</code>，但是我们需要将<code>String</code>转换为<code>Number</code>，则可以通过这个方法注册<code>addConverter(String.class, Number.class, StringToIntegerConverter)</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">DefaultConversionService conversionService = <span class="keyword">new</span> DefaultConversionService();</span><br><span class="line"><span class="comment">//先去掉内置的转换器</span></span><br><span class="line">conversionService.removeConvertible(String.class, Number.class);</span><br><span class="line"><span class="comment">//再注册上我们自己定义的 String -&gt; Integer</span></span><br><span class="line">conversionService.addConverter(<span class="keyword">new</span> StringToIntegerConverter());</span><br><span class="line">System.out.println(conversionService.convert(<span class="string">&quot;1&quot;</span>, Number.class));</span><br><span class="line"></span><br><span class="line"><span class="comment">//这种情况下是无法正确转换的。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//但是通过这个方法显式注册之后可以正确转换</span></span><br><span class="line">conversionService.addConverter(String.class, Number.class, <span class="keyword">new</span> StringToIntegerConverter());</span><br><span class="line"><span class="comment">// 1</span></span><br></pre></td></tr></table></figure>
+
+<p>下面是查找的大致过程：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/post/504e/%E6%9F%A5%E6%89%BEconverter.png" alt="查找converter的图示"></p>
+<h1 id="DirectFieldAccessor"><a href="#DirectFieldAccessor" class="headerlink" title="DirectFieldAccessor"></a><code>DirectFieldAccessor</code></h1><p>通过反射直接访问Bean实例的字段。可以直接绑定到字段，而不需要通过JavaBean set方法。</p>
+<p>从Spring 4.2开始，绝大多数<code>BeanWrapper</code>特性已经被合并到<code>AbstractPropertyAccessor</code>中，这意味着这个类也支持属性遍历以及集合和Map 访问。</p>
+<p><code>DirectFieldAccessor</code>的<code>extractOldValueForEditor</code>属性默认为<code>true</code>，因为在读取字段的时候是直接通过反射去拿到的字段值，不需要调用<code>getter</code>方法。</p>
+<h1 id="PropertyAccessorFactory"><a href="#PropertyAccessorFactory" class="headerlink" title="PropertyAccessorFactory"></a><code>PropertyAccessorFactory</code></h1><p>可以通过此类来获取<code>BeanWrapper</code>和<code>DirectFieldAccessor</code>。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://qzztf.com">水娃</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://qzztf.com/post/504e/">http://qzztf.com/post/504e/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://qzztf.com" target="_blank">水娃火娃石榴娃</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/BeanWrapper/">BeanWrapper</a><a class="post-meta__tags" href="/tags/Converter/">Converter</a><a class="post-meta__tags" href="/tags/Formatter/">Formatter</a><a class="post-meta__tags" href="/tags/ConversionService/">ConversionService</a><a class="post-meta__tags" href="/tags/%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/">类型转换</a></div><div class="post_share"><div class="social-share" data-image="/image/avatar.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/post/4819/" title="ObjectFactory与BeanFactory的区别"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">ObjectFactory与BeanFactory的区别</div></div></a></div><div class="next-post pull-right"><a href="/post/72a3/" title="Bean初始化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Bean初始化</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">水娃</div><div class="author-info__description">水娃的博客 | java</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/qzztf"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎光临</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BeanWrapper"><span class="toc-number">1.</span> <span class="toc-text">BeanWrapper</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#BeanWrapper%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.1.</span> <span class="toc-text">BeanWrapper是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E7%BB%93%E6%9E%84"><span class="toc-number">1.2.</span> <span class="toc-text">类结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">1.3.</span> <span class="toc-text">使用方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%B1%9E%E6%80%A7"><span class="toc-number">1.3.1.</span> <span class="toc-text">获取属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B5%8C%E5%A5%97%E5%B1%9E%E6%80%A7"><span class="toc-number">1.3.1.1.</span> <span class="toc-text">嵌套属性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="toc-number">1.3.2.</span> <span class="toc-text">获取属性值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="toc-number">1.3.3.</span> <span class="toc-text">设置属性值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PropertyEditor"><span class="toc-number">1.4.</span> <span class="toc-text">PropertyEditor</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89PropertyEditor"><span class="toc-number">1.4.1.</span> <span class="toc-text">自定义PropertyEditor</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConversionService"><span class="toc-number">1.5.</span> <span class="toc-text">ConversionService</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95"><span class="toc-number">1.5.1.</span> <span class="toc-text">方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Converter"><span class="toc-number">1.6.</span> <span class="toc-text">Converter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConverterFactory"><span class="toc-number">1.7.</span> <span class="toc-text">ConverterFactory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConditionalConverter"><span class="toc-number">1.8.</span> <span class="toc-text">ConditionalConverter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GenericConverter"><span class="toc-number">1.9.</span> <span class="toc-text">GenericConverter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConverterRegistry"><span class="toc-number">1.10.</span> <span class="toc-text">ConverterRegistry</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ConversionService%E7%BB%84%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="toc-number">1.11.</span> <span class="toc-text">ConversionService组件结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GenericConversionService%E7%B1%BB"><span class="toc-number">1.12.</span> <span class="toc-text">GenericConversionService类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DefaultConversionService%E7%B1%BB"><span class="toc-number">1.13.</span> <span class="toc-text">DefaultConversionService类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spring-%E6%8F%90%E4%BE%9B%E7%9A%84Converter"><span class="toc-number">1.14.</span> <span class="toc-text">Spring 提供的Converter</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#StringToBooleanConverter"><span class="toc-number">1.14.1.</span> <span class="toc-text">StringToBooleanConverter</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89Converter"><span class="toc-number">1.15.</span> <span class="toc-text">自定义Converter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Formatter"><span class="toc-number">1.16.</span> <span class="toc-text">Formatter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FormatterRegistry"><span class="toc-number">1.17.</span> <span class="toc-text">FormatterRegistry</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FormattingConversionService"><span class="toc-number">1.18.</span> <span class="toc-text">FormattingConversionService</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DefaultFormattingConversionService"><span class="toc-number">1.19.</span> <span class="toc-text">DefaultFormattingConversionService</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Spring%E6%8F%90%E4%BE%9B%E7%9A%84Formatter"><span class="toc-number">1.19.1.</span> <span class="toc-text">Spring提供的Formatter</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.20.</span> <span class="toc-text">使用示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89Formatter"><span class="toc-number">1.21.</span> <span class="toc-text">自定义Formatter</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89StringFormat%E6%B3%A8%E8%A7%A3"><span class="toc-number">1.21.1.</span> <span class="toc-text">定义StringFormat注解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89StringFormatAnnotationFormatterFactory"><span class="toc-number">1.21.2.</span> <span class="toc-text">定义StringFormatAnnotationFormatterFactory</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-StringFormatFormatter"><span class="toc-number">1.21.3.</span> <span class="toc-text">自定义 StringFormatFormatter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-number">1.21.4.</span> <span class="toc-text">使用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Converter-%E7%9A%84%E6%B3%A8%E5%86%8C%E4%B8%8E%E8%8E%B7%E5%8F%96"><span class="toc-number">1.22.</span> <span class="toc-text">Converter 的注册与获取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ConverterRegistry-1"><span class="toc-number">1.22.1.</span> <span class="toc-text">ConverterRegistry</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%95-1"><span class="toc-number">1.22.1.1.</span> <span class="toc-text">方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GenericConversionService"><span class="toc-number">1.22.2.</span> <span class="toc-text">GenericConversionService</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConverterAdapter%E9%80%82%E9%85%8D%E5%99%A8"><span class="toc-number">1.22.3.</span> <span class="toc-text">ConverterAdapter适配器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConverterFactoryAdapter%E9%80%82%E9%85%8D%E5%99%A8"><span class="toc-number">1.22.4.</span> <span class="toc-text">ConverterFactoryAdapter适配器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConvertiblePair"><span class="toc-number">1.22.5.</span> <span class="toc-text">ConvertiblePair</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Converters"><span class="toc-number">1.22.6.</span> <span class="toc-text">Converters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FormatterRegistry%E6%B3%A8%E5%86%8C-Formatter"><span class="toc-number">1.22.7.</span> <span class="toc-text">FormatterRegistry注册    Formatter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FormattingConversionService-1"><span class="toc-number">1.22.8.</span> <span class="toc-text">FormattingConversionService</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96Converter"><span class="toc-number">1.22.9.</span> <span class="toc-text">获取Converter</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#DirectFieldAccessor"><span class="toc-number">2.</span> <span class="toc-text">DirectFieldAccessor</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PropertyAccessorFactory"><span class="toc-number">3.</span> <span class="toc-text">PropertyAccessorFactory</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/5441/" title="Spring Cloud Gateway整合Spring Doc">Spring Cloud Gateway整合Spring Doc</a><time datetime="2023-04-02T12:49:15.000Z" title="发表于 2023-04-02 20:49:15">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f507/" title="处理字典值反显问题.md">处理字典值反显问题.md</a><time datetime="2023-04-02T12:46:42.000Z" title="发表于 2023-04-02 20:46:42">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/9fa5/" title="Spring AOP 调用同一个对象的方法">Spring AOP 调用同一个对象的方法</a><time datetime="2020-12-05T14:55:47.000Z" title="发表于 2020-12-05 22:55:47">2020-12-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/39fc/" title="Spring AOP基本用法3">Spring AOP基本用法3</a><time datetime="2020-09-23T02:26:55.000Z" title="发表于 2020-09-23 10:26:55">2020-09-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f93d/" title="Spring AOP基本用法2">Spring AOP基本用法2</a><time datetime="2020-09-23T02:25:58.000Z" title="发表于 2020-09-23 10:25:58">2020-09-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 水娃</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '248e3cebde8537449dbb',
+      clientSecret: 'a9c539e71782374d81eb91ad932288cd41809575',
+      repo: 'blog-s-gitalk',
+      owner: 'qinzaizhen',
+      admin: ['qzztf'],
+      id: '49794525d4f8866ff3d9f11358450d30',
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></body></html>

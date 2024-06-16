@@ -1,0 +1,253 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>Spring Boot 八- 构建工具插件 | 水娃火娃石榴娃</title><meta name="author" content="水娃"><meta name="copyright" content="水娃"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Spring Boot提供Maven和Gradle的构建工具插件。插件提供了各种功能，包括可执行jar的打包。 本节提供有关这两个插件的更多详细信息，以及如果需要扩展不受支持的构建系统的一些帮助。 如果你刚刚开始，你可能需要先阅读第三部分“使用Spring Boot”一节中的“第13章，构建系统”。"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="http://qzztf.com/post/4406/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/image/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/image/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/image/pwa/16.png"/><link rel="mask-icon" href="/image/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?86553a0f289bcfb307062507dc247eb2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Spring Boot 八- 构建工具插件',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-06-16 15:25:26'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="水娃火娃石榴娃"><span class="site-name">水娃火娃石榴娃</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Spring Boot 八- 构建工具插件</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2017-10-16T08:05:47.000Z" title="发表于 2017-10-16 16:05:47">2017-10-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-06-16T07:25:26.152Z" title="更新于 2024-06-16 15:25:26">2024-06-16</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Spring Boot 八- 构建工具插件"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>Spring Boot提供Maven和Gradle的构建工具插件。插件提供了各种功能，包括可执行jar的打包。 本节提供有关这两个插件的更多详细信息，以及如果需要扩展不受支持的构建系统的一些帮助。 如果你刚刚开始，你可能需要先阅读<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#using-boot">第三部分“使用Spring Boot”</a>一节中的<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#using-boot-build-systems">“第13章，构建系统”</a>。</p>
+<h2 id="Spring-Boot-Maven-plugin"><a href="#Spring-Boot-Maven-plugin" class="headerlink" title="Spring Boot Maven plugin"></a>Spring Boot Maven plugin</h2><p>Spring Boot Maven插件在Maven中提供Spring Boot支持，允许你打包可执行的jar或war包并可以直接运行应用程序。要使用它，你必须使用Maven 3.2（或更高版本）。</p>
+<blockquote>
+<p>有关完整的插件文档，请参阅Spring Boot Maven插件网站。</p>
+</blockquote>
+<h3 id="引入插件"><a href="#引入插件" class="headerlink" title="引入插件"></a>引入插件</h3><p>要使用Spring Boot Maven Plugin，只需在<code>pom.xml</code>的<code>plugins</code>部分包含相应的XML</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.0.BUILD-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">executions</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">execution</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">goals</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">goal</span>&gt;</span>repackage<span class="tag">&lt;/<span class="name">goal</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">goals</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">execution</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">executions</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>此配置将重新打包在Maven生命周期的<code>package</code>阶段期间构建的jar或war。 以下示例展示了<code>target</code>目录中的重新打包的jar以及原始jar：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mvn package</span><br><span class="line">$ ls target&#x2F;*.jar</span><br><span class="line">target&#x2F;myproject-1.0.0.jar target&#x2F;myproject-1.0.0.jar.original</span><br></pre></td></tr></table></figure>
+<p>如果你没有包含上述的<code>&lt;execution /&gt;</code>配置，你可以自行运行该插件（但是仅当使用package目标时）。 例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mvn package spring-boot:repackage</span><br><span class="line">$ ls target&#x2F;*.jar</span><br><span class="line">target&#x2F;myproject-1.0.0.jar target&#x2F;myproject-1.0.0.jar.original</span><br></pre></td></tr></table></figure>
+<p>如果你正在使用里程碑或快照版本，还需要添加适当的<code>pluginRepository</code>元素：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">pluginRepositories</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>spring-snapshots<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repo.spring.io/snapshot<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>spring-milestones<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://repo.spring.io/milestone<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">pluginRepository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">pluginRepositories</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="打包可执行jar的war文件"><a href="#打包可执行jar的war文件" class="headerlink" title="打包可执行jar的war文件"></a>打包可执行jar的war文件</h3><p>一旦你的pom.xml中包含了<code>spring-boot-maven-plugin</code>，它将自动尝试重写包，使其可以使用<code>spring-boot:repackage</code>目标来执行。你应该使用常规的<code>packaging</code>元素配置你的项目来构建jar或war（如适用）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;project xmlns&#x3D;&quot;http:&#x2F;&#x2F;maven.apache.org&#x2F;POM&#x2F;4.0.0&quot; xmlns:xsi&#x3D;&quot;http:&#x2F;&#x2F;www.w3.org&#x2F;2001&#x2F;XMLSchema-instance&quot;</span><br><span class="line">    xsi:schemaLocation&#x3D;&quot;http:&#x2F;&#x2F;maven.apache.org&#x2F;POM&#x2F;4.0.0 http:&#x2F;&#x2F;maven.apache.org&#x2F;xsd&#x2F;maven-4.0.0.xsd&quot;&gt;</span><br><span class="line">    &lt;!-- ... --&gt;</span><br><span class="line">    &lt;packaging&gt;jar&lt;&#x2F;packaging&gt;</span><br><span class="line">    &lt;!-- ... --&gt;</span><br><span class="line">&lt;&#x2F;project&gt;</span><br></pre></td></tr></table></figure>
+<p>你的现有包将在<code>package</code>阶段由Spring Boot增强。 你要启动的主类可以使用配置选项指定，也可以以常规方式向清单添加<code>Main-Class</code>属性。 如果你没有指定一个主类，那么插件将搜索一个带有<code>public static void main(String[] args)</code>方法的类。</p>
+<p>要构建和运行项目artifact，可以输入以下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mvn package</span><br><span class="line">$ java -jar target&#x2F;mymodule-0.0.1-SNAPSHOT.jar</span><br></pre></td></tr></table></figure>
+<p>要构建可执行并可部署到外部容器的war文件，你需要将嵌入式容器依赖项标记为“provided”，例如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">packaging</span>&gt;</span>war<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-tomcat<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>有关如何创建可部署的war文件的更多详细信息，请参阅”<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#howto-create-a-deployable-war-file">第86.1节”创建可部署的war文件”</a>“部分。</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/maven-plugin//">插件信息页面</a>中提供了高级配置选项和示例。</p>
+<h2 id="Spring-Boot-Gradle-plugin"><a href="#Spring-Boot-Gradle-plugin" class="headerlink" title="Spring Boot Gradle plugin"></a>Spring Boot Gradle plugin</h2><p>Spring Boot Gradle插件在Gradle中提供Spring Boot支持，允许你打包可执行的jar或war 包，运行Spring Boot应用程序并使用<code>spring-boot-dependencies</code>提供的依赖关系管理。 它需要Gradle 3.4级或更高版本。 请参阅插件的文档了解更多信息：</p>
+<ul>
+<li>Reference (<a target="_blank" rel="noopener" href="http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/gradle-plugin//reference/html">HTML</a> and <a target="_blank" rel="noopener" href="http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/gradle-plugin//reference/pdf/spring-boot-gradle-plugin-reference.pdf">PDF</a>)</li>
+<li><a target="_blank" rel="noopener" href="http://docs.spring.io/spring-boot/docs/2.0.0.BUILD-SNAPSHOT/gradle-plugin//api">API</a></li>
+</ul>
+<h2 id="Spring-Boot-AntLib-模块"><a href="#Spring-Boot-AntLib-模块" class="headerlink" title="Spring Boot AntLib 模块"></a>Spring Boot AntLib 模块</h2><h3 id="Spring-Boot-Ant-任务"><a href="#Spring-Boot-Ant-任务" class="headerlink" title="Spring Boot Ant 任务"></a>Spring Boot Ant 任务</h3><h4 id="spring-boot-exejar"><a href="#spring-boot-exejar" class="headerlink" title="spring-boot:exejar"></a>spring-boot:exejar</h4><h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><h3 id="spring-boot-findmainclass"><a href="#spring-boot-findmainclass" class="headerlink" title="spring-boot:findmainclass"></a>spring-boot:findmainclass</h3><h4 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h4><h2 id="其他构建系统支持"><a href="#其他构建系统支持" class="headerlink" title="其他构建系统支持"></a>其他构建系统支持</h2><p>如果要使用除Maven，Gradle或Ant之外的构建工具，则可能需要开发自己的插件。 可执行的jar需要遵循特定格式，某些条目需要以未压缩的形式写入（有关详细信息，请参阅附录中的<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#executable-jar"><em>可执行jar格式</em></a>部分）。</p>
+<p>Spring Boot Maven和Gradle插件都使用<code>spring-boot-loader-tools</code>来实际生成jar。 如果需要，你也可以直接使用这个库。</p>
+<h3 id="重新打包"><a href="#重新打包" class="headerlink" title="重新打包"></a>重新打包</h3><p>要重新打包现有的包，以便它成为一个独立的可执行包，请使用<code>org.springframework.boot.loader.tools.Repackager</code>。<code>Repackager</code>类接受一个引用现有jar或war包的构造函数参数。 使用两个可用的<code>repackage()</code>方法之一替换原始文件或写入新的目录。 在重新打包运行之前，也可以配置各种设置。</p>
+<h3 id="内部库"><a href="#内部库" class="headerlink" title="内部库"></a>内部库</h3><p>在重新打包时，可以使用<code>org.springframework.boot.loader.tools.Libraries</code>接口来引用依赖关系文件。我们不提供这里的库的任何具体实现，因为它们通常是构建系统特定的。</p>
+<p>如果你的包已经包含库，你可以使用<code>Libraries.NONE</code>。</p>
+<h3 id="查询main-类"><a href="#查询main-类" class="headerlink" title="查询main 类"></a>查询main 类</h3><p>如果不使用<code>Repackager.setMainClass()</code>来指定主类，则重新打包程序将使用<code>ASM</code>读取类文件，并尝试找到拥有<code>public static void main（String [] args）</code>方法的合适的类。 如果找到多个候选者，则抛出异常。</p>
+<h3 id="重新打包实现示例"><a href="#重新打包实现示例" class="headerlink" title="重新打包实现示例"></a>重新打包实现示例</h3><p>这是一个典型的重新打包例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Repackager repackager &#x3D; new Repackager(sourceJarFile);</span><br><span class="line">repackager.setBackupSource(false);</span><br><span class="line">repackager.repackage(new Libraries() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public void doWithLibraries(LibraryCallback callback) throws IOException &#123;</span><br><span class="line">                &#x2F;&#x2F; Build system specific implementation, callback for each dependency</span><br><span class="line">                &#x2F;&#x2F; callback.library(new Library(nestedFile, LibraryScope.COMPILE));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h2><p>如果你对构建工具插件的工作原理感兴趣，可以在GitHub上查看<a target="_blank" rel="noopener" href="https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-tools"><code>spring-boot-tools</code></a>模块。 <a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#executable-jar">可执行jar格式</a>的更多技术细节在附录中有所描述。</p>
+<p>如果你有特殊的构建问题，可以查看“<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#howto">how-to</a>”指南。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://qzztf.com">水娃</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://qzztf.com/post/4406/">http://qzztf.com/post/4406/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://qzztf.com" target="_blank">水娃火娃石榴娃</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Spring-Boot/">Spring Boot</a><a class="post-meta__tags" href="/tags/build-tool-plugin/">build tool plugin</a></div><div class="post_share"><div class="social-share" data-image="/image/avatar.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/post/6b4e/" title="Spring Boot 九 - “How-to” 指南"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Spring Boot 九 - “How-to” 指南</div></div></a></div><div class="next-post pull-right"><a href="/post/977d/" title="编绎Spring Boot源码"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">编绎Spring Boot源码</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/post/361c/" title="Idea 创建 Spring boot应用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-04-22</div><div class="title">Idea 创建 Spring boot应用</div></div></a></div><div><a href="/post/29bc/" title="Spring Boot 七 - Spring Boot CLI"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-10-13</div><div class="title">Spring Boot 七 - Spring Boot CLI</div></div></a></div><div><a href="/post/64fe/" title="Spring Boot 六 - 部署Spring Boot应用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-10-09</div><div class="title">Spring Boot 六 - 部署Spring Boot应用</div></div></a></div><div><a href="/post/60cf/" title="Spring Boot 五-Spring Boot执行器 - 生产就绪特性"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-09-13</div><div class="title">Spring Boot 五-Spring Boot执行器 - 生产就绪特性</div></div></a></div><div><a href="/post/6b4e/" title="Spring Boot 九 - “How-to” 指南"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-10-18</div><div class="title">Spring Boot 九 - “How-to” 指南</div></div></a></div><div><a href="/post/e2d8/" title="Spring Boot 学习1-创建Spring Boot应用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-11-18</div><div class="title">Spring Boot 学习1-创建Spring Boot应用</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">水娃</div><div class="author-info__description">水娃的博客 | java</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/qzztf"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎光临</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Spring-Boot-Maven-plugin"><span class="toc-number">1.</span> <span class="toc-text">Spring Boot Maven plugin</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E5%85%A5%E6%8F%92%E4%BB%B6"><span class="toc-number">1.1.</span> <span class="toc-text">引入插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%93%E5%8C%85%E5%8F%AF%E6%89%A7%E8%A1%8Cjar%E7%9A%84war%E6%96%87%E4%BB%B6"><span class="toc-number">1.2.</span> <span class="toc-text">打包可执行jar的war文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spring-Boot-Gradle-plugin"><span class="toc-number">2.</span> <span class="toc-text">Spring Boot Gradle plugin</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spring-Boot-AntLib-%E6%A8%A1%E5%9D%97"><span class="toc-number">3.</span> <span class="toc-text">Spring Boot AntLib 模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Spring-Boot-Ant-%E4%BB%BB%E5%8A%A1"><span class="toc-number">3.1.</span> <span class="toc-text">Spring Boot Ant 任务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#spring-boot-exejar"><span class="toc-number">3.1.1.</span> <span class="toc-text">spring-boot:exejar</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-number">3.1.2.</span> <span class="toc-text">示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#spring-boot-findmainclass"><span class="toc-number">3.2.</span> <span class="toc-text">spring-boot:findmainclass</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B-1"><span class="toc-number">3.2.1.</span> <span class="toc-text">示例</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E6%9E%84%E5%BB%BA%E7%B3%BB%E7%BB%9F%E6%94%AF%E6%8C%81"><span class="toc-number">4.</span> <span class="toc-text">其他构建系统支持</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E6%96%B0%E6%89%93%E5%8C%85"><span class="toc-number">4.1.</span> <span class="toc-text">重新打包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E9%83%A8%E5%BA%93"><span class="toc-number">4.2.</span> <span class="toc-text">内部库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2main-%E7%B1%BB"><span class="toc-number">4.3.</span> <span class="toc-text">查询main 类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E6%96%B0%E6%89%93%E5%8C%85%E5%AE%9E%E7%8E%B0%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.4.</span> <span class="toc-text">重新打包实现示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-number">5.</span> <span class="toc-text">延伸阅读</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/5441/" title="Spring Cloud Gateway整合Spring Doc">Spring Cloud Gateway整合Spring Doc</a><time datetime="2023-04-02T12:49:15.000Z" title="发表于 2023-04-02 20:49:15">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f507/" title="处理字典值反显问题.md">处理字典值反显问题.md</a><time datetime="2023-04-02T12:46:42.000Z" title="发表于 2023-04-02 20:46:42">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/9fa5/" title="Spring AOP 调用同一个对象的方法">Spring AOP 调用同一个对象的方法</a><time datetime="2020-12-05T14:55:47.000Z" title="发表于 2020-12-05 22:55:47">2020-12-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/39fc/" title="Spring AOP基本用法3">Spring AOP基本用法3</a><time datetime="2020-09-23T02:26:55.000Z" title="发表于 2020-09-23 10:26:55">2020-09-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f93d/" title="Spring AOP基本用法2">Spring AOP基本用法2</a><time datetime="2020-09-23T02:25:58.000Z" title="发表于 2020-09-23 10:25:58">2020-09-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 水娃</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '248e3cebde8537449dbb',
+      clientSecret: 'a9c539e71782374d81eb91ad932288cd41809575',
+      repo: 'blog-s-gitalk',
+      owner: 'qinzaizhen',
+      admin: ['qzztf'],
+      id: '05dbecac50f171055f9c156eac465136',
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></body></html>

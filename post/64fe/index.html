@@ -1,0 +1,469 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>Spring Boot 六 - 部署Spring Boot应用 | 水娃火娃石榴娃</title><meta name="author" content="水娃"><meta name="copyright" content="水娃"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在部署应用时，Spring Boot 灵活的打包选项提供了大量的选择。你可以轻松地将Spring Boot 应用部署到各种云平台、容器镜像(例如Docker)或虚拟&amp;#x2F;真实机器上。 本节将介绍一些更常见的部署场景。 部署到云上Spring Boot的可执行jar对于大多数流行的云PaaS(平台即服务)"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="http://qzztf.com/post/64fe/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/image/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/image/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/image/pwa/16.png"/><link rel="mask-icon" href="/image/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?86553a0f289bcfb307062507dc247eb2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Spring Boot 六 - 部署Spring Boot应用',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-06-16 15:25:26'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="水娃火娃石榴娃"><span class="site-name">水娃火娃石榴娃</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Spring Boot 六 - 部署Spring Boot应用</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2017-10-09T10:16:54.000Z" title="发表于 2017-10-09 18:16:54">2017-10-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-06-16T07:25:26.152Z" title="更新于 2024-06-16 15:25:26">2024-06-16</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">4.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>17分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Spring Boot 六 - 部署Spring Boot应用"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>在部署应用时，Spring Boot 灵活的打包选项提供了大量的选择。你可以轻松地将Spring Boot 应用部署到各种云平台、容器镜像(例如Docker)或虚拟/真实机器上。</p>
+<p>本节将介绍一些更常见的部署场景。</p>
+<h2 id="部署到云上"><a href="#部署到云上" class="headerlink" title="部署到云上"></a>部署到云上</h2><p>Spring Boot的可执行jar对于大多数流行的云PaaS(平台即服务)提供者都是直接可用的。这些提供者往往要求你“自带容器”;它们管理应用程序进程程(不是专门针对Java应用程序的)，因此它们需要一些中间层，以使应用程序适应云的运行过程的概念。</p>
+<p>两家受欢迎的云服务提供商，Heroku和Cloud Foundry，采用了一种“buildpack”的方式。buildpack将你部署的代码封装在<em>启动应用程序</em>所需的任何东西中:它可能是一个JDK和对<code>java</code>的调用，它可能是一个嵌入式web服务器，或者它可能是一个成熟的应用程序服务器。buildpack是可插拔的，但理想情况下，你应该能够尽可能少地定制它。这减少了不受你控制的功能的占用。它最小化了开发和生产环境之间的差异。</p>
+<p>理想情况下，你的应用程序，就像一个Spring Boot 的可执行jar一样，拥有它需要在其中运行的所有东西。</p>
+<p>在本节中，我们将看看在“入门”部分中<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#getting-started-first-application">开发的简单应用程序</a>在云中运行所需的功能。</p>
+<h3 id="Cloud-Foundry"><a href="#Cloud-Foundry" class="headerlink" title="Cloud Foundry"></a>Cloud Foundry</h3><p>如果没有指定其他buildpack ，则Cloud Foundry提供了默认的buildpack 。Cloud Foundry <a target="_blank" rel="noopener" href="https://github.com/cloudfoundry/java-buildpack">Java buildpack</a>为Spring应用程序提供了极好的支持，包括Spring Boot。你可以部署独立的可执行jar应用程序，以及传统的<code>.war</code>包应用程序。</p>
+<p>构建应用程序（使用例如<code>mvn clean package</code>）并<a target="_blank" rel="noopener" href="http://docs.cloudfoundry.org/devguide/installcf/install-go-cli.html">安装<code>cf</code>命令行工具后</a>，只需像下面这样使用<code>cf push</code>命令部署应用程序，将其中的路径替换为你自己编译好的<code>.jar</code>路径。在推送应用之前，一定要使用<a target="_blank" rel="noopener" href="http://docs.cloudfoundry.org/devguide/installcf/whats-new-v6.html#login">你的<code>cf</code>命令行客户端登录</a>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cf push acloudyspringtime -p target&#x2F;demo-0.0.1-SNAPSHOT.jar</span><br></pre></td></tr></table></figure>
+<p>有关更多选项，请参阅<a target="_blank" rel="noopener" href="http://docs.cloudfoundry.org/devguide/installcf/whats-new-v6.html#push"><code>cf push</code>文档</a>。 如果在同一目录中存在Cloud Foundry <a target="_blank" rel="noopener" href="http://docs.cloudfoundry.org/devguide/deploy-apps/manifest.html"><code>manifest.yml</code></a>文件，则会参考这个文件。</p>
+<blockquote>
+<p>这里我们用<code>acloudyspringtime</code>代替你给cf的任何值，该值作为你的应用程序的名称。</p>
+</blockquote>
+<p>此时，<code>cf</code>将开始上传你的应用程序:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Uploading acloudyspringtime... OK</span><br><span class="line">Preparing to start acloudyspringtime... OK</span><br><span class="line">-----&gt; Downloaded app package (8.9M)</span><br><span class="line">-----&gt; Java Buildpack Version: v3.12 (offline) | https:&#x2F;&#x2F;github.com&#x2F;cloudfoundry&#x2F;java-buildpack.git#6f25b7e</span><br><span class="line">-----&gt; Downloading Open Jdk JRE 1.8.0_121 from https:&#x2F;&#x2F;java-buildpack.cloudfoundry.org&#x2F;openjdk&#x2F;trusty&#x2F;x86_64&#x2F;openjdk-1.8.0_121.tar.gz (found in cache)</span><br><span class="line">       Expanding Open Jdk JRE to .java-buildpack&#x2F;open_jdk_jre (1.6s)</span><br><span class="line">-----&gt; Downloading Open JDK Like Memory Calculator 2.0.2_RELEASE from https:&#x2F;&#x2F;java-buildpack.cloudfoundry.org&#x2F;memory-calculator&#x2F;trusty&#x2F;x86_64&#x2F;memory-calculator-2.0.2_RELEASE.tar.gz (found in cache)</span><br><span class="line">       Memory Settings: -Xss349K -Xmx681574K -XX:MaxMetaspaceSize&#x3D;104857K -Xms681574K -XX:MetaspaceSize&#x3D;104857K</span><br><span class="line">-----&gt; Downloading Container Certificate Trust Store 1.0.0_RELEASE from https:&#x2F;&#x2F;java-buildpack.cloudfoundry.org&#x2F;container-certificate-trust-store&#x2F;container-certificate-trust-store-1.0.0_RELEASE.jar (found in cache)</span><br><span class="line">       Adding certificates to .java-buildpack&#x2F;container_certificate_trust_store&#x2F;truststore.jks (0.6s)</span><br><span class="line">-----&gt; Downloading Spring Auto Reconfiguration 1.10.0_RELEASE from https:&#x2F;&#x2F;java-buildpack.cloudfoundry.org&#x2F;auto-reconfiguration&#x2F;auto-reconfiguration-1.10.0_RELEASE.jar (found in cache)</span><br><span class="line">Checking status of app &#39;acloudyspringtime&#39;...</span><br><span class="line">  0 of 1 instances running (1 starting)</span><br><span class="line">  ...</span><br><span class="line">  0 of 1 instances running (1 starting)</span><br><span class="line">  ...</span><br><span class="line">  0 of 1 instances running (1 starting)</span><br><span class="line">  ...</span><br><span class="line">  1 of 1 instances running (1 running)</span><br><span class="line"></span><br><span class="line">App started</span><br></pre></td></tr></table></figure>
+<p>祝贺你！应用现在已经运行了！</p>
+<p>很容易验证已部署的应用的状态:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ cf apps</span><br><span class="line">Getting applications in ...</span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line">name                 requested state   instances   memory   disk   urls</span><br><span class="line">...</span><br><span class="line">acloudyspringtime    started           1&#x2F;1         512M     1G     acloudyspringtime.cfapps.io</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>一旦Cloud Foundry认为你的应用已经部署,你应该能够访问给定的URI,在这个例子中是<code>http://acloudyspringtime.cfapps.io/</code>。</p>
+<h4 id="绑定到服务"><a href="#绑定到服务" class="headerlink" title="绑定到服务"></a>绑定到服务</h4><p>默认情况下，关于运行应用程序和服务连接信息的元数据将作为环境变量(例如:<code>$VCAP_SERVICES</code>)暴露给应用程序。这个架构决策是由于Cloud Foundry的polyglot(任何语言和平台都可以作为buildpack支持)的特性;进程范围的环境变量是语言无关的。</p>
+<p>环境变量并不总是适合最简单的API，所以Spring Boot 自动提取它们并将数据转化为可以通过Spring的<code>Environment</code>抽象来访问的属性。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyBean</span> <span class="keyword">implements</span> <span class="title">EnvironmentAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String instanceId;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEnvironment</span><span class="params">(Environment environment)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.instanceId = environment.getProperty(<span class="string">&quot;vcap.application.instance_id&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所有的Cloud Foundry属性都是以<code>vcap</code>为前缀的。你可以使用vcap属性来访问应用程序信息(例如应用程序的公共URL)和服务信息(例如数据库凭据)。有关完整的详细信息，请参阅<code>CloudFoundryVcapEnvironmentPostProcessor</code> Javadoc。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://cloud.spring.io/spring-cloud-connectors/">Spring Cloud Connectors</a>项目更适合配置DataSource等任务。 Spring Boot包括自动配置支持和<code>spring-boot-starter-cloud-connectors</code> starter。</p>
+</blockquote>
+<h3 id="Heroku"><a href="#Heroku" class="headerlink" title="Heroku"></a>Heroku</h3><h3 id="OpenShift"><a href="#OpenShift" class="headerlink" title="OpenShift"></a>OpenShift</h3><p><a target="_blank" rel="noopener" href="https://www.openshift.com/">OpenShift</a>是RedHat public(和enterprise)PaaS解决方案。与Heroku一样，它通过运行由git提交的脚本运行，因此，只要Java运行时可用(这是你在OpenShift中可以要求的标准功能)，你可以用任何方式编写Spring Boot 应用程序的启动。要做到这一点，你可以在你的仓库的<code>.openshift/action_hooks</code>下使用<a target="_blank" rel="noopener" href="https://www.openshift.com/developers/do-it-yourself">DIY Cartridge </a>和hook。</p>
+<p>基本的模型是:</p>
+<ol>
+<li>确保Java和你的构建工具是远程安装的，例如使用<code>pre_build</code> hook(Java和Maven是默认安装的，而Gradle则不是)。</li>
+<li>使用<code>build</code> hook来构建你的jar(使用Maven 或Gradle )。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line">cd $OPENSHIFT_REPO_DIR</span><br><span class="line">mvn package -s .openshift&#x2F;settings.xml -DskipTests&#x3D;true</span><br></pre></td></tr></table></figure></li>
+<li>添加一个调用<code>java-jar ...</code>的<code>start</code> hook<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line">cd $OPENSHIFT_REPO_DIR</span><br><span class="line">nohup java -jar target&#x2F;*.jar --server.port&#x3D;$&#123;OPENSHIFT_DIY_PORT&#125; --server.address&#x3D;$&#123;OPENSHIFT_DIY_IP&#125; &amp;</span><br></pre></td></tr></table></figure></li>
+<li>使用一个<code>stop</code> hook(因为start应该干净地返回???)。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line">source $OPENSHIFT_CARTRIDGE_SDK_BASH</span><br><span class="line">PID&#x3D;$(ps -ef | grep java.*\.jar | grep -v grep | awk &#39;&#123; print $2 &#125;&#39;)</span><br><span class="line">if [ -z &quot;$PID&quot; ]</span><br><span class="line">then</span><br><span class="line">    client_result &quot;Application is already stopped&quot;</span><br><span class="line">else</span><br><span class="line">    kill $PID</span><br><span class="line">fi</span><br></pre></td></tr></table></figure></li>
+<li>在<code>application.properties</code>中由平台提供的环境变量的服务绑定,例如:<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">spring.datasource.url&#x3D; jdbc:mysql:&#x2F;&#x2F;$&#123;OPENSHIFT_MYSQL_DB_HOST&#125;:$&#123;OPENSHIFT_MYSQL_DB_PORT&#125;&#x2F;$&#123;OPENSHIFT_APP_NAME&#125;</span><br><span class="line">spring.datasource.username&#x3D; $&#123;OPENSHIFT_MYSQL_DB_USERNAME&#125;</span><br><span class="line">spring.datasource.password&#x3D; $&#123;OPENSHIFT_MYSQL_DB_PASSWORD&#125;</span><br></pre></td></tr></table></figure>
+在他们的网站上有一个关于在OpenShift上运行Gradle的博客，让你使用gradle来运行你的应用。<h3 id="Amazon-Web-Services-AWS"><a href="#Amazon-Web-Services-AWS" class="headerlink" title="Amazon Web Services (AWS)"></a>Amazon Web Services (AWS)</h3></li>
+</ol>
+<h4 id="AWS-Elastic-Beanstalk"><a href="#AWS-Elastic-Beanstalk" class="headerlink" title="AWS Elastic Beanstalk"></a>AWS Elastic Beanstalk</h4><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><h3 id="Boxfuse-and-Amazon-Web-Services"><a href="#Boxfuse-and-Amazon-Web-Services" class="headerlink" title="Boxfuse and Amazon Web Services"></a>Boxfuse and Amazon Web Services</h3><h3 id="Google-Cloud"><a href="#Google-Cloud" class="headerlink" title="Google Cloud"></a>Google Cloud</h3><p>Google Cloud有几个选项可以用来启动Spring Boot应用。最容易开始使用的可能是App Engine，但是你也可以找到在容器引擎的容器中运行Spring Boot，或者在虚拟机上使用计算引擎运行Spring Boot的方法。</p>
+<p>要在App Engine中运行，你可以首先在UI中创建一个项目，它为你设置一个惟一的标识符和HTTP路由。将Java应用程序添加到项目中，然后将其清空，然后使用<a target="_blank" rel="noopener" href="https://cloud.google.com/sdk/downloads">Google Cloud SDK</a>将你的Spring Boot应用从命令行或CI构建中push到该项目。</p>
+<p>App Engine需要你创建一个<code>app.yaml</code>文件来描述你的应用所需要的资源。通常你把它放在<code>src/min/appengine</code>，它看起来是这样的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">service: default</span><br><span class="line"></span><br><span class="line">runtime: java</span><br><span class="line">env: flex</span><br><span class="line"></span><br><span class="line">runtime_config:</span><br><span class="line">  jdk: openjdk8</span><br><span class="line"></span><br><span class="line">handlers:</span><br><span class="line">- url: &#x2F;.*</span><br><span class="line">  script: this field is required, but ignored</span><br><span class="line"></span><br><span class="line">manual_scaling:</span><br><span class="line">  instances: 1</span><br><span class="line"></span><br><span class="line">health_check:</span><br><span class="line">  enable_health_check: False</span><br><span class="line"></span><br><span class="line">env_variables:</span><br><span class="line">  ENCRYPT_KEY: your_encryption_key_here</span><br></pre></td></tr></table></figure>
+<p>例如，你可以使用Maven插件来部署该应用程序，只需将项目ID添加到构建配置中即可:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">    &lt;groupId&gt;com.google.cloud.tools&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;appengine-maven-plugin&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.3.0&lt;&#x2F;version&gt;</span><br><span class="line">    &lt;configuration&gt;</span><br><span class="line">        &lt;project&gt;myproject&lt;&#x2F;project&gt;</span><br><span class="line">    &lt;&#x2F;configuration&gt;</span><br><span class="line">&lt;&#x2F;plugin&gt;</span><br></pre></td></tr></table></figure>
+<p>然后使用<code>mvn appengine:deploy</code>(如果你需要先进行身份验证，构建将失败)。</p>
+<blockquote>
+<p>Google App Engine Classic与Servlet 2.5 API绑定住了，因此你不能在没有修改的情况下部署Spring应用。请参阅本指南的<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#howto-servlet-2-5">Servlet 2.5部分</a>。</p>
+</blockquote>
+<h2 id="安装Spring-Boot应用"><a href="#安装Spring-Boot应用" class="headerlink" title="安装Spring Boot应用"></a>安装Spring Boot应用</h2><p>除了使用<code>java -jar</code>运行Spring Boot应用程序外，还可以为Unix系统创建完整的可执行的应用程序。完整可执行的jar可以像任何其他可执行二进制文件一样执行，也可以使用<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#deployment-service"><code>init.d</code>或<code>systemd</code></a>进行注册。这使得在常见的生产环境中安装和管理Spring Boot应用程序非常容易。</p>
+<blockquote>
+<p>完全可执行的jar通过在文件的前面嵌入一个额外的脚本来工作。目前，有些工具不接受这种格式，因此你可能不总是能够使用这种技术。例如，<code>jar -xf</code>可能会在提取出jar或完全可执行的war时失败。如果你打算直接执行它，而不是用<code>java -jar</code>运行它，或者将它部署到servlet容器中，那么建议你仅使你的jar或者war是完全可执行的。</p>
+</blockquote>
+<p>要使用Maven来创建一个“完全可执行”jar，请使用以下插件配置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;plugin&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-maven-plugin&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;configuration&gt;</span><br><span class="line">        &lt;executable&gt;true&lt;&#x2F;executable&gt;</span><br><span class="line">    &lt;&#x2F;configuration&gt;</span><br><span class="line">&lt;&#x2F;plugin&gt;</span><br></pre></td></tr></table></figure>
+<p>使用Gradle 的配置为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">springBoot &#123;</span><br><span class="line">    executable &#x3D; true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后，你可以通过键入<code>./my-application.jar</code>（其中<code>my-application</code>是你的artifact的名称）来运行应用程序。 包含jar的目录将被用作应用程序的工作目录。</p>
+<h3 id="支持的操作系统"><a href="#支持的操作系统" class="headerlink" title="支持的操作系统"></a>支持的操作系统</h3><p>默认的脚本支付大多数Linux分发版本并且已经在CentOS和Ubuntu上测试通过。其他的平台比如OS X和FreeBSD，需要 使用自定义的<code>embeddedLaunchScript</code>。</p>
+<h3 id="Unix-Linux服务"><a href="#Unix-Linux服务" class="headerlink" title="Unix/Linux服务"></a>Unix/Linux服务</h3><p>Spring Boot应用可以方便地作为Unix/Linux服务，既可以使用<code>init.d</code>又可以使用<code>systemd</code>。</p>
+<h4 id="安装为init-d服务-System-V"><a href="#安装为init-d服务-System-V" class="headerlink" title="安装为init.d服务(System V)"></a>安装为init.d服务(System V)</h4><p>如果你配置了Spring Boot的Maven或者Gradle插件来生成<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#deployment-install">完全可执行的jar</a>，并且你没有使用自定义的<code>embeddedLaunchScript</code>，那么你的应用可以当作<code>init.d</code>服务来使用。简单地将jar链接到<code>init.d</code>以支持标准的<code>start</code>，<code>stop</code>，<code>restart</code>和<code>status</code>命令。<br>该脚本支持以下功能：</p>
+<ul>
+<li>以拥有该jar文件的用户身份启动服务</li>
+<li>使用<code>/var/run/&lt;appname&gt;/&lt;appname&gt;.pid</code>跟踪应用程序的PID</li>
+<li>将控制台日志写入<code>/var/log/&lt;appname&gt;.log</code></li>
+</ul>
+<p>假设你有一个Spring Boot 应用程序安装在<code>/var/ myapp</code>中，安装Spring Boot 应用程序作为<code>init.d</code>服务只需创建一个符号链接：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo ln -s &#x2F;var&#x2F;myapp&#x2F;myapp.jar &#x2F;etc&#x2F;init.d&#x2F;myapp</span><br></pre></td></tr></table></figure>
+<p>一旦安装之后 ，你可以按照通常的方式启动和停止服务。例如，在基于Debian的系统上：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ service myapp start</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果你的应用程序无法启动，请检查写入<code>/var/log/&lt;appname&gt;.log</code>的日志文件是否有错误。</p>
+</blockquote>
+<p>你还可以将应用程序标记为使用标准操作系统工具自动启动。例如，在Debian上：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ update-rc.d myapp defaults &lt;priority&gt;</span><br></pre></td></tr></table></figure>
+<h6 id="保护init-d服务"><a href="#保护init-d服务" class="headerlink" title="保护init.d服务"></a>保护init.d服务</h6><blockquote>
+<p>以下是关于如何保护作为init.d服务运行的Spring Boot应用程序的一组指导。 它并不是为了强化应用程序和运行环境而应该做的一切的详尽列表。</p>
+</blockquote>
+<p>当以root身份执行时，在使用root来启动init.d服务的情况下，可执行脚本将默认以拥有该jar文件的用户身份运行应用程序。你不应该以<code>root</code>身份运行Spring Boot 应用程序，因此应用程序的jar文件不应该由root拥有。 相反，创建一个特定的用户来运行应用程序，并使用<code>chown</code>将其作为jar文件的所有者。 例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ chown bootapp:bootapp your-app.jar</span><br></pre></td></tr></table></figure>
+<p>在这种情况下，可执行脚本默认将以<code>bootapp</code>用户运行应用程序。</p>
+<blockquote>
+<p>为了减少应用程序的用户帐户遭到入侵的机会，你应该考虑防止其使用登录shell。例如，将帐户的shell设置为<code>/usr/sbin/nologin</code>。</p>
+</blockquote>
+<p>你还应该采取措施来阻止修改应用程序的jar文件。首先，配置其权限，使其不能被写入，并且只能由其所有者读取或执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ chmod 500 your-app.jar</span><br></pre></td></tr></table></figure>
+<p>其次，如果你的应用程序或运行它的帐户遭到破坏，你还应采取措施减少损失。如果攻击者确实获得访问权限，他们可以使jar文件可写，并更改其内容。防止这种情况的一种方法是使用<code>chattr</code>使其变得不可变：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo chattr +i your-app.jar</span><br></pre></td></tr></table></figure>
+<p>这将阻止任何用户（包括root）修改该jar。</p>
+<p>如果root用于控制应用程序的服务，则使用一个用于自定义启动的<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#deployment-script-customization-conf-file"><code>.conf</code>文件</a>。root用户将会读取和验证<code>.conf</code>文件。它也应该保证相应的安全性。使用<code>chmod</code>使文件只能由所有者读取，并使用<code>chown</code>来使root作为其拥有者。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ chmod 400 your-app.conf</span><br><span class="line">$ sudo chown root:root your-app.conf</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装为systemd-服务"><a href="#安装为systemd-服务" class="headerlink" title="安装为systemd 服务"></a>安装为systemd 服务</h4><p>Systemd是System V init系统的后继者，现在被许多现代Linux发行版使用。尽管你可以继续使用<code>systemd</code>的<code>init.d</code>脚本，但也可以使用<code>systemd</code> ‘service’ 脚本启动Spring Boot应用程序。</p>
+<p>假设你在<code>/var/myapp</code>中安装了一个Spring Boot应用程序，要将Spring Boot应用程序安装为系统服务，请创建使用以下示例的名为<code>myapp.service</code>的脚本，并将其放在<code>/etc/systemd/system</code>目录中：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=myapp</span><br><span class="line">After=syslog.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">User=myapp</span><br><span class="line">ExecStart=/var/myapp/myapp.jar</span><br><span class="line">SuccessExitStatus=143</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>请记住更改应用程序的<code>Description</code>，<code>User</code>和<code>ExecStart</code>字段。</p>
+</blockquote>
+<blockquote>
+<p>请注意，<code>ExecStart</code>字段不声明脚本操作命令，这意味着默认情况下使用<code>run</code>命令。</p>
+</blockquote>
+<p>请注意，与运行<code>init.d</code>服务不同，运行应用程序，PID文件和控制台日志文件的用户由<code>systemd</code>本身管理，因此必须使用’service’脚本中的适当字段进行配置。 有关详细信息，请参阅<a target="_blank" rel="noopener" href="http://www.freedesktop.org/software/systemd/man/systemd.service.html">服务单元配置手册页</a>。</p>
+<p>要标记应用程序在系统启动时自动启动，请使用以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl enable myapp.service</span><br></pre></td></tr></table></figure>
+<p>请参考<code>man systemctl</code>了解更多详情。</p>
+<h4 id="自定义启动脚本"><a href="#自定义启动脚本" class="headerlink" title="自定义启动脚本"></a>自定义启动脚本</h4><p>由Maven或Gradle插件编写的默认嵌入式启动脚本可以通过多种方式进行自定义。对于大多数人来说，使用默认脚本以及一些自定义设置通常就足够了。如果你发现无法自定义需要的内容，则可以随时使用<code>embeddedLaunchScript</code>选项来完全编写自己的文件。</p>
+<h6 id="写脚本时自定义脚本"><a href="#写脚本时自定义脚本" class="headerlink" title="写脚本时自定义脚本"></a>写脚本时自定义脚本</h6><p>在将脚本写入jar文件时，自定义开始脚本的元素通常是有意义的。例如，init.d脚本可以提供一个“描述”，因为你知道这一点（它不会改变），你可以在生成jar时提供它。</p>
+<p>要自定义写入的元素，请使用Spring Boot Maven 或Gradle  插件的<code>embeddedLaunchScriptProperties</code>选项。</p>
+<p>默认脚本支持以下属性替换：</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>mode</code></td>
+<td>脚本模式。 默认为<code>auto</code>。</td>
+</tr>
+<tr>
+<td><code>initInfoProvides</code></td>
+<td>“INIT INFO”的<code>Provides</code>部分。默认为Gradle的<code>spring-boot-application</code>和Maven的 <code>$&#123;project.artifactId&#125;</code>。</td>
+</tr>
+<tr>
+<td><code>initInfoRequiredStart</code></td>
+<td>“INIT INFO”的<code>Required-Start</code>部分。默认为<code>$remote_fs $syslog $network</code>。</td>
+</tr>
+<tr>
+<td><code>initInfoRequiredStop</code></td>
+<td>“INIT INFO”的<code>Required-Stop</code>部分。默认为<code>$remote_fs $syslog $network</code>。</td>
+</tr>
+<tr>
+<td><code>initInfoDefaultStart</code></td>
+<td>“INIT INFO”的<code>Default-Start</code>部分。默认为<code>2 3 4 5</code>。</td>
+</tr>
+<tr>
+<td><code>initInfoDefaultStop</code></td>
+<td>“INIT INFO”的<code>Default-Start</code>部分。默认为<code>0 1 6</code>。</td>
+</tr>
+<tr>
+<td><code>initInfoShortDescription</code></td>
+<td>“INIT INFO”的<code>Short-Description</code>部分。默认为Gradle的<code>Spring Boot Application</code>和Maven的<code>$&#123;project.name&#125;</code>。</td>
+</tr>
+<tr>
+<td><code>initInfoDescription</code></td>
+<td>“INIT INFO”的<code>Description</code>部分。默认为Gradle的<code>Spring Boot Application</code>和Maven的<code>$&#123;project.description&#125;</code>（失败时使用<code>$&#123;project.name&#125;</code>）。</td>
+</tr>
+<tr>
+<td><code>initInfoChkconfig</code></td>
+<td>“INIT INFO”的<code>chkconfig</code>部分。默认为<code>2345 99 01</code>。</td>
+</tr>
+<tr>
+<td><code>confFolder</code></td>
+<td><code>CONF_FOLDER</code>的默认值。 默认为包含该jar的文件夹。</td>
+</tr>
+<tr>
+<td><code>logFolder</code></td>
+<td><code>LOG_FOLDER</code>的默认值。 仅适用于<code>init.d</code>服务。</td>
+</tr>
+<tr>
+<td><code>logFilename</code></td>
+<td><code>LOG_FILENAME</code>的默认值。 仅适用于<code>init.d</code>服务。</td>
+</tr>
+<tr>
+<td><code>pidFolder</code></td>
+<td><code>PID_FOLDER</code>的默认值。 仅适用于<code>init.d</code>服务。</td>
+</tr>
+<tr>
+<td><code>pidFilename</code></td>
+<td><code>PID_FOLDER</code>中pid文件名称的默认值。 仅适用于<code>init.d</code>服务。</td>
+</tr>
+<tr>
+<td><code>useStartStopDaemon</code></td>
+<td>如果<code>start-stop-daemon</code>命令可用，应该用于控制进程。默认为<code>true</code>。</td>
+</tr>
+<tr>
+<td><code>stopWaitTime</code></td>
+<td><code>STOP_WAIT_TIME</code>的默认值。仅适用于<code>init.d</code>服务。默认为60秒。</td>
+</tr>
+</tbody></table>
+<h6 id="在运行时自定义脚本"><a href="#在运行时自定义脚本" class="headerlink" title="在运行时自定义脚本"></a>在运行时自定义脚本</h6><p>对于在写入jar<em>后</em>需要定制的脚本项目，你可以使用环境变量或<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#deployment-script-customization-conf-file">配置文件</a>。</p>
+<p>默认脚本支持以下环境属性：</p>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>MODE</code></td>
+<td>操作模式。默认取决于构建jar的方式，但是通常为<code>auto</code>(<strong>这意味着它会尝试猜测它是否是初始化脚本，通过检查它是否是<code>init.d</code>目录中的符号链接</strong>)。你可以明确地设置它为<code>service</code>，这样就可以使用`stop</td>
+</tr>
+<tr>
+<td><code>USE_START_STOP_DAEMON</code></td>
+<td>如果<code>start-stop-daemon</code>命令可用时，它应该用来控制进程。默认为<code>true</code>。</td>
+</tr>
+<tr>
+<td><code>PID_FOLDER</code></td>
+<td>pid 文件夹的根名称（默认为<code>/var/run</code>）。</td>
+</tr>
+<tr>
+<td><code>LOG_FOLDER</code></td>
+<td>放置日志文件的目录名称（默认为<code>/var/log</code>）。</td>
+</tr>
+<tr>
+<td><code>CONF_FOLDER</code></td>
+<td>读取.conf文件的文件夹名称（默认与jar-file相同的文件夹）。</td>
+</tr>
+<tr>
+<td><code>LOG_FILENAME</code></td>
+<td><code>LOG_FOLDER</code>中的日志文件名称（默认为<code>&lt;appname&gt;.log</code>）。</td>
+</tr>
+<tr>
+<td><code>APP_NAME</code></td>
+<td>应用的名称。如果jar从符号链接运行，这个脚本将会猜测应用的名称，如果不是符号链接，或者你想要明确设置应用的名称，这个将会非常有用。</td>
+</tr>
+<tr>
+<td><code>RUN_ARGS</code></td>
+<td>传递给程序（Spring Boot 应用）的参数。</td>
+</tr>
+<tr>
+<td><code>JAVA_HOME</code></td>
+<td>默认通过使用<code>PATH</code>来发现<code>java</code>可执行程序，但是如果在<code>$JAVA_HOME/bin/java</code>有一个可执行文件，你可以明确地设置它。</td>
+</tr>
+<tr>
+<td><code>JAVA_OPTS</code></td>
+<td>传递给JVM启动时的选项。</td>
+</tr>
+<tr>
+<td><code>JARFILE</code></td>
+<td>在使用脚本来启动不是实际内嵌的jar时，指定jar文件的明确路径。</td>
+</tr>
+<tr>
+<td><code>DEBUG</code></td>
+<td>当不为空时将设置shell进程的<code>-x</code>标志，可以很容易地查看脚本的逻辑。</td>
+</tr>
+<tr>
+<td><code>STOP_WAIT_TIME</code></td>
+<td>在停止应用时在强制退出之前等待的时间秒数（默认为<code>60</code>）。</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><code>PID_FOLDER</code>,<code>LOG_FOLDER</code>和<code>LOG_FILENAME</code>变量只在<code>init.d</code>服务时可用。<code>systemd</code>时使用’service’脚本来使用等价的自定义变量。查看<a target="_blank" rel="noopener" href="http://www.freedesktop.org/software/systemd/man/systemd.service.html">更多细节</a>。</p>
+</blockquote>
+<p>除了<code>JARFILE</code> 和 <code>APP_NAME</code>，上面的设置可用使用一个<code>.conf</code>文件。这个文件在jar文件的相同目录并且有相同的名称，但是后缀为<code>.conf</code>而不是<code>.jar</code>。例如，名为<code>/var/myapp/myapp.jar</code>的jar将会使用名为<code>/var/myapp/myapp.conf</code>的配置文件。</p>
+<p>myapp.conf：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">JAVA_OPTS&#x3D;-Xmx1024M</span><br><span class="line">LOG_FOLDER&#x3D;&#x2F;custom&#x2F;log&#x2F;folder</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果你不想它与jar在同一个目录，你可以使用<code>CONF_FOLDER</code>环境变量来自定义配置文件的位置。</p>
+</blockquote>
+<p>阅读<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#deployment-initd-service-securing">保护init.d服务的指南</a>来学习适当地保护配置文件。</p>
+<h3 id="微软Windows服务"><a href="#微软Windows服务" class="headerlink" title="微软Windows服务"></a>微软Windows服务</h3><p>Spring Boot 应用使用<code>winsw</code>来作为Windows服务启动。</p>
+<p>有个<a target="_blank" rel="noopener" href="https://github.com/snicoll-scratches/spring-boot-daemon">单独维护</a>的示例逐步介绍了如何为Spring Boot 应用程序创建Windows服务。</p>
+<h2 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h2><p>查看<a target="_blank" rel="noopener" href="http://www.cloudfoundry.com/">Cloud Foundry</a>，<a target="_blank" rel="noopener" href="https://www.heroku.com/">Heroku</a>，<a target="_blank" rel="noopener" href="https://www.openshift.com/">OpenShift</a>和<a target="_blank" rel="noopener" href="https://boxfuse.com/">Boxfuse</a>网站，了解有关PaaS可提供的各种功能的更多信息。这些只是四个最受欢迎的Java PaaS提供商，因为Spring Boot 非常适合基于云的部署，你可以自由考虑其他提供商。</p>
+<p>下一节将介绍<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#cli">Spring Boot CLI</a>; 或者你可以前往阅读关于<a target="_blank" rel="noopener" href="http://www.doczh.site/docs/spring-boot/spring-boot-docs/current/en/reference/htmlsingle/index.html#build-tool-plugins">构建工具插件</a>。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://qzztf.com">水娃</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://qzztf.com/post/64fe/">http://qzztf.com/post/64fe/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://qzztf.com" target="_blank">水娃火娃石榴娃</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Spring-Boot/">Spring Boot</a><a class="post-meta__tags" href="/tags/%E9%83%A8%E7%BD%B2/">部署</a><a class="post-meta__tags" href="/tags/%E4%BA%91/">云</a></div><div class="post_share"><div class="social-share" data-image="/image/avatar.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/post/29bc/" title="Spring Boot 七 - Spring Boot CLI"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Spring Boot 七 - Spring Boot CLI</div></div></a></div><div class="next-post pull-right"><a href="/post/60cf/" title="Spring Boot 五-Spring Boot执行器 - 生产就绪特性"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Spring Boot 五-Spring Boot执行器 - 生产就绪特性</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/post/361c/" title="Idea 创建 Spring boot应用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-04-22</div><div class="title">Idea 创建 Spring boot应用</div></div></a></div><div><a href="/post/29bc/" title="Spring Boot 七 - Spring Boot CLI"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-10-13</div><div class="title">Spring Boot 七 - Spring Boot CLI</div></div></a></div><div><a href="/post/4406/" title="Spring Boot 八- 构建工具插件"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-10-16</div><div class="title">Spring Boot 八- 构建工具插件</div></div></a></div><div><a href="/post/60cf/" title="Spring Boot 五-Spring Boot执行器 - 生产就绪特性"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-09-13</div><div class="title">Spring Boot 五-Spring Boot执行器 - 生产就绪特性</div></div></a></div><div><a href="/post/6b4e/" title="Spring Boot 九 - “How-to” 指南"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-10-18</div><div class="title">Spring Boot 九 - “How-to” 指南</div></div></a></div><div><a href="/post/e2d8/" title="Spring Boot 学习1-创建Spring Boot应用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-11-18</div><div class="title">Spring Boot 学习1-创建Spring Boot应用</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">水娃</div><div class="author-info__description">水娃的博客 | java</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/qzztf"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎光临</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E4%B8%8A"><span class="toc-number">1.</span> <span class="toc-text">部署到云上</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Cloud-Foundry"><span class="toc-number">1.1.</span> <span class="toc-text">Cloud Foundry</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%91%E5%AE%9A%E5%88%B0%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.1.1.</span> <span class="toc-text">绑定到服务</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Heroku"><span class="toc-number">1.2.</span> <span class="toc-text">Heroku</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OpenShift"><span class="toc-number">1.3.</span> <span class="toc-text">OpenShift</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Amazon-Web-Services-AWS"><span class="toc-number">1.4.</span> <span class="toc-text">Amazon Web Services (AWS)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#AWS-Elastic-Beanstalk"><span class="toc-number">1.4.1.</span> <span class="toc-text">AWS Elastic Beanstalk</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.4.2.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Boxfuse-and-Amazon-Web-Services"><span class="toc-number">1.5.</span> <span class="toc-text">Boxfuse and Amazon Web Services</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Google-Cloud"><span class="toc-number">1.6.</span> <span class="toc-text">Google Cloud</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85Spring-Boot%E5%BA%94%E7%94%A8"><span class="toc-number">2.</span> <span class="toc-text">安装Spring Boot应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%AF%E6%8C%81%E7%9A%84%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"><span class="toc-number">2.1.</span> <span class="toc-text">支持的操作系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Unix-Linux%E6%9C%8D%E5%8A%A1"><span class="toc-number">2.2.</span> <span class="toc-text">Unix&#x2F;Linux服务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%B8%BAinit-d%E6%9C%8D%E5%8A%A1-System-V"><span class="toc-number">2.2.1.</span> <span class="toc-text">安装为init.d服务(System V)</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E4%BF%9D%E6%8A%A4init-d%E6%9C%8D%E5%8A%A1"><span class="toc-number">2.2.1.0.1.</span> <span class="toc-text">保护init.d服务</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%B8%BAsystemd-%E6%9C%8D%E5%8A%A1"><span class="toc-number">2.2.2.</span> <span class="toc-text">安装为systemd 服务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%90%AF%E5%8A%A8%E8%84%9A%E6%9C%AC"><span class="toc-number">2.2.3.</span> <span class="toc-text">自定义启动脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%86%99%E8%84%9A%E6%9C%AC%E6%97%B6%E8%87%AA%E5%AE%9A%E4%B9%89%E8%84%9A%E6%9C%AC"><span class="toc-number">2.2.3.0.1.</span> <span class="toc-text">写脚本时自定义脚本</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E5%9C%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E8%87%AA%E5%AE%9A%E4%B9%89%E8%84%9A%E6%9C%AC"><span class="toc-number">2.2.3.0.2.</span> <span class="toc-text">在运行时自定义脚本</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%AE%E8%BD%AFWindows%E6%9C%8D%E5%8A%A1"><span class="toc-number">2.3.</span> <span class="toc-text">微软Windows服务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-number">3.</span> <span class="toc-text">延伸阅读</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/5441/" title="Spring Cloud Gateway整合Spring Doc">Spring Cloud Gateway整合Spring Doc</a><time datetime="2023-04-02T12:49:15.000Z" title="发表于 2023-04-02 20:49:15">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f507/" title="处理字典值反显问题.md">处理字典值反显问题.md</a><time datetime="2023-04-02T12:46:42.000Z" title="发表于 2023-04-02 20:46:42">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/9fa5/" title="Spring AOP 调用同一个对象的方法">Spring AOP 调用同一个对象的方法</a><time datetime="2020-12-05T14:55:47.000Z" title="发表于 2020-12-05 22:55:47">2020-12-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/39fc/" title="Spring AOP基本用法3">Spring AOP基本用法3</a><time datetime="2020-09-23T02:26:55.000Z" title="发表于 2020-09-23 10:26:55">2020-09-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f93d/" title="Spring AOP基本用法2">Spring AOP基本用法2</a><time datetime="2020-09-23T02:25:58.000Z" title="发表于 2020-09-23 10:25:58">2020-09-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 水娃</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '248e3cebde8537449dbb',
+      clientSecret: 'a9c539e71782374d81eb91ad932288cd41809575',
+      repo: 'blog-s-gitalk',
+      owner: 'qinzaizhen',
+      admin: ['qzztf'],
+      id: '9fed5553683b482d559ee676659100ed',
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></body></html>

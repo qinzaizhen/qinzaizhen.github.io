@@ -1,0 +1,327 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>dubbo学习4-集群容灾与负载均衡配置 | 水娃火娃石榴娃</title><meta name="author" content="水娃"><meta name="copyright" content="水娃"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="集群配置调用关系图：   这里的Invoker是Provider的一个可调用Service的抽象，Invoder封装了Provider的地址和Service接口信息。 Direcotry代表多个Invoder，可以看成是List，但与List不同的是，它的值可能是动态变化的，比如注册中心推送变更。"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="http://qzztf.com/post/154c/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/image/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/image/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/image/pwa/16.png"/><link rel="mask-icon" href="/image/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?86553a0f289bcfb307062507dc247eb2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'dubbo学习4-集群容灾与负载均衡配置',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-06-16 15:25:26'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="水娃火娃石榴娃"><span class="site-name">水娃火娃石榴娃</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">dubbo学习4-集群容灾与负载均衡配置</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2017-07-27T13:38:39.000Z" title="发表于 2017-07-27 21:38:39">2017-07-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-06-16T07:25:26.158Z" title="更新于 2024-06-16 15:25:26">2024-06-16</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>14分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="dubbo学习4-集群容灾与负载均衡配置"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h4 id="集群配置"><a href="#集群配置" class="headerlink" title="集群配置"></a>集群配置</h4><p>调用关系图：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="http://ooll8xqpq.bkt.clouddn.com/cluster.jpg" alt="调用关系图"></p>
+<ul>
+<li>这里的Invoker是Provider的一个可调用Service的抽象，Invoder封装了Provider的地址和Service接口信息。</li>
+<li>Direcotry代表多个Invoder，可以看成是List<Invoder>，但与List不同的是，它的值可能是动态变化的，比如注册中心推送变更。</Invoder></li>
+<li>Cluster将Directory中的多个Invoder伪装成一个Invoder，对上层透明，伪装过程包含了容错逻辑，调用失败后，根据容错逻辑进行接下来的处理。</li>
+<li>Router负责从多个Invoder中按路由规则选出子集，比如读写分离，应用隔离等。</li>
+<li>LoadBalance负责从多个Invoder中选出具体的一个去进行调用，选的过程包含了负载均衡算法，调用失败后可能需要重选。</li>
+</ul>
+<h5 id="dubbo提供的容错模式"><a href="#dubbo提供的容错模式" class="headerlink" title="dubbo提供的容错模式"></a>dubbo提供的容错模式</h5><h6 id="Failover-Cluster-失败自动切换"><a href="#Failover-Cluster-失败自动切换" class="headerlink" title="Failover Cluster 失败自动切换"></a>Failover Cluster 失败自动切换</h6><ul>
+<li>当出现失败时，重试其他服务器（默认）</li>
+<li>通常用于读操作，但重试会带来更长延迟</li>
+<li>可通过<code>retries</code>来设置重试次数（不含第一次）</li>
+</ul>
+<h6 id="Failfast-Cluster-快速失败"><a href="#Failfast-Cluster-快速失败" class="headerlink" title="Failfast Cluster 快速失败"></a>Failfast Cluster 快速失败</h6><ul>
+<li>只发起一次调用，失败立即报错</li>
+<li>通常用于非幂等性的操作，比如新增记录</li>
+</ul>
+<h6 id="Failsafe-Cluster-失败安全"><a href="#Failsafe-Cluster-失败安全" class="headerlink" title="Failsafe Cluster 失败安全"></a>Failsafe Cluster 失败安全</h6><ul>
+<li>出现异常时直接忽略</li>
+<li>通常用于写入审记日志等操作</li>
+</ul>
+<h6 id="Failback-Cluster-失败自动恢复"><a href="#Failback-Cluster-失败自动恢复" class="headerlink" title="Failback Cluster 失败自动恢复"></a>Failback Cluster 失败自动恢复</h6><ul>
+<li>后台记录失败请求，定时重发</li>
+<li>通常用于消息通知操作</li>
+</ul>
+<h6 id="Forking-Cluster-并行调用"><a href="#Forking-Cluster-并行调用" class="headerlink" title="Forking Cluster 并行调用"></a>Forking Cluster 并行调用</h6><ul>
+<li>并行调用多个服务器，只要一个成功即返回</li>
+<li>通常用于实时性要求较高的读操作，但需要浪费更多服务资源</li>
+<li>可以通过<code>forks</code> 来设置最大并行数</li>
+</ul>
+<h6 id="Broadcast-Cluster-广播调用"><a href="#Broadcast-Cluster-广播调用" class="headerlink" title="Broadcast Cluster 广播调用"></a>Broadcast Cluster 广播调用</h6><ul>
+<li>广播调用所有提供者，逐个调用，任意一台报错则报错</li>
+<li>通常用于通知所有提供者更新缓存或日志等本地资源信息</li>
+</ul>
+<p>重试次数配置如：（failover模式生效）</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:service</span> <span class="attr">retries</span> = <span class="string">&quot;2&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>或：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:reference</span> <span class="attr">retries</span> =<span class="string">&quot;2&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>或：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:reference</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dubbo:method</span> <span class="attr">name</span> =<span class="string">&quot;sayHello&quot;</span> <span class="attr">retries</span> = <span class="string">&quot;2&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dubbo:reference</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>集群模式配置如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:service</span> <span class="attr">cluster</span> =<span class="string">&quot;failsafe&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>或：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:reference</span> <span class="attr">cluster</span>=<span class="string">&quot;failsafe&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="测试方法"><a href="#测试方法" class="headerlink" title="测试方法"></a>测试方法</h5><p>提供了两个provider，代码基本一致，端口号不一样。为了能模拟失败的场景，设置了超时时间，并且在service的代码中加入了线程休眠。当进入service的方法中时，手动结束掉进程，观察consumer端的反应。</p>
+<p>provider1：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoServiceImpl</span> <span class="keyword">implements</span> <span class="title">DemoService</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Logger logger = LoggerFactory.getLogger(DemoServiceImpl.class);</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sayHello</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        logger.debug(<span class="string">&quot;服务调用前&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        logger.debug(<span class="string">&quot;服务调用开始&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;hello :&quot;</span> + name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dubbo.application.name=helloapp</span><br><span class="line">dubbo.registry.address = zookeeper:<span class="comment">//localhost:2181</span></span><br><span class="line">dubbo.protocol.name=dubbo</span><br><span class="line">dubbo.protocol.port = <span class="number">20880</span></span><br></pre></td></tr></table></figure>
+
+<p>provider2：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoServiceImpl</span> <span class="keyword">implements</span> <span class="title">DemoService</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Logger logger = LoggerFactory.getLogger(DemoServiceImpl.class);</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sayHello</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        logger.debug(<span class="string">&quot;调用Provider2的服务&quot;</span>);</span><br><span class="line">        logger.debug(<span class="string">&quot;休息20秒&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">20000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;hello :&quot;</span> + name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">dubbo.application.name=helloapp</span><br><span class="line">dubbo.registry.address = zookeeper:<span class="comment">//localhost:2181</span></span><br><span class="line">dubbo.protocol.name=dubbo</span><br><span class="line">dubbo.protocol.port = <span class="number">20881</span></span><br></pre></td></tr></table></figure>
+
+<p>consumer：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:annotation</span> <span class="attr">package</span>=<span class="string">&quot;life.qzz.dubbodemo&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dubbo:reference</span> <span class="attr">interface</span>=<span class="string">&quot;life.qzz.dubbodemo.api.DemoService&quot;</span> <span class="attr">id</span>=<span class="string">&quot;demoService&quot;</span> <span class="attr">init</span>=<span class="string">&quot;true&quot;</span> <span class="attr">timeout</span>=<span class="string">&quot;50000&quot;</span> <span class="attr">retries</span>=<span class="string">&quot;2&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hello</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        logger.debug(<span class="string">&quot;服务返回结果：&#123;&#125;&quot;</span> , demoService.sayHello(name));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h6 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h6><ol>
+<li>failover<br>开始调用provider1，线程进行休眠，这时结束provider1的进程。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[DubboServerHandler-10.96.2.111:20880-thread-5] DemoServiceImpl.sayHello(20) | 服务调用前</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>consumer出现了连接异常错误：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Caused by: java.net.ConnectException: Connection refused: no further information: /<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20880</span></span><br><span class="line">	at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)</span><br><span class="line">	at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:<span class="number">717</span>)</span><br><span class="line">	at org.jboss.netty.channel.socket.nio.NioClientBoss.connect(NioClientBoss.java:<span class="number">150</span>)</span><br><span class="line">	at org.jboss.netty.channel.socket.nio.NioClientBoss.processSelectedKeys(NioClientBoss.java:<span class="number">105</span>)</span><br><span class="line">	at org.jboss.netty.channel.socket.nio.NioClientBoss.process(NioClientBoss.java:<span class="number">79</span>)</span><br><span class="line">	at org.jboss.netty.channel.socket.nio.AbstractNioSelector.run(AbstractNioSelector.java:<span class="number">312</span>)</span><br><span class="line">	at org.jboss.netty.channel.socket.nio.NioClientBoss.run(NioClientBoss.java:<span class="number">42</span>)</span><br><span class="line">	... <span class="number">3</span> more</span><br></pre></td></tr></table></figure>
+
+<p>但是consumer的方法还没结束，日志中打印了如下信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.alibaba.dubbo.rpc.cluster.support.FailoverClusterInvoker.doInvoke(FailoverClusterInvoker.java:<span class="number">79</span>) WARN [main] FailoverClusterInvoker.doInvoke(<span class="number">79</span>) |  [DUBBO] Although retry the method sayHello in the service life.qzz.dubbodemo.api.DemoService was successful by the provider <span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20881</span>, but there have been failed providers [<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20880</span>] (<span class="number">1</span>/<span class="number">1</span>) from the registry localhost:<span class="number">2181</span> on the consumer <span class="number">10.96</span>.<span class="number">2.111</span> using the dubbo version <span class="number">2.8</span>.<span class="number">4.</span> </span><br></pre></td></tr></table></figure>
+<p>provider1调用失败了，重新调用了provider2的方法。provider2打印出了日志，并且consumer也打印出了返回的信息。</p>
+<p>consumer日志：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">life.qzz.dubbodemo.controller.DemoController.hello(DemoController.java:<span class="number">27</span>) DEBUG [main] DemoController.hello(<span class="number">27</span>) | 服务返回结果：hello :qzz</span><br></pre></td></tr></table></figure>
+
+<p>provider2日志：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">20</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20881</span>-thread-<span class="number">2</span>] DemoServiceImpl.sayHello(<span class="number">20</span>) | 调用Provider2的服务</span><br><span class="line">life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">21</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20881</span>-thread-<span class="number">2</span>] DemoServiceImpl.sayHello(<span class="number">21</span>) | 休息<span class="number">20</span>秒</span><br></pre></td></tr></table></figure>
+
+<h6 id="failsafe"><a href="#failsafe" class="headerlink" title="failsafe"></a>failsafe</h6><p>provider的配置不用改，consumer的配置改为如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:annotation</span> <span class="attr">package</span>=<span class="string">&quot;life.qzz.dubbodemo&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dubbo:reference</span> <span class="attr">interface</span>=<span class="string">&quot;life.qzz.dubbodemo.api.DemoService&quot;</span> <span class="attr">id</span>=<span class="string">&quot;demoService&quot;</span> <span class="attr">init</span>=<span class="string">&quot;true&quot;</span> <span class="attr">timeout</span>=<span class="string">&quot;50000&quot;</span> <span class="attr">cluster</span>=<span class="string">&quot;failsafe&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>超时之后出现错误，consumer打印出了null。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">com.alibaba.dubbo.rpc.cluster.support.FailsafeClusterInvoker.doInvoke(FailsafeClusterInvoker.java:<span class="number">50</span>) ERROR [main] FailsafeClusterInvoker.doInvoke(<span class="number">50</span>) |  [DUBBO] Failsafe ignore exception: Invoke remote method timeout.</span><br><span class="line">life.qzz.dubbodemo.controller.DemoController.hello(DemoController.java:<span class="number">27</span>) DEBUG [main] DemoController.hello(<span class="number">27</span>) | 服务返回结果：<span class="keyword">null</span></span><br></pre></td></tr></table></figure>
+<p>并没有去调用另一个provider，我们的方法也没有抛出异常，也就是说错误没有在暴露给我们的方法。</p>
+<h6 id="failfast"><a href="#failfast" class="headerlink" title="failfast"></a>failfast</h6><p>出现了异常信息，consumer没有打印出日志，也就是说我们的方法出现了异常。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread <span class="string">&quot;main&quot;</span> com.alibaba.dubbo.rpc.RpcException: Failfast invoke providers dubbo:<span class="comment">//10.96.2.111:20881/life.qzz.dubbodemo.api.DemoService?anyhost=true&amp;application=helloapp&amp;check=false&amp;cluster=failfast&amp;default.check=false&amp;dubbo=2.8.4&amp;generic=false&amp;init=true&amp;interface=life.qzz.dubbodemo.api.DemoService&amp;methods=sayHello&amp;pid=11248&amp;side=consumer&amp;timeout=50000&amp;timestamp=1501137556130 RandomLoadBalance select from all providers [com.alibaba.dubbo.registry.integration.RegistryDirectory$InvokerDelegete@6950ed69, com.alibaba.dubbo.registry.integration.RegistryDirectory$InvokerDelegete@6dd7b5a3] for service life.qzz.dubbodemo.api.DemoService method sayHello on consumer 10.96.2.111 use dubbo version 2.8.4, but no luck to perform the invocation. Last error is: Invoke remote method timeout. method: sayHello, provider: dubbo://10.96.2.111:20881/life.qzz.dubbodemo.api.DemoService?anyhost=true&amp;application=helloapp&amp;check=false&amp;cluster=failfast&amp;default.check=false&amp;dubbo=2.8.4&amp;generic=false&amp;init=true&amp;interface=life.qzz.dubbodemo.api.DemoService&amp;methods=sayHello&amp;pid=11248&amp;side=consumer&amp;timeout=50000&amp;timestamp=1501137556130, cause: Waiting server-side response timeout by scan timer. start time: 2017-07-27 14:39:17.073, end time: 2017-07-27 14:40:07.088, client elapsed: 25 ms, server elapsed: 49988 ms, timeout: 50000 ms, request: Request [id=0, version=2.0.0, twoway=true, event=false, broken=false, data=RpcInvocation [methodName=sayHello, parameterTypes=[class java.lang.String], arguments=[qzz], attachments=&#123;path=life.qzz.dubbodemo.api.DemoService, interface=life.qzz.dubbodemo.api.DemoService, version=0.0.0, timeout=50000&#125;]], channel: 10.96.2.111:0 -&gt; /10.96.2.111:20881</span></span><br><span class="line">	at com.alibaba.dubbo.rpc.cluster.support.FailfastClusterInvoker.doInvoke(FailfastClusterInvoker.java:<span class="number">52</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.cluster.support.AbstractClusterInvoker.invoke(AbstractClusterInvoker.java:<span class="number">227</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.cluster.support.wrapper.MockClusterInvoker.invoke(MockClusterInvoker.java:<span class="number">72</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.proxy.InvokerInvocationHandler.invoke(InvokerInvocationHandler.java:<span class="number">52</span>)</span><br><span class="line">	at com.alibaba.dubbo.common.bytecode.proxy0.sayHello(proxy0.java)</span><br><span class="line">	at life.qzz.dubbodemo.controller.DemoController.hello(DemoController.java:<span class="number">27</span>)</span><br><span class="line">	at life.qzz.dubbodemo.Consumer.main(Consumer.java:<span class="number">20</span>)</span><br></pre></td></tr></table></figure>
+
+<h6 id="failback"><a href="#failback" class="headerlink" title="failback"></a>failback</h6><p>虽然日志中打印出了等待重试，但是我没有在日志中发现具体的重试行为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.alibaba.dubbo.rpc.cluster.support.FailbackClusterInvoker.doInvoke(FailbackClusterInvoker.java:<span class="number">104</span>) ERROR [main] FailbackClusterInvoker.doInvoke(<span class="number">104</span>) |  [DUBBO] Failback to invoke method sayHello, wait <span class="keyword">for</span> retry in background. Ignored exception: Invoke remote method timeout.</span><br></pre></td></tr></table></figure>
+
+<p>在超时时间内将关掉的provider重新打开，直到consumer超时时，provider打印出了调用的信息，但是consumer打印出了null。<br>provider日志：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">19</span>:<span class="number">01</span> life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">20</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20881</span>-thread-<span class="number">5</span>] DemoServiceImpl.sayHello(<span class="number">20</span>) | 调用Provider2的服务</span><br><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">19</span>:<span class="number">01</span> life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">21</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20881</span>-thread-<span class="number">5</span>] DemoServiceImpl.sayHello(<span class="number">21</span>) | 休息<span class="number">20</span>秒</span><br></pre></td></tr></table></figure>
+
+<p>consumer日志：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">18</span>:<span class="number">56</span> life.qzz.dubbodemo.controller.DemoController.hello(DemoController.java:<span class="number">27</span>) DEBUG [main] DemoController.hello(<span class="number">27</span>) | 服务返回结果：<span class="keyword">null</span></span><br></pre></td></tr></table></figure>
+<p>不晓得重试的机制是什么，超时的时候才重新发起请求么？</p>
+<h6 id="forking"><a href="#forking" class="headerlink" title="forking"></a>forking</h6><p>consumer：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dubbo:reference</span> <span class="attr">interface</span>=<span class="string">&quot;life.qzz.dubbodemo.api.DemoService&quot;</span> <span class="attr">id</span>=<span class="string">&quot;demoService&quot;</span> <span class="attr">init</span>=<span class="string">&quot;true&quot;</span> <span class="attr">timeout</span>=<span class="string">&quot;60000&quot;</span> <span class="attr">cluster</span>=<span class="string">&quot;forking&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>但是<code>forks</code>这个属性貌似不能加啊！！！</p>
+<p>provider1：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">36</span>:<span class="number">09</span> life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">20</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20880</span>-thread-<span class="number">2</span>] DemoServiceImpl.sayHello(<span class="number">20</span>) | 服务调用前</span><br><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">36</span>:<span class="number">19</span> life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">26</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20880</span>-thread-<span class="number">2</span>] DemoServiceImpl.sayHello(<span class="number">26</span>) | 休息结束</span><br><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">36</span>:<span class="number">19</span> life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">27</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20880</span>-thread-<span class="number">2</span>] DemoServiceImpl.sayHello(<span class="number">27</span>) | 服务调用开始</span><br></pre></td></tr></table></figure>
+
+<p>provider2：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">36</span>:<span class="number">09</span> life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">20</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20881</span>-thread-<span class="number">2</span>] DemoServiceImpl.sayHello(<span class="number">20</span>) | 调用Provider2的服务</span><br><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">36</span>:<span class="number">09</span> life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">21</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20881</span>-thread-<span class="number">2</span>] DemoServiceImpl.sayHello(<span class="number">21</span>) | 休息<span class="number">20</span>秒</span><br><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">36</span>:<span class="number">29</span> life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">27</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20881</span>-thread-<span class="number">2</span>] DemoServiceImpl.sayHello(<span class="number">27</span>) | 休息结束</span><br></pre></td></tr></table></figure>
+
+<p>consumer：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">36</span>:<span class="number">19</span> life.qzz.dubbodemo.controller.DemoController.hello(DemoController.java:<span class="number">27</span>) DEBUG [main] DemoController.hello(<span class="number">27</span>) | 服务返回结果：hello :qzz</span><br></pre></td></tr></table></figure>
+
+<p>从时间先后顺序可以看到provider1返回之后consumer就得到了返回结果。</p>
+<h6 id="broadcast"><a href="#broadcast" class="headerlink" title="broadcast"></a>broadcast</h6><p>provider1：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">40</span>:<span class="number">25</span> life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">20</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20880</span>-thread-<span class="number">6</span>] DemoServiceImpl.sayHello(<span class="number">20</span>) | 服务调用前</span><br><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">40</span>:<span class="number">35</span> life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">26</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20880</span>-thread-<span class="number">6</span>] DemoServiceImpl.sayHello(<span class="number">26</span>) | 休息结束</span><br><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">40</span>:<span class="number">35</span> life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">27</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20880</span>-thread-<span class="number">6</span>] DemoServiceImpl.sayHello(<span class="number">27</span>) | 服务调用开始</span><br></pre></td></tr></table></figure>
+
+<p>provider2：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">40</span>:<span class="number">35</span> life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">20</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20881</span>-thread-<span class="number">6</span>] DemoServiceImpl.sayHello(<span class="number">20</span>) | 调用Provider2的服务</span><br><span class="line"><span class="number">2017</span>-<span class="number">07</span>-<span class="number">27</span> <span class="number">15</span>:<span class="number">40</span>:<span class="number">35</span> life.qzz.dubbodemo.api.impl.DemoServiceImpl.sayHello(DemoServiceImpl.java:<span class="number">21</span>) DEBUG [DubboServerHandler-<span class="number">10.96</span>.<span class="number">2.111</span>:<span class="number">20881</span>-thread-<span class="number">6</span>] DemoServiceImpl.sayHello(<span class="number">21</span>) | 休息<span class="number">20</span>秒</span><br></pre></td></tr></table></figure>
+
+<p>consumer：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread <span class="string">&quot;main&quot;</span> com.alibaba.dubbo.rpc.RpcException: Invoke remote method timeout. method: sayHello, provider: dubbo:<span class="comment">//10.96.2.111:20881/life.qzz.dubbodemo.api.DemoService?anyhost=true&amp;application=helloapp&amp;check=false&amp;cluster=broadcast&amp;default.check=false&amp;dubbo=2.8.4&amp;generic=false&amp;init=true&amp;interface=life.qzz.dubbodemo.api.DemoService&amp;methods=sayHello&amp;pid=3028&amp;side=consumer&amp;timeout=60000&amp;timestamp=1501141224739, cause: Waiting server-side response timeout. start time: 2017-07-27 15:40:35.559, end time: 2017-07-27 15:41:35.564, client elapsed: 0 ms, server elapsed: 60004 ms, timeout: 60000 ms, request: Request [id=1, version=2.0.0, twoway=true, event=false, broken=false, data=RpcInvocation [methodName=sayHello, parameterTypes=[class java.lang.String], arguments=[qzz], attachments=&#123;path=life.qzz.dubbodemo.api.DemoService, interface=life.qzz.dubbodemo.api.DemoService, version=0.0.0, timeout=60000&#125;]], channel: 10.96.2.111:0 -&gt; /10.96.2.111:20881</span></span><br><span class="line">	at com.alibaba.dubbo.rpc.protocol.dubbo.DubboInvoker.doInvoke(DubboInvoker.java:<span class="number">99</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.protocol.AbstractInvoker.invoke(AbstractInvoker.java:<span class="number">144</span>)</span><br><span class="line">	at com.alibaba.dubbo.monitor.support.MonitorFilter.invoke(MonitorFilter.java:<span class="number">75</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$<span class="number">1.</span>invoke(ProtocolFilterWrapper.java:<span class="number">91</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.protocol.dubbo.filter.FutureFilter.invoke(FutureFilter.java:<span class="number">53</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$<span class="number">1.</span>invoke(ProtocolFilterWrapper.java:<span class="number">91</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.filter.ConsumerContextFilter.invoke(ConsumerContextFilter.java:<span class="number">48</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$<span class="number">1.</span>invoke(ProtocolFilterWrapper.java:<span class="number">91</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.listener.ListenerInvokerWrapper.invoke(ListenerInvokerWrapper.java:<span class="number">74</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.protocol.InvokerWrapper.invoke(InvokerWrapper.java:<span class="number">53</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.cluster.support.BroadcastClusterInvoker.doInvoke(BroadcastClusterInvoker.java:<span class="number">51</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.cluster.support.AbstractClusterInvoker.invoke(AbstractClusterInvoker.java:<span class="number">227</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.cluster.support.wrapper.MockClusterInvoker.invoke(MockClusterInvoker.java:<span class="number">72</span>)</span><br><span class="line">	at com.alibaba.dubbo.rpc.proxy.InvokerInvocationHandler.invoke(InvokerInvocationHandler.java:<span class="number">52</span>)</span><br><span class="line">	at com.alibaba.dubbo.common.bytecode.proxy0.sayHello(proxy0.java)</span><br><span class="line">	at life.qzz.dubbodemo.controller.DemoController.hello(DemoController.java:<span class="number">27</span>)</span><br><span class="line">	at life.qzz.dubbodemo.Consumer.main(Consumer.java:<span class="number">20</span>)</span><br></pre></td></tr></table></figure>
+<p>provider1 在40:35秒结束，provider2开始执行，然后结束掉provider2的进程，consumer最终报错。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://qzztf.com">水娃</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://qzztf.com/post/154c/">http://qzztf.com/post/154c/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://qzztf.com" target="_blank">水娃火娃石榴娃</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/dubbo/">dubbo</a><a class="post-meta__tags" href="/tags/%E9%9B%86%E7%BE%A4/">集群</a><a class="post-meta__tags" href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/">负载均衡</a></div><div class="post_share"><div class="social-share" data-image="/image/avatar.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/post/c1b3/" title="dubbo学习1- 配置"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">dubbo学习1- 配置</div></div></a></div><div class="next-post pull-right"><a href="/post/dbef/" title="dubbo学习3-启动时检查"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">dubbo学习3-启动时检查</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/post/c1b3/" title="dubbo学习1- 配置"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-08-03</div><div class="title">dubbo学习1- 配置</div></div></a></div><div><a href="/post/dbef/" title="dubbo学习3-启动时检查"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-07-26</div><div class="title">dubbo学习3-启动时检查</div></div></a></div><div><a href="/post/dc62/" title="dubbo学习5-restfull接口"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-08-04</div><div class="title">dubbo学习5-restfull接口</div></div></a></div><div><a href="/post/e377/" title="dubbo学习6-直连提供者"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-08-04</div><div class="title">dubbo学习6-直连提供者</div></div></a></div><div><a href="/post/beda/" title="dubbo学习7-只订阅服务不注册"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-08-05</div><div class="title">dubbo学习7-只订阅服务不注册</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">水娃</div><div class="author-info__description">水娃的博客 | java</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/qzztf"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎光临</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">集群配置</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#dubbo%E6%8F%90%E4%BE%9B%E7%9A%84%E5%AE%B9%E9%94%99%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.1.</span> <span class="toc-text">dubbo提供的容错模式</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#Failover-Cluster-%E5%A4%B1%E8%B4%A5%E8%87%AA%E5%8A%A8%E5%88%87%E6%8D%A2"><span class="toc-number">1.1.1.</span> <span class="toc-text">Failover Cluster 失败自动切换</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Failfast-Cluster-%E5%BF%AB%E9%80%9F%E5%A4%B1%E8%B4%A5"><span class="toc-number">1.1.2.</span> <span class="toc-text">Failfast Cluster 快速失败</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Failsafe-Cluster-%E5%A4%B1%E8%B4%A5%E5%AE%89%E5%85%A8"><span class="toc-number">1.1.3.</span> <span class="toc-text">Failsafe Cluster 失败安全</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Failback-Cluster-%E5%A4%B1%E8%B4%A5%E8%87%AA%E5%8A%A8%E6%81%A2%E5%A4%8D"><span class="toc-number">1.1.4.</span> <span class="toc-text">Failback Cluster 失败自动恢复</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Forking-Cluster-%E5%B9%B6%E8%A1%8C%E8%B0%83%E7%94%A8"><span class="toc-number">1.1.5.</span> <span class="toc-text">Forking Cluster 并行调用</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Broadcast-Cluster-%E5%B9%BF%E6%92%AD%E8%B0%83%E7%94%A8"><span class="toc-number">1.1.6.</span> <span class="toc-text">Broadcast Cluster 广播调用</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95"><span class="toc-number">1.2.</span> <span class="toc-text">测试方法</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="toc-number">1.2.1.</span> <span class="toc-text">测试结果</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#failsafe"><span class="toc-number">1.2.2.</span> <span class="toc-text">failsafe</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#failfast"><span class="toc-number">1.2.3.</span> <span class="toc-text">failfast</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#failback"><span class="toc-number">1.2.4.</span> <span class="toc-text">failback</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#forking"><span class="toc-number">1.2.5.</span> <span class="toc-text">forking</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#broadcast"><span class="toc-number">1.2.6.</span> <span class="toc-text">broadcast</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/5441/" title="Spring Cloud Gateway整合Spring Doc">Spring Cloud Gateway整合Spring Doc</a><time datetime="2023-04-02T12:49:15.000Z" title="发表于 2023-04-02 20:49:15">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f507/" title="处理字典值反显问题.md">处理字典值反显问题.md</a><time datetime="2023-04-02T12:46:42.000Z" title="发表于 2023-04-02 20:46:42">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/9fa5/" title="Spring AOP 调用同一个对象的方法">Spring AOP 调用同一个对象的方法</a><time datetime="2020-12-05T14:55:47.000Z" title="发表于 2020-12-05 22:55:47">2020-12-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/39fc/" title="Spring AOP基本用法3">Spring AOP基本用法3</a><time datetime="2020-09-23T02:26:55.000Z" title="发表于 2020-09-23 10:26:55">2020-09-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f93d/" title="Spring AOP基本用法2">Spring AOP基本用法2</a><time datetime="2020-09-23T02:25:58.000Z" title="发表于 2020-09-23 10:25:58">2020-09-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 水娃</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '248e3cebde8537449dbb',
+      clientSecret: 'a9c539e71782374d81eb91ad932288cd41809575',
+      repo: 'blog-s-gitalk',
+      owner: 'qinzaizhen',
+      admin: ['qzztf'],
+      id: '7ccc9f072304a9aeec11a9980214b263',
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></body></html>

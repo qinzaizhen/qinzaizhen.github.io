@@ -1,0 +1,323 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>Spring 常用接口 | 水娃火娃石榴娃</title><meta name="author" content="水娃"><meta name="copyright" content="水娃"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Spring 常用接口Bean 工厂相关BeanFactory 这个接口是访问Spring bean 容器的顶层接口。实现类会持有一些bean定义，每一个都有唯一的名称。根据bean定义，这个工厂将返回一个独立的（原型设计模式），或者是一个共享的实例(单例模式的强力替代品，实例在工厂的生存周期内是一"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="http://qzztf.com/post/dac1/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/image/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/image/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/image/pwa/16.png"/><link rel="mask-icon" href="/image/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?86553a0f289bcfb307062507dc247eb2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Spring 常用接口',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-06-16 15:25:26'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="水娃火娃石榴娃"><span class="site-name">水娃火娃石榴娃</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Spring 常用接口</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-03-18T08:26:06.000Z" title="发表于 2019-03-18 16:26:06">2019-03-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-06-16T07:25:26.156Z" title="更新于 2024-06-16 15:25:26">2024-06-16</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>12分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Spring 常用接口"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Spring-常用接口"><a href="#Spring-常用接口" class="headerlink" title="Spring 常用接口"></a>Spring 常用接口</h1><h2 id="Bean-工厂相关"><a href="#Bean-工厂相关" class="headerlink" title="Bean 工厂相关"></a>Bean 工厂相关</h2><h3 id="BeanFactory"><a href="#BeanFactory" class="headerlink" title="BeanFactory"></a>BeanFactory</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/post/dac1/59e2e5d2.png" alt="类图"></p>
+<p>这个接口是访问Spring bean 容器的顶层接口。实现类会持有一些bean定义，每一个都有唯一的名称。根据bean定义，这个工厂将返回一个独立的（原型设计模式），或者是一个共享的实例(单例模式的强力替代品，实例在工厂的生存周期内是一个单例),返回的实例类型取决于工厂配置。</p>
+<p>这种方式的要点是BeanFactory是应用程序组件的注册中心，并集中配置应用的组件(例如，单个对象不再需要读取配置文件)。</p>
+<h4 id="ListableBeanFactory"><a href="#ListableBeanFactory" class="headerlink" title="ListableBeanFactory"></a>ListableBeanFactory</h4><p>继承自<code>BeanFactory</code>, 这个接口的用途是枚举所有bean 实例，而不是客户端通过名称一个个查找。</p>
+<h4 id="HierarchicalBeanFactory"><a href="#HierarchicalBeanFactory" class="headerlink" title="HierarchicalBeanFactory"></a>HierarchicalBeanFactory</h4><p>这个接口用来实现工厂的继承关系，</p>
+<h4 id="AutowireCapableBeanFactory"><a href="#AutowireCapableBeanFactory" class="headerlink" title="AutowireCapableBeanFactory"></a>AutowireCapableBeanFactory</h4><p>此工厂提供bean自动注入功能。</p>
+<h4 id="ConfigurableBeanFactory"><a href="#ConfigurableBeanFactory" class="headerlink" title="ConfigurableBeanFactory"></a>ConfigurableBeanFactory</h4><p>提供配置bean工厂的功能，但是此工厂一般是框架内部使用。</p>
+<h4 id="ConfigurableListableBeanFactory"><a href="#ConfigurableListableBeanFactory" class="headerlink" title="ConfigurableListableBeanFactory"></a>ConfigurableListableBeanFactory</h4><p>提供分析和修改bean定义和预初始化单例bean的功能。</p>
+<h3 id="ConversionService"><a href="#ConversionService" class="headerlink" title="ConversionService"></a>ConversionService</h3><p>用于类型转换的服务接口。这是转换系统的入口点。调用<code>convert(Object, Class)</code>方法来使用此系统执行线程安全类型转换</p>
+<h3 id="AliasRegistry"><a href="#AliasRegistry" class="headerlink" title="AliasRegistry"></a>AliasRegistry</h3><p>用来注册别名的顶层接口</p>
+<h4 id="BeanDefinitionRegistry"><a href="#BeanDefinitionRegistry" class="headerlink" title="BeanDefinitionRegistry"></a>BeanDefinitionRegistry</h4><p>用来注册bean 定义</p>
+<h3 id="FactoryBean"><a href="#FactoryBean" class="headerlink" title="FactoryBean"></a>FactoryBean</h3><p>接口由BeanFactory中的对象实现，这些对象本身是用于单个对象的工厂。如果一个bean实现了这个接口，那么它将被用作要公开的对象的工厂，而不是将自己公开的bean实例。</p>
+<p><strong>注意:实现此接口的bean不能作为普通bean使用。FactoryBean是以bean形式定义的，但是bean引用公开的对象(<code>getObject()</code>)总是它创建的对象。</strong></p>
+<p><code>FactoryBean</code>s可以支持单例和原型，可以根据需要创建对象，也可以在启动时创建对象。<code>SmartFactoryBean</code>接口允许公开更细粒度的行为元数据。</p>
+<p>这个接口在框架本身中大量使用，例如在AOP <code>org.springframework.aop.framework.ProxyFactoryBean</code>或<code>org.springframework.jndi.JndiObjectFactoryBean</code>中。它也可以用于定制组件; 然而，这只在基础组件代码中很常见。<br><code>FactoryBean</code>是一个编程契约。实现不应该依赖于<code>annotation-driven</code>注入或其他反射工具。可能会在启动过程中提前调用<code>getObjectType()</code> 和<code>getObject()</code>，甚至比任何后处理器设置都要早。如果需要访问其他bean，请实现<code>BeanFactoryAware</code>并通过编写代码获取。</p>
+<p>最后，<code>FactoryBean</code>对象参与bean工厂的bean创建同步过程。通常不需要内部同步，只需要在<code>FactoryBean</code>本身(或类似的东西)中进行延迟初始化即可</p>
+<h3 id="SmartFactoryBean"><a href="#SmartFactoryBean" class="headerlink" title="SmartFactoryBean"></a>SmartFactoryBean</h3><p><code>FactoryBean</code>接口的扩展。当<code>isSingleton()</code>实现返回<code>false</code>而没有明确表示独立实例时，实现类可能会指示它们是否总是返回独立实例。</p>
+<p>如果它们的<code>isSingleton()</code>实现返回false，那么不实现这个扩展接口的纯<code>FactoryBean</code>实现类将始终返回独立实例;只有在需要时才访问公开的对象。</p>
+<p><strong>注意:这个接口是一个特殊用途的接口，主要用于框架内部和协作框架内部。通常，应用程序提供的<code>FactoryBean</code>应该简单地实现普通的<code>FactoryBean</code>接口。新的方法可能会被添加到这个扩展的接口中.</strong></p>
+<h3 id="BeanNameGenerator"><a href="#BeanNameGenerator" class="headerlink" title="BeanNameGenerator"></a>BeanNameGenerator</h3><p>用于为bean定义生成bean名称的策略接口</p>
+<h3 id="BeanFactoryPostProcessor"><a href="#BeanFactoryPostProcessor" class="headerlink" title="BeanFactoryPostProcessor"></a>BeanFactoryPostProcessor</h3><p>允许自定义修改应用程序上下文的bean定义，调整上下文的底层bean工厂的bean属性值。</p>
+<p>应用程序上下文可以自动检测bean定义中的<code>BeanFactoryPostProcessor</code> bean，并在创建任何其他bean之前应用它们。</p>
+<p>系统管理员使用自定义配置文件覆盖在应用程序上下文中配置的bean属性非常有用。</p>
+<p>有关解决此类配置需求的开箱即用解决方案，请参见<code>PropertyResourceConfigurer</code>及其具体实现。</p>
+<p><code>BeanFactoryPostProcessor</code>可以与bean定义交互并修改bean定义，但不能与bean实例交互。这样做可能会导致过早的bean实例化，破坏容器并导致意想不到的副作用。如果需要与bean实例交互，可以考虑实现<code>BeanPostProcessor</code>。</p>
+<h4 id="BeanDefinitionRegistryPostProcessor"><a href="#BeanDefinitionRegistryPostProcessor" class="headerlink" title="BeanDefinitionRegistryPostProcessor"></a>BeanDefinitionRegistryPostProcessor</h4><p>扩展标准的<code>BeanFactoryPostProcessor</code> SPI，允许在常规的<code>BeanFactoryPostProcessor</code>检测开始之前注册更多的bean定义。特别是，<code>BeanDefinitionRegistryPostProcessor</code>可以注册更多的bean定义，这些bean定义又定义<code>BeanFactoryPostProcessor</code>实例。</p>
+<h3 id="BeanPostProcessor"><a href="#BeanPostProcessor" class="headerlink" title="BeanPostProcessor"></a>BeanPostProcessor</h3><p>工厂允许自定义修改新的bean实例的入口，例如检查标记接口或用代理包装它们。</p>
+<p><code>ApplicationContext</code>可以自动检测bean定义中的<code>BeanPostProcessor</code> bean，并将它们应用于随后创建的任何bean。普通bean工厂允许编程式注册后处理程序，适用于通过该工厂创建的所有bean。</p>
+<p>通常，通过标记接口或类似方法填充bean的后处理程序将实现<code>postProcessBeforeInitialization</code>方法，而使用代理包装bean的后处理器通常实现<code>postProcessAfterInitialization</code>方法.</p>
+<h3 id="ImportSelector"><a href="#ImportSelector" class="headerlink" title="ImportSelector"></a>ImportSelector</h3><p>根据给定的选择标准(通常是一个或多个注解属性)确定应该导入哪个<code>@Configuration</code>类。<br><code>ImportSelector</code>可以实现以下任何一个感知接口，它们各自的方法将在<code>selectImports</code>之前被调用:</p>
+<ul>
+<li><code>EnvironmentAware</code></li>
+<li><code>BeanFactoryAware</code></li>
+<li><code>BeanClassLoaderAware</code></li>
+<li><code>ResourceLoaderAware</code><br><code>ImportSelector</code>通常以与常规<code>@Import</code>注解相同的方式处理，但是，也可以推迟选择导入，直到处理完所有<code>@Configuration</code>类(有关详细信息，请参阅<code>DeferredImportSelector</code>)</li>
+</ul>
+<h4 id="DeferredImportSelector"><a href="#DeferredImportSelector" class="headerlink" title="DeferredImportSelector"></a>DeferredImportSelector</h4><p><code>ImportSelector</code>的一个变体，它在处理完所有<code>@Configuration</code> bean之后运行。当选择的导入是<code>@Conditional</code>时，这种类型的选择器特别有用。<br>实现类还可以扩展<code>org.springframework.core.Ordered</code>接口或使用<code>org.springframework.core.annotation.Order</code>注解，指示相对于其他<code>DeferredImportSelector</code>的优先级。</p>
+<p>实现类还可以提供一个导入组（<code>getImportGroup()</code>），该导入组可以跨不同的选择器提供额外的排序和过滤逻辑.</p>
+<h3 id="ImportBeanDefinitionRegistrar"><a href="#ImportBeanDefinitionRegistrar" class="headerlink" title="ImportBeanDefinitionRegistrar"></a>ImportBeanDefinitionRegistrar</h3><p>可以用来在处理<code>@Configuration</code>类时注册其他bean定义。在bean定义级别(与<code>@Bean</code>方法/实例级别相反)操作是需要的或必要的。<br>与<code>@Configuration</code>和<code>ImportSelector</code>一起，可以向<code>@Import</code>注解提供这种类型的类(或者也可以从<code>ImportSelector</code>返回)。<br><code>ImportBeanDefinitionRegistrar</code>可以实现以下任何一个可感知的接口，它们各自的方法将在<code>registerBeanDefinitions</code>之前被调用:</p>
+<ul>
+<li><code>EnvironmentAware</code></li>
+<li><code>BeanFactoryAware</code></li>
+<li><code>BeanClassLoaderAware</code></li>
+<li><code>ResourceLoaderAware</code></li>
+</ul>
+<h2 id="应用上下文相关"><a href="#应用上下文相关" class="headerlink" title="应用上下文相关"></a>应用上下文相关</h2><h3 id="ApplicationContext"><a href="#ApplicationContext" class="headerlink" title="ApplicationContext"></a>ApplicationContext</h3><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/post/dac1/990d4ca9.png" alt="类图"></p>
+<p>此接口用来为应用程序提供配置。在应用运行过程中，配置应该是只读的，但是可以根据实现类来实现重新加载。</p>
+<p><code>ApplicationContext</code> 提供：</p>
+<ul>
+<li>访问应用组件的工厂方法，从<code>ListableBeanFactory</code> 接口继承而来。</li>
+<li>通用的方式加载资源文件，从<code>ResourceLoader</code>接口继承而来。</li>
+<li>向注册的监听器发布事件。从<code>ApplicationEventPublisher</code>接口继承而来。</li>
+<li>转换消息，并支持国际化，从<code>MessageSource</code>接口继承而来。</li>
+<li>继承父级上下文能力。后代上下文中的定义将保持优先。这意味着，比如说一个父上下文可以被整个web应用访问，然而每个servlet有它自己的子类上下文，这个上下文是和别的servlet隔离的。</li>
+</ul>
+<h4 id="ConfigurableApplicationContext"><a href="#ConfigurableApplicationContext" class="headerlink" title="ConfigurableApplicationContext"></a>ConfigurableApplicationContext</h4><p>此接口提供配置应用上下文的方法</p>
+<h3 id="AttributeAccessor"><a href="#AttributeAccessor" class="headerlink" title="AttributeAccessor"></a>AttributeAccessor</h3><p>该接口定义用于向任意对象设置和访问元数据的通用协议。</p>
+<h4 id="BeanDefinition"><a href="#BeanDefinition" class="headerlink" title="BeanDefinition"></a>BeanDefinition</h4><p>bean定义描述了一个bean实例的属性值、构造函数参数值和由具体实现提供的进一步信息。<br>这只是一个最小的接口:主要目的是允许<code>BeanFactoryPostProcessor</code>(如<code>PropertyPlaceholderConfigurer</code>)反省和修改属性值和bean其他的元数据</p>
+<h4 id="AnnotatedBeanDefinition"><a href="#AnnotatedBeanDefinition" class="headerlink" title="AnnotatedBeanDefinition"></a>AnnotatedBeanDefinition</h4><p>bean定义的扩展接口，它暴露<code>AnnotationMetadata</code>的bean 类型——而不需要加载该类。</p>
+<h2 id="类型元数据相关"><a href="#类型元数据相关" class="headerlink" title="类型元数据相关"></a>类型元数据相关</h2><h3 id="ClassMetadata"><a href="#ClassMetadata" class="headerlink" title="ClassMetadata"></a>ClassMetadata</h3><p>该接口定义特定类的抽象元数据，不需要加载该类。</p>
+<h3 id="AnnotatedTypeMetadata"><a href="#AnnotatedTypeMetadata" class="headerlink" title="AnnotatedTypeMetadata"></a>AnnotatedTypeMetadata</h3><p>定义对特定类型(类<code>AnnotationMetadata</code>或方法<code>MethodMetadata</code>)的注解的访问，其方式不一定需要加载类</p>
+<h3 id="AnnotationMetadata"><a href="#AnnotationMetadata" class="headerlink" title="AnnotationMetadata"></a>AnnotationMetadata</h3><p>定义访问特定类型注解的方式</p>
+<h3 id="MethodMetadata"><a href="#MethodMetadata" class="headerlink" title="MethodMetadata"></a>MethodMetadata</h3><h3 id="MetadataReader"><a href="#MetadataReader" class="headerlink" title="MetadataReader"></a>MetadataReader</h3><p>用于访问类元数据的简单门面，由ASM<code>org.springframework.asm.ClassReader</code>类实现</p>
+<h3 id="ResourceLoader"><a href="#ResourceLoader" class="headerlink" title="ResourceLoader"></a>ResourceLoader</h3><p>加载资源的策略接口(例如类路径或文件系统资源)。<code>org.springframework.context.ApplicationContext</code>需要提供此功能，以及扩展<code>org.springframework.core.io.support.ResourcePatternResolver</code>支持。</p>
+<p><code>DefaultResourceLoader</code>是一个独立的实现，可以在<code>ApplicationContext</code>之外使用，也可以由<code>ResourceEditor</code>使用。</p>
+<p>当在<code>ApplicationContext</code>中使用时，可以使用特定上下文的资源加载策略从字符串填充Resource类型和Resource数组的Bean属性</p>
+<h4 id="ResourcePatternResolver"><a href="#ResourcePatternResolver" class="headerlink" title="ResourcePatternResolver"></a>ResourcePatternResolver</h4><p>用于将位置模式(例如，ant样式的路径模式)解析为资源对象的策略接口。</p>
+<p>这是<code>ResourceLoader</code>接口的扩展。可以检查传入的ResourceLoader(比如在容器中运行时，通过<code>org.springframework.context.ResourceLoaderAware</code>)是否也实现了这个扩展接口。</p>
+<p><code>PathMatchingResourcePatternResolver</code>是一个独立的实现，可以在<code>ApplicationContext</code>之外使用，<code>ResourceArrayPropertyEditor</code>也使用它来填充bean的资源数组属性。</p>
+<p>可以与任何类型的位置模式(例如<code>/WEB-INF/*-context.xml</code>):输入模式必须匹配策略实现。这个接口只指定转换方法，而不是特定的模式格式。</p>
+<p>这个接口还为类路径中所有匹配的资源提供了一个新的资源前缀<code>classpath*:</code>。注意，在这种情况下，资源位置应该是一个没有占位符的路径(例如<code>/beans.xml</code>); JAR文件或类目录可以包含多个同名文件</p>
+<h3 id="MessageSource"><a href="#MessageSource" class="headerlink" title="MessageSource"></a>MessageSource</h3><p>用于解析消息的策略接口，支持此类消息的参数化和国际化。<br>Spring为生产提供了两种开箱即用的实现:</p>
+<ul>
+<li><code>org.springframework.context.support.ResourceBundleMessageSource</code>, 基于<code>java.util.ResourceBundle</code></li>
+<li><code>org.springframework.context.support.ReloadableResourceBundleMessageSource</code> , 不重启的情况下重新加载消息定义</li>
+</ul>
+<h4 id="HierarchicalMessageSource"><a href="#HierarchicalMessageSource" class="headerlink" title="HierarchicalMessageSource"></a>HierarchicalMessageSource</h4><p>继承自<code>MessageSource</code>, 体现层次结构</p>
+<h3 id="ApplicationEventPublisher"><a href="#ApplicationEventPublisher" class="headerlink" title="ApplicationEventPublisher"></a>ApplicationEventPublisher</h3><p>封装事件发布功能。作为<code>ApplicationContext</code>的顶级接口</p>
+<h3 id="EnvironmentCapable"><a href="#EnvironmentCapable" class="headerlink" title="EnvironmentCapable"></a>EnvironmentCapable</h3><p>此接口标志着组件包含和暴露<code>Environment</code>引用。</p>
+<p>所有Spring应用程序上下文都是<code>EnvironmentCapable</code>，并且该接口主要用于在框架方法中执行<code>instanceof</code>检查，这些框架方法接受<code>BeanFactory</code>实例(这些实例可能是，也可能不是实际的<code>ApplicationContext</code>实例)，以便在环境确实可用时与环境进行交互。</p>
+<p>如前所述，<code>ApplicationContext</code>扩展了<code>EnvironmentCapable</code>，从而公开了<code>getEnvironment()</code>方法; 然而，<code>ConfigurableApplicationContext</code>重新定义了<code>getEnvironment()</code>，并缩小了方法签名的范围，返回一个<code>ConfigurableEnvironment</code>。其结果是，在从<code>ConfigurableApplicationContext</code>访问环境对象之前，<code>Environment</code>对象是“只读的”，此时也可以配置它</p>
+<h3 id="PropertyResolver"><a href="#PropertyResolver" class="headerlink" title="PropertyResolver"></a>PropertyResolver</h3><p>此接口用于根据任何来源解析属性。</p>
+<h4 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h4><p>此接口表示当前应用程序运行所在的环境。对应用程序环境的两个关键方面建模:<code>profiles</code>和<code>properties</code>。与属性访问相关的方法通过<code>PropertyResolver</code>父接口公开。</p>
+<p><code>profile</code>是一个命名的bean定义逻辑组，只有在给定<code>profile</code>处于<code>active</code>状态时才向容器注册。可以将bean分配给一个<code>profile</code>，无论是在XML中定义的还是通过注解定义的; 有关语法细节，请参阅spring-beans 3.1 schema 或<code>@Profile</code>注解。与 profiles 相关的<code>Environment</code>对象的角色是确定哪些profiles(如果有的话)当前(<code>getActiveProfiles</code>)是<code>active</code>的，以及哪些profiles (如果有的话)在默认情况(<code>getDefaultProfiles</code>)下应该是<code>active</code>的。</p>
+<p><code>Properties</code>几乎在所有的应用程序中都扮演着重要的角色，并且可能来自各种各样的源:属性文件、JVM系统属性、系统环境变量、JNDI、servlet上下文参数、特殊属性对象、Maps 等等。<code>Environment</code>对象与<code>Properties</code>之间的关系的作用是为用户提供一个方便的服务接口，用于配置<code>Properties</code>源并从中解析<code>Properties</code>。</p>
+<p>在<code>ApplicationContext</code>中管理的bean可以注册为<code>EnvironmentAware</code> bean或<code>@Inject</code> <code>Environment</code>bean，以便直接查询<code>profile</code>状态或解析属性。</p>
+<p>然而，在大多数情况下，应用级bean不需要直接与<code>Environment</code>交互，而是必须使用<code>$&#123;…&#125;</code>属性值替换为属性占位符配置程序，如<code>PropertySourcesPlaceholderConfigurer</code>，它本身是<code>EnvironmentAware</code>的，从Spring 3.1开始，默认情况下使用<code>&lt;context:property-placeholder/&gt;</code>注册。</p>
+<p><code>environment</code>对象的配置必须通过<code>ConfigurableEnvironment</code>接口完成，该接口由所有<code>AbstractApplicationContext</code>子类的<code>getEnvironment()</code>方法返回。有关在应用程序上下文<code>refresh()</code>之前操作属性源的使用示例，请参阅<code>ConfigurableEnvironment</code> Javadoc。</p>
+<h4 id="ConfigurableEnvironment"><a href="#ConfigurableEnvironment" class="headerlink" title="ConfigurableEnvironment"></a>ConfigurableEnvironment</h4><p>此接口提供设置<code>active</code>和<code>default</code>配置文件以及操作基础属性源的工具。允许客户端通过<code>ConfigurablePropertyResolver</code> 父接口设置和验证所需的属性、定制转换服务等等。</p>
+<h4 id="ConfigurablePropertyResolver"><a href="#ConfigurablePropertyResolver" class="headerlink" title="ConfigurablePropertyResolver"></a>ConfigurablePropertyResolver</h4><p>此接口提供访问的工具和自定义转换属性值时使用的<code>ConversionService</code>。</p>
+<h2 id="xml-解析与BeanDefinition-解析相关"><a href="#xml-解析与BeanDefinition-解析相关" class="headerlink" title="xml 解析与BeanDefinition 解析相关"></a>xml 解析与BeanDefinition 解析相关</h2><h3 id="NamespaceHandler"><a href="#NamespaceHandler" class="headerlink" title="NamespaceHandler"></a>NamespaceHandler</h3><p><code>DefaultBeanDefinitionDocumentReader</code>使用的基本接口，用于处理Spring XML配置文件中的自定义名称空间。</p>
+<p>实现类将返回用于自定义顶级标签的<code>BeanDefinitionParser</code>接口的实现，以及用于自定义嵌套标签的<code>BeanDefinitionDecorator</code>接口的实现。</p>
+<p>解析器将在遇到<code>&lt;beans&gt;</code>标签下的自定义标签时调用<code>parse</code>方法，并在遇到<code>&lt;bean&gt;</code>标签下的自定义标签时进行调用<code>decorate</code>方法。</p>
+<p>编写自己的自定义元素扩展时通常不需要直接实现这个接口，而是使用提供的<code>NamespaceHandlerSupport</code>类</p>
+<h3 id="NamespaceHandlerResolver"><a href="#NamespaceHandlerResolver" class="headerlink" title="NamespaceHandlerResolver"></a>NamespaceHandlerResolver</h3><p><code>DefaultBeanDefinitionDocumentReader</code>用这个接口为特定名称空间URI定位<code>NamespaceHandler</code>实现类</p>
+<h3 id="BeanDefinitionParser"><a href="#BeanDefinitionParser" class="headerlink" title="BeanDefinitionParser"></a>BeanDefinitionParser</h3><p><code>DefaultBeanDefinitionDocumentReader</code>用来处理自定义顶级(直接位于<code>&lt;beans/&gt;</code>下)标签的接口。</p>
+<p>实现类可以根据需要自由地将自定义标记中的元数据转换成任意多的<code>BeanDefinition</code>。</p>
+<p>解析器从相关联的<code>NamespaceHandler</code>中为自定义标记所在的命名空间定位一个<code>BeanDefinitionParser</code></p>
+<h3 id="BeanDefinitionDecorator"><a href="#BeanDefinitionDecorator" class="headerlink" title="BeanDefinitionDecorator"></a>BeanDefinitionDecorator</h3><p><code>DefaultBeanDefinitionDocumentReader</code>使用该接口来处理自定义的嵌套(直接位于<code>&lt;bean&gt;</code>下)标签。</p>
+<p>还可以用于装饰<code>&lt;bean&gt;</code>标签的自定义属性。实现类可以自由地将自定义标签中的元数据转换为所需的任意多个<code>BeanDefinition</code>，并转换包含的<code>&lt;bean&gt;</code>标签为<code>BeanDefinition</code>，甚至可能返回一个完全不同的<code>BeanDefinition</code>来替换原来的。</p>
+<p><code>BeanDefinitionDecorator</code>应该感知到它们可能是解析链的一部分。特别是，<code>BeanDefinitionDecorator</code>应该感知到之前的<code>BeanDefinitionDecorator</code>可能已经用<code>org.springframework.aop.framework.ProxyFactoryBean</code>定义替换了原来的<code>org.springframework.bean.factory.config.BeanDefinition</code>，它允许添加自定义拦截器。</p>
+<p>希望向所包含的bean添加拦截器的<code>BeanDefinitionDecorator</code>应该扩展<code>org.springframework.aop.config.AbstractInterceptorDrivenBeanDefinitionDecorator</code>，它处理解析链，确保只创建一个代理，并且它包含链中的所有拦截器。</p>
+<p>解析器从<code>NamespaceHandler</code>中为自定义标签所在的命名空间定位一个<code>BeanDefinitionDecorator</code>。</p>
+<h3 id="MergedBeanDefinitionPostProcessor"><a href="#MergedBeanDefinitionPostProcessor" class="headerlink" title="MergedBeanDefinitionPostProcessor"></a>MergedBeanDefinitionPostProcessor</h3><p>用于在运行时<code>合并</code>bean定义的后处理器回调接口。为了后处理Spring <code>BeanFactory</code>用来创建bean实例的合并bean定义(原始bean定义的已处理副本)，BeanPostProcessor实现可以实现这个子接口。</p>
+<p>例如，<code>postProcessMergedBeanDefinition</code>方法可以内省bean定义，以便在对bean的实际实例进行后处理之前准备一些缓存的元数据。它还允许修改bean定义，但是<code>只</code>允许修改实际上用于并发修改的定义属性。本质上，这只适用于在<code>RootBeanDefinition</code>本身上定义的操作，而不适用于其基类的属性</p>
+<h3 id="BeanDefinitionReader"><a href="#BeanDefinitionReader" class="headerlink" title="BeanDefinitionReader"></a>BeanDefinitionReader</h3><p>bean定义阅读器的简单接口。定义带有<code>Resource</code>和<code>String</code>位置参数的加载方法。</p>
+<p>当然具体的bean定义阅读器可以为bean定义添加额外的加载和注册方法，具体到它们的bean定义格式。</p>
+<p>请注意，bean定义阅读器不必实现此接口。它仅为希望遵循标准命名约定的bean定义读者提供建议。</p>
+<h3 id="BeanDefinitionDocumentReader"><a href="#BeanDefinitionDocumentReader" class="headerlink" title="BeanDefinitionDocumentReader"></a>BeanDefinitionDocumentReader</h3><p>用于解析包含Spring bean定义的XML文档的SPI。<code>XmlBeanDefinitionReader</code>用于实际解析DOM文档。</p>
+<p>要解析的每个文档实例化:实现类可以在<code>registerBeanDefinitions</code>方法执行期间在实例变量中保存状态——例如，为文档中所有bean定义定义的全局设置</p>
+<h3 id="DestructionAwareBeanPostProcessor"><a href="#DestructionAwareBeanPostProcessor" class="headerlink" title="DestructionAwareBeanPostProcessor"></a>DestructionAwareBeanPostProcessor</h3><h3 id="InstantiationAwareBeanPostProcessor"><a href="#InstantiationAwareBeanPostProcessor" class="headerlink" title="InstantiationAwareBeanPostProcessor"></a>InstantiationAwareBeanPostProcessor</h3><h3 id="SmartInstantiationAwareBeanPostProcessor"><a href="#SmartInstantiationAwareBeanPostProcessor" class="headerlink" title="SmartInstantiationAwareBeanPostProcessor"></a>SmartInstantiationAwareBeanPostProcessor</h3><h2 id="标记接口相关"><a href="#标记接口相关" class="headerlink" title="标记接口相关"></a>标记接口相关</h2><h3 id="Aware"><a href="#Aware" class="headerlink" title="Aware"></a>Aware</h3><h4 id="BeanFactoryAware"><a href="#BeanFactoryAware" class="headerlink" title="BeanFactoryAware"></a>BeanFactoryAware</h4><h4 id="ApplicationEventPublisherAware"><a href="#ApplicationEventPublisherAware" class="headerlink" title="ApplicationEventPublisherAware"></a>ApplicationEventPublisherAware</h4><h4 id="NotificationPublisherAware"><a href="#NotificationPublisherAware" class="headerlink" title="NotificationPublisherAware"></a>NotificationPublisherAware</h4><h4 id="MessageSourceAware"><a href="#MessageSourceAware" class="headerlink" title="MessageSourceAware"></a>MessageSourceAware</h4><h4 id="EnvironmentAware"><a href="#EnvironmentAware" class="headerlink" title="EnvironmentAware"></a>EnvironmentAware</h4><h4 id="EmbeddedValueResolverAware"><a href="#EmbeddedValueResolverAware" class="headerlink" title="EmbeddedValueResolverAware"></a>EmbeddedValueResolverAware</h4><h4 id="ResourceLoaderAware"><a href="#ResourceLoaderAware" class="headerlink" title="ResourceLoaderAware"></a>ResourceLoaderAware</h4><h4 id="ImportAware"><a href="#ImportAware" class="headerlink" title="ImportAware"></a>ImportAware</h4><h4 id="LoadTimeWeaverAware"><a href="#LoadTimeWeaverAware" class="headerlink" title="LoadTimeWeaverAware"></a>LoadTimeWeaverAware</h4><h4 id="BeanNameAware"><a href="#BeanNameAware" class="headerlink" title="BeanNameAware"></a>BeanNameAware</h4><h4 id="BeanClassLoaderAware"><a href="#BeanClassLoaderAware" class="headerlink" title="BeanClassLoaderAware"></a>BeanClassLoaderAware</h4><h4 id="ApplicationContextAware"><a href="#ApplicationContextAware" class="headerlink" title="ApplicationContextAware"></a>ApplicationContextAware</h4></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://qzztf.com">水娃</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://qzztf.com/post/dac1/">http://qzztf.com/post/dac1/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://qzztf.com" target="_blank">水娃火娃石榴娃</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Spring/">Spring</a></div><div class="post_share"><div class="social-share" data-image="/image/avatar.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/post/736b/" title="Spring ApplicationContext初始化过程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Spring ApplicationContext初始化过程</div></div></a></div><div class="next-post pull-right"><a href="/post/821c/" title="年会"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">年会</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/post/72a3/" title="Bean初始化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-08-21</div><div class="title">Bean初始化</div></div></a></div><div><a href="/post/9fa5/" title="Spring AOP 调用同一个对象的方法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-05</div><div class="title">Spring AOP 调用同一个对象的方法</div></div></a></div><div><a href="/post/b3b1/" title="Spring resource配置文件写法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2018-06-15</div><div class="title">Spring resource配置文件写法</div></div></a></div><div><a href="/post/53da/" title="windows 编绎spring-framework源代码遇到的问题"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-07-25</div><div class="title">windows 编绎spring-framework源代码遇到的问题</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">水娃</div><div class="author-info__description">水娃的博客 | java</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/qzztf"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎光临</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3"><span class="toc-number">1.</span> <span class="toc-text">Spring 常用接口</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Bean-%E5%B7%A5%E5%8E%82%E7%9B%B8%E5%85%B3"><span class="toc-number">1.1.</span> <span class="toc-text">Bean 工厂相关</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#BeanFactory"><span class="toc-number">1.1.1.</span> <span class="toc-text">BeanFactory</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ListableBeanFactory"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">ListableBeanFactory</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#HierarchicalBeanFactory"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">HierarchicalBeanFactory</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AutowireCapableBeanFactory"><span class="toc-number">1.1.1.3.</span> <span class="toc-text">AutowireCapableBeanFactory</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ConfigurableBeanFactory"><span class="toc-number">1.1.1.4.</span> <span class="toc-text">ConfigurableBeanFactory</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ConfigurableListableBeanFactory"><span class="toc-number">1.1.1.5.</span> <span class="toc-text">ConfigurableListableBeanFactory</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConversionService"><span class="toc-number">1.1.2.</span> <span class="toc-text">ConversionService</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AliasRegistry"><span class="toc-number">1.1.3.</span> <span class="toc-text">AliasRegistry</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#BeanDefinitionRegistry"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">BeanDefinitionRegistry</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FactoryBean"><span class="toc-number">1.1.4.</span> <span class="toc-text">FactoryBean</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SmartFactoryBean"><span class="toc-number">1.1.5.</span> <span class="toc-text">SmartFactoryBean</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BeanNameGenerator"><span class="toc-number">1.1.6.</span> <span class="toc-text">BeanNameGenerator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BeanFactoryPostProcessor"><span class="toc-number">1.1.7.</span> <span class="toc-text">BeanFactoryPostProcessor</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#BeanDefinitionRegistryPostProcessor"><span class="toc-number">1.1.7.1.</span> <span class="toc-text">BeanDefinitionRegistryPostProcessor</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BeanPostProcessor"><span class="toc-number">1.1.8.</span> <span class="toc-text">BeanPostProcessor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ImportSelector"><span class="toc-number">1.1.9.</span> <span class="toc-text">ImportSelector</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#DeferredImportSelector"><span class="toc-number">1.1.9.1.</span> <span class="toc-text">DeferredImportSelector</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ImportBeanDefinitionRegistrar"><span class="toc-number">1.1.10.</span> <span class="toc-text">ImportBeanDefinitionRegistrar</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87%E7%9B%B8%E5%85%B3"><span class="toc-number">1.2.</span> <span class="toc-text">应用上下文相关</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ApplicationContext"><span class="toc-number">1.2.1.</span> <span class="toc-text">ApplicationContext</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ConfigurableApplicationContext"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">ConfigurableApplicationContext</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AttributeAccessor"><span class="toc-number">1.2.2.</span> <span class="toc-text">AttributeAccessor</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#BeanDefinition"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">BeanDefinition</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AnnotatedBeanDefinition"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">AnnotatedBeanDefinition</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E5%85%83%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3"><span class="toc-number">1.3.</span> <span class="toc-text">类型元数据相关</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ClassMetadata"><span class="toc-number">1.3.1.</span> <span class="toc-text">ClassMetadata</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AnnotatedTypeMetadata"><span class="toc-number">1.3.2.</span> <span class="toc-text">AnnotatedTypeMetadata</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AnnotationMetadata"><span class="toc-number">1.3.3.</span> <span class="toc-text">AnnotationMetadata</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MethodMetadata"><span class="toc-number">1.3.4.</span> <span class="toc-text">MethodMetadata</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MetadataReader"><span class="toc-number">1.3.5.</span> <span class="toc-text">MetadataReader</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ResourceLoader"><span class="toc-number">1.3.6.</span> <span class="toc-text">ResourceLoader</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ResourcePatternResolver"><span class="toc-number">1.3.6.1.</span> <span class="toc-text">ResourcePatternResolver</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MessageSource"><span class="toc-number">1.3.7.</span> <span class="toc-text">MessageSource</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HierarchicalMessageSource"><span class="toc-number">1.3.7.1.</span> <span class="toc-text">HierarchicalMessageSource</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ApplicationEventPublisher"><span class="toc-number">1.3.8.</span> <span class="toc-text">ApplicationEventPublisher</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EnvironmentCapable"><span class="toc-number">1.3.9.</span> <span class="toc-text">EnvironmentCapable</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PropertyResolver"><span class="toc-number">1.3.10.</span> <span class="toc-text">PropertyResolver</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Environment"><span class="toc-number">1.3.10.1.</span> <span class="toc-text">Environment</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ConfigurableEnvironment"><span class="toc-number">1.3.10.2.</span> <span class="toc-text">ConfigurableEnvironment</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ConfigurablePropertyResolver"><span class="toc-number">1.3.10.3.</span> <span class="toc-text">ConfigurablePropertyResolver</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#xml-%E8%A7%A3%E6%9E%90%E4%B8%8EBeanDefinition-%E8%A7%A3%E6%9E%90%E7%9B%B8%E5%85%B3"><span class="toc-number">1.4.</span> <span class="toc-text">xml 解析与BeanDefinition 解析相关</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#NamespaceHandler"><span class="toc-number">1.4.1.</span> <span class="toc-text">NamespaceHandler</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NamespaceHandlerResolver"><span class="toc-number">1.4.2.</span> <span class="toc-text">NamespaceHandlerResolver</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BeanDefinitionParser"><span class="toc-number">1.4.3.</span> <span class="toc-text">BeanDefinitionParser</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BeanDefinitionDecorator"><span class="toc-number">1.4.4.</span> <span class="toc-text">BeanDefinitionDecorator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MergedBeanDefinitionPostProcessor"><span class="toc-number">1.4.5.</span> <span class="toc-text">MergedBeanDefinitionPostProcessor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BeanDefinitionReader"><span class="toc-number">1.4.6.</span> <span class="toc-text">BeanDefinitionReader</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BeanDefinitionDocumentReader"><span class="toc-number">1.4.7.</span> <span class="toc-text">BeanDefinitionDocumentReader</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DestructionAwareBeanPostProcessor"><span class="toc-number">1.4.8.</span> <span class="toc-text">DestructionAwareBeanPostProcessor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#InstantiationAwareBeanPostProcessor"><span class="toc-number">1.4.9.</span> <span class="toc-text">InstantiationAwareBeanPostProcessor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SmartInstantiationAwareBeanPostProcessor"><span class="toc-number">1.4.10.</span> <span class="toc-text">SmartInstantiationAwareBeanPostProcessor</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E8%AE%B0%E6%8E%A5%E5%8F%A3%E7%9B%B8%E5%85%B3"><span class="toc-number">1.5.</span> <span class="toc-text">标记接口相关</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Aware"><span class="toc-number">1.5.1.</span> <span class="toc-text">Aware</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#BeanFactoryAware"><span class="toc-number">1.5.1.1.</span> <span class="toc-text">BeanFactoryAware</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ApplicationEventPublisherAware"><span class="toc-number">1.5.1.2.</span> <span class="toc-text">ApplicationEventPublisherAware</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#NotificationPublisherAware"><span class="toc-number">1.5.1.3.</span> <span class="toc-text">NotificationPublisherAware</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MessageSourceAware"><span class="toc-number">1.5.1.4.</span> <span class="toc-text">MessageSourceAware</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#EnvironmentAware"><span class="toc-number">1.5.1.5.</span> <span class="toc-text">EnvironmentAware</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#EmbeddedValueResolverAware"><span class="toc-number">1.5.1.6.</span> <span class="toc-text">EmbeddedValueResolverAware</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ResourceLoaderAware"><span class="toc-number">1.5.1.7.</span> <span class="toc-text">ResourceLoaderAware</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ImportAware"><span class="toc-number">1.5.1.8.</span> <span class="toc-text">ImportAware</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LoadTimeWeaverAware"><span class="toc-number">1.5.1.9.</span> <span class="toc-text">LoadTimeWeaverAware</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BeanNameAware"><span class="toc-number">1.5.1.10.</span> <span class="toc-text">BeanNameAware</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BeanClassLoaderAware"><span class="toc-number">1.5.1.11.</span> <span class="toc-text">BeanClassLoaderAware</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ApplicationContextAware"><span class="toc-number">1.5.1.12.</span> <span class="toc-text">ApplicationContextAware</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/5441/" title="Spring Cloud Gateway整合Spring Doc">Spring Cloud Gateway整合Spring Doc</a><time datetime="2023-04-02T12:49:15.000Z" title="发表于 2023-04-02 20:49:15">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f507/" title="处理字典值反显问题.md">处理字典值反显问题.md</a><time datetime="2023-04-02T12:46:42.000Z" title="发表于 2023-04-02 20:46:42">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/9fa5/" title="Spring AOP 调用同一个对象的方法">Spring AOP 调用同一个对象的方法</a><time datetime="2020-12-05T14:55:47.000Z" title="发表于 2020-12-05 22:55:47">2020-12-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/39fc/" title="Spring AOP基本用法3">Spring AOP基本用法3</a><time datetime="2020-09-23T02:26:55.000Z" title="发表于 2020-09-23 10:26:55">2020-09-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f93d/" title="Spring AOP基本用法2">Spring AOP基本用法2</a><time datetime="2020-09-23T02:25:58.000Z" title="发表于 2020-09-23 10:25:58">2020-09-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 水娃</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '248e3cebde8537449dbb',
+      clientSecret: 'a9c539e71782374d81eb91ad932288cd41809575',
+      repo: 'blog-s-gitalk',
+      owner: 'qinzaizhen',
+      admin: ['qzztf'],
+      id: '80a3460db0b1515f51aec42cd8bd78b7',
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></body></html>

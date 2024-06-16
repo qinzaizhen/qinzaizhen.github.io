@@ -1,0 +1,264 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>jQuery prop与attr的区别 | 水娃火娃石榴娃</title><meta name="author" content="水娃"><meta name="copyright" content="水娃"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="问题今天在操作checkbox的时候，想让它选中，用了下面的写法： 1$(&amp;quot;#id1&amp;quot;).attr(&amp;quot;checked&amp;quot;,true); 结果并没有选中。查看了一下dom，发现多了一个属性checked&amp;#x3D;&amp;quot;checked&amp;quot;，看似是应该选中才对，"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="http://qzztf.com/post/8b63/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/image/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/image/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/image/pwa/16.png"/><link rel="mask-icon" href="/image/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?86553a0f289bcfb307062507dc247eb2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'jQuery prop与attr的区别',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-06-16 15:25:26'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="水娃火娃石榴娃"><span class="site-name">水娃火娃石榴娃</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">jQuery prop与attr的区别</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2018-04-25T08:35:34.000Z" title="发表于 2018-04-25 16:35:34">2018-04-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-06-16T07:25:26.158Z" title="更新于 2024-06-16 15:25:26">2024-06-16</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="jQuery prop与attr的区别"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>今天在操作<code>checkbox</code>的时候，想让它选中，用了下面的写法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(&quot;#id1&quot;).attr(&quot;checked&quot;,true);</span><br></pre></td></tr></table></figure>
+<p>结果并没有选中。查看了一下dom，发现多了一个属性<code>checked=&quot;checked&quot;</code>，看似是应该选中才对，然而并没有啥用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;input id&#x3D;&quot;id1&quot; type&#x3D;&quot;checkbox&quot; value&#x3D;&quot;1&quot; checked&#x3D;&quot;checked&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>网上也发现我不少朋友遇到这问题，换用<code>prop</code>方法试了一下，结果选中了。dom为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;input id&#x3D;&quot;id1&quot; type&#x3D;&quot;checkbox&quot; value&#x3D;&quot;1&quot; offval&#x3D;&quot;0&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>有点儿奇怪。</p>
+<h3 id="attr-方法"><a href="#attr-方法" class="headerlink" title="attr()方法"></a><code>attr()</code>方法</h3><p>获取匹配的元素集合中的第一个元素的属性的值 或 设置每一个匹配元素的一个或多个属性。</p>
+<ul>
+<li>e.attr( attributeName )</li>
+<li>e.attr( attributeName, value )</li>
+<li>e.attr( attributes )</li>
+<li>e.attr( attributeName, function(index, attr) )</li>
+</ul>
+<h3 id="prop-方法"><a href="#prop-方法" class="headerlink" title="prop() 方法"></a><code>prop()</code> 方法</h3><p>获取匹配的元素集中第一个元素的属性（property）值或设置每一个匹配元素的一个或多个属性。 - e.prop( propertyName )</p>
+<ul>
+<li>e.prop( propertyName, value )</li>
+<li>e.prop( properties )</li>
+<li>e.prop( propertyName, function(index, oldPropertyValue) )</li>
+</ul>
+<p>看出区别了吗，没错，是参数有区别，<code>attr()</code>传入的是<code>attributeName</code>，而<code>prop()</code>传入的是<code>propertyName</code>。现在我们的问题转移了，我们需要研究的是<code>attributeName</code>和<code>propertyName</code>之间的区别了。</p>
+<h3 id="Attributes-vs-Properties"><a href="#Attributes-vs-Properties" class="headerlink" title="Attributes vs. Properties"></a><code>Attributes</code> vs. <code>Properties</code></h3><p>在这里，我们可以将<code>attribute</code>理解为<code>特性</code>，<code>property</code>理解为为<code>属性</code>从而来区分俩者的差异。</p>
+<p>如果把DOM元素看成是一个普通的Object对象，这个对象在其定义时就具有一些属性（property），比如把<code>checkbox</code>当做一个对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var checkbox &#x3D; &#123;</span><br><span class="line">    checked: false</span><br><span class="line">    attributes: [],</span><br><span class="line">    ...</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<p>实际情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">accept: &quot;&quot;</span><br><span class="line">accessKey: &quot;&quot;</span><br><span class="line">align: &quot;&quot;</span><br><span class="line">alt: &quot;&quot;</span><br><span class="line">attributes:NamedNodeMap &#123;0: id, 1: type, 2: value, 3: offval, 4: checked, id: id, type: type, value: value, offval: offval, checked: checked, …&#125;</span><br><span class="line">checked: false</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>attributes:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">0:id</span><br><span class="line">  baseURI:&quot;http:&#x2F;&#x2F;localhost:8080&#x2F;x5&#x2F;bims&#x2F;material&#x2F;materialNode&#x2F;materialNodeEdit?productId&#x3D;DDKD_NJY_OTH&amp;productName&#x3D;%25E5%25A4%25A7%25E9%2581%2593%25E5%25BF%25AB%25E8%25B4%25B7%25EF%25BC%2588%25E8%2587%25AA%25E8%2590%25A5%25E7%2589%2588%25EF%25BC%2589&quot;</span><br><span class="line">  childNodes:NodeList []</span><br><span class="line">  firstChild:null</span><br><span class="line">  isConnected:false</span><br><span class="line">  lastChild:null</span><br><span class="line">  localName:&quot;id&quot;</span><br><span class="line">  name:&quot;id&quot;</span><br><span class="line">  namespaceURI:null</span><br><span class="line">  nextSibling:null</span><br><span class="line">  nodeName:&quot;id&quot;</span><br><span class="line">  ...</span><br></pre></td></tr></table></figure>
+<p>现在，我们一目了然了，<code>attribute</code>是一个特性节点，每个DOM元素都有一个对应的<code>attributes</code>属性来存放所有的<code>attribute</code>节点，它是一个类数组的容器。<code>attributes</code>的每个数字索引以键值对(<code>name=&quot;value&quot;</code>)的形式存放了一个<code>attribute</code>节点。而<code>property</code>就是一个属性，是一个以键值对(<code>name=&quot;value&quot;</code>)的形式存放在Object中的属性。<br>回到一开始的问题，复选框的状态改变只会修改<code>checked</code>属性(<code>property</code>)，换句话说，要想选中<code>checkbox</code>，只能修改<code>checked</code>属性(<code>property</code>)。因此，用jQuery请使用<code>prop()</code>方法。</p>
+<h3 id="jquery中attr和prop的区别介绍"><a href="#jquery中attr和prop的区别介绍" class="headerlink" title="jquery中attr和prop的区别介绍"></a>jquery中attr和prop的区别介绍</h3><p>在高版本的jQuery引入<code>prop</code>方法后，什么时候该用<code>prop</code>？什么时候用<code>attr</code>？它们两个之间有什么区别？这些问题就出现了。<br>关于它们两个的区别，网上的答案很多。这里谈谈我的心得，我的心得很简单：</p>
+<ol>
+<li>对于HTML元素本身就带有的<strong>固有</strong>属性，在处理时，使用<code>prop</code>方法。</li>
+<li>对于HTML元素我们自己<strong>自定义</strong>的DOM属性，在处理时，使用<code>attr</code>方法。</li>
+</ol>
+<p>上面的描述也许有点模糊，举几个例子就知道了。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href&#x3D;&quot;http:&#x2F;&#x2F;www.baidu.com&quot; target&#x3D;&quot;_self&quot; class&#x3D;&quot;btn&quot;&gt;百度&lt;&#x2F;a&gt;</span><br></pre></td></tr></table></figure>
+<p>这个例子里<code>&lt;a&gt;</code>元素的DOM属性有<code>href</code>、<code>target</code>和<code>class</code>，这些属性就是<code>&lt;a&gt;</code>元素本身就带有的属性，也是W3C标准里就包含有这几个属性，或者说在IDE里能够智能提示出的属性，这些就叫做固有属性。处理这些属性时，建议使用prop方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href&#x3D;&quot;#&quot; id&#x3D;&quot;link1&quot; action&#x3D;&quot;delete&quot;&gt;删除&lt;&#x2F;a&gt; </span><br></pre></td></tr></table></figure>
+<p>这个例子里<code>&lt;a&gt;</code>元素的DOM属性有<code>href</code>、<code>id</code>和<code>action</code>，很明显，前两个是固有属性，而后面一个<code>action</code>属性是我们自己<strong>自定义</strong>上去的，<code>&lt;a&gt;</code>元素本身是没有这个属性的。这种就是自定义的DOM属性。处理这些属性时，建议使用<code>attr</code>方法。使用<code>prop</code>方法取值和设置属性值时，都会返回<code>undefined</code>值。</p>
+<p>再举一个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;input id&#x3D;&quot;chk1&quot; type&#x3D;&quot;checkbox&quot; &#x2F;&gt;是否可见&lt;input id&#x3D;&quot;chk2&quot; type&#x3D;&quot;checkbox&quot; checked&#x3D;&quot;checked&quot; &#x2F;&gt;是否可见</span><br></pre></td></tr></table></figure>
+
+<p>像<code>checkbox</code>，<code>radio</code>和<code>select</code>这样的元素，选中属性对应<code>checked</code>和<code>selected</code>，这些也属于固有属性，因此需要使用prop方法去操作才能获得正确的结果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$(&quot;#chk1&quot;).prop(&quot;checked&quot;) &#x3D;&#x3D; false</span><br><span class="line">$(&quot;#chk2&quot;).prop(&quot;checked&quot;) &#x3D;&#x3D; true</span><br></pre></td></tr></table></figure>
+<p>如果上面使用attr方法，则会出现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$(&quot;#chk1&quot;).attr(&quot;checked&quot;) &#x3D;&#x3D; undefined</span><br><span class="line">$(&quot;#chk2&quot;).attr(&quot;checked&quot;) &#x3D;&#x3D; &quot;checked&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><h4 id="prop-函数的结果"><a href="#prop-函数的结果" class="headerlink" title="prop()函数的结果:"></a><code>prop()</code>函数的结果:</h4><p>1.如果有相应的属性，返回指定属性值。<br>2.如果没有相应的属性，返回值是空字符串。</p>
+<h4 id="attr-函数的结果"><a href="#attr-函数的结果" class="headerlink" title="attr()函数的结果:"></a><code>attr()</code>函数的结果:</h4><p>1.如果有相应的属性，返回指定属性值。<br>2.如果没有相应的属性，返回值是undefined。</p>
+<p>对于HTML元素本身就带有的固有属性，在处理时，使用prop方法。<br>对于HTML元素我们自己自定义的DOM属性，在处理时，使用attr方法。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://qzztf.com">水娃</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://qzztf.com/post/8b63/">http://qzztf.com/post/8b63/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://qzztf.com" target="_blank">水娃火娃石榴娃</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/jquery/">jquery</a><a class="post-meta__tags" href="/tags/prop/">prop</a><a class="post-meta__tags" href="/tags/attr/">attr</a></div><div class="post_share"><div class="social-share" data-image="/image/avatar.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/post/6917/" title="错误记录20180521"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">错误记录20180521</div></div></a></div><div class="next-post pull-right"><a href="/post/2011/" title="IntelliJ IDEA中创建测试用例"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">IntelliJ IDEA中创建测试用例</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">水娃</div><div class="author-info__description">水娃的博客 | java</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/qzztf"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎光临</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#attr-%E6%96%B9%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">attr()方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#prop-%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">prop() 方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Attributes-vs-Properties"><span class="toc-number">4.</span> <span class="toc-text">Attributes vs. Properties</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jquery%E4%B8%ADattr%E5%92%8Cprop%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%8B%E7%BB%8D"><span class="toc-number">5.</span> <span class="toc-text">jquery中attr和prop的区别介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#prop-%E5%87%BD%E6%95%B0%E7%9A%84%E7%BB%93%E6%9E%9C"><span class="toc-number">6.1.</span> <span class="toc-text">prop()函数的结果:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#attr-%E5%87%BD%E6%95%B0%E7%9A%84%E7%BB%93%E6%9E%9C"><span class="toc-number">6.2.</span> <span class="toc-text">attr()函数的结果:</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/5441/" title="Spring Cloud Gateway整合Spring Doc">Spring Cloud Gateway整合Spring Doc</a><time datetime="2023-04-02T12:49:15.000Z" title="发表于 2023-04-02 20:49:15">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f507/" title="处理字典值反显问题.md">处理字典值反显问题.md</a><time datetime="2023-04-02T12:46:42.000Z" title="发表于 2023-04-02 20:46:42">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/9fa5/" title="Spring AOP 调用同一个对象的方法">Spring AOP 调用同一个对象的方法</a><time datetime="2020-12-05T14:55:47.000Z" title="发表于 2020-12-05 22:55:47">2020-12-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/39fc/" title="Spring AOP基本用法3">Spring AOP基本用法3</a><time datetime="2020-09-23T02:26:55.000Z" title="发表于 2020-09-23 10:26:55">2020-09-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f93d/" title="Spring AOP基本用法2">Spring AOP基本用法2</a><time datetime="2020-09-23T02:25:58.000Z" title="发表于 2020-09-23 10:25:58">2020-09-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 水娃</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '248e3cebde8537449dbb',
+      clientSecret: 'a9c539e71782374d81eb91ad932288cd41809575',
+      repo: 'blog-s-gitalk',
+      owner: 'qinzaizhen',
+      admin: ['qzztf'],
+      id: 'd961205f3c1ef12771f25861371a01c3',
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></body></html>

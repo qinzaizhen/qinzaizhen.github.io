@@ -1,0 +1,245 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>The valid characters are defined in RFC 7230 and RFC 3986 | 水娃火娃石榴娃</title><meta name="author" content="水娃"><meta name="copyright" content="水娃"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="今天在使用tomcat的过程中遇到了这个问题。表现为400错误以及空白页面。 1234567891011Error parsing HTTP request headerNote: further occurrences of HTTP header parsing errors will be l"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="http://qzztf.com/post/4e8e/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/image/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/image/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/image/pwa/16.png"/><link rel="mask-icon" href="/image/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?86553a0f289bcfb307062507dc247eb2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'The valid characters are defined in RFC 7230 and RFC 3986',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2024-06-16 15:25:26'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="水娃火娃石榴娃"><span class="site-name">水娃火娃石榴娃</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">The valid characters are defined in RFC 7230 and RFC 3986</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2017-07-26T03:16:27.000Z" title="发表于 2017-07-26 11:16:27">2017-07-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-06-16T07:25:26.157Z" title="更新于 2024-06-16 15:25:26">2024-06-16</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="The valid characters are defined in RFC 7230 and RFC 3986"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>今天在使用tomcat的过程中遇到了这个问题。表现为400错误以及空白页面。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Error parsing HTTP request header</span><br><span class="line">Note: further occurrences of HTTP header parsing errors will be logged at DEBUG level.</span><br><span class="line">Java.lang.IllegalArgumentException: Invalid character found in the request target. The valid characters are defined in RFC <span class="number">7230</span> and RFC <span class="number">3986</span></span><br><span class="line">at org.apache.coyote.http11.InternalInputBuffer.parseRequestLine(InternalInputBuffer.java:<span class="number">189</span>)</span><br><span class="line">at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:<span class="number">1000</span>)</span><br><span class="line">at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:<span class="number">637</span>)</span><br><span class="line">at org.apache.tomcat.util.NET.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:<span class="number">318</span>)</span><br><span class="line">at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:<span class="number">1145</span>)</span><br><span class="line">at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:<span class="number">615</span>)</span><br><span class="line">at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:<span class="number">61</span>)</span><br><span class="line">at java.lang.Thread.run(Thread.java:<span class="number">745</span>)</span><br></pre></td></tr></table></figure>
+
+<p>原因是新版本的tomcat规范了get请求url中参数，Url中只允许包含英文字母（a-zA-Z）、数字（0-9）、-_.~4个特殊字符以及所有保留字符。<a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc3986">原文第2章</a>关于字符那部分有说明。<br>保留字符：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">reserved    = gen-delims / sub-delims</span><br><span class="line">gen-delims  = &quot;:&quot; / &quot;/&quot; / &quot;?&quot; / &quot;#&quot; / &quot;[&quot; / &quot;]&quot; / &quot;@&quot;</span><br><span class="line">sub-delims  = &quot;!&quot; / &quot;$&quot; / &quot;&amp;&quot; / &quot;&#x27;&quot; / &quot;(&quot; / &quot;)&quot;</span><br><span class="line">          / &quot;*&quot; / &quot;+&quot; / &quot;,&quot; / &quot;;&quot; / &quot;=&quot;</span><br></pre></td></tr></table></figure>
+<p>非保留字符（字母、数字，-_.~）：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unreserved  = ALPHA / DIGIT / &quot;-&quot; / &quot;.&quot; / &quot;_&quot; / &quot;~&quot;</span><br></pre></td></tr></table></figure>
+<p>还有一些字符放在url中可能会引起解析的歧义（<a target="_blank" rel="noopener" href="http://blog.csdn.net/laokaizzz/article/details/60752593">此部分来源于</a>）：</p>
+<ul>
+<li>空格Url在传输的过程，或者用户在排版的过程，或者文本处理程序在处理Url的过程，都有可能引入无关紧要的空格，或者将那些有意义的空格给去掉</li>
+<li>引号以及&lt;&gt;引号和尖括号通常用于在普通文本中起到分隔Url的作用</li>
+<li>#通常用于表示书签或者锚点</li>
+<li>%百分号本身用作对不安全字符进行编码时使用的特殊字符，因此本身需要编码</li>
+<li>{}|^[]`~某一些网关或者传输代理会篡改这些字符</li>
+</ul>
+<p>当出现这些字符时就需要进行<code>urlencode</code>。在javascript中有两种encode的方法:<br> -|encodeURI|encodeURIComponent<br> –|–|–<br> 相同点| 不会对字母、数字、标点符号 - _ . ! ~ * ‘ ( )进行编码<br> 不同点|不会对URI中具有特殊含义的字符进行编码 <code>：;/?:@&amp;=+$,#</code>，因为此方法将参数当成完整的URL，这些字符在URI中具有合法的意义，无需编码|除上面的不会编码之外，其他的字符都会编码  <code>：;/?:@&amp;=+$,#</code></p>
+<p>因此如果在URI组件中含有分隔符，比如 ? 和 #，则应当使用 encodeURIComponent() 方法分别对各组件进行编码，如：<code>http://localhost/redirect?url=http://localhost/index</code>, 这里的<code>url</code>参数的值就应该进行编码，需要用<code>encodeURIComponent</code>方法对<code>http://localhost/index</code>进行编码。</p>
+<p>具体的使用例子(<a target="_blank" rel="noopener" href="http://www.w3school.com.cn/jsref/jsref_encodeURIComponent.asp">来源于w3c encodeURIComponent</a>，<a target="_blank" rel="noopener" href="http://www.w3school.com.cn/jsref/jsref_encodeuri.asp">encodeuri</a>)：</p>
+<p><strong>encodeURI</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><br><span class="line"></span><br><span class="line"><span class="built_in">document</span>.write(<span class="built_in">encodeURI</span>(<span class="string">&quot;http://www.w3school.com.cn&quot;</span>)+ <span class="string">&quot;&lt;br /&gt;&quot;</span>)</span><br><span class="line"><span class="built_in">document</span>.write(<span class="built_in">encodeURI</span>(<span class="string">&quot;http://www.w3school.com.cn/My first/&quot;</span>))</span><br><span class="line"><span class="built_in">document</span>.write(<span class="built_in">encodeURI</span>(<span class="string">&quot;,/?:@&amp;=+$#&quot;</span>))</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://www.w3school.com.cn</span><br><span class="line">http://www.w3school.com.cn/My%20first/</span><br><span class="line">,/?:@&amp;=+$#</span><br></pre></td></tr></table></figure>
+
+<p><strong>encodeURIComponent</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><br><span class="line"></span><br><span class="line"><span class="built_in">document</span>.write(<span class="built_in">encodeURIComponent</span>(<span class="string">&quot;http://www.w3school.com.cn&quot;</span>))</span><br><span class="line"><span class="built_in">document</span>.write(<span class="string">&quot;&lt;br /&gt;&quot;</span>)</span><br><span class="line"><span class="built_in">document</span>.write(<span class="built_in">encodeURIComponent</span>(<span class="string">&quot;http://www.w3school.com.cn/p 1/&quot;</span>))</span><br><span class="line"><span class="built_in">document</span>.write(<span class="string">&quot;&lt;br /&gt;&quot;</span>)</span><br><span class="line"><span class="built_in">document</span>.write(<span class="built_in">encodeURIComponent</span>(<span class="string">&quot;,/?:@&amp;=+$#&quot;</span>))</span><br><span class="line"></span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>输出:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http%3A%2F%2Fwww.w3school.com.cn</span><br><span class="line">http%3A%2F%2Fwww.w3school.com.cn%2Fp%201%2F</span><br><span class="line">%2C%2F%3F%3A%40%26%3D%2B%24%23</span><br></pre></td></tr></table></figure>
+<p>具体的判断在tomcat的<code>org.apache.tomcat.util.http.parser.HttpParser</code>中的<code>IS_NOT_REQUEST_TARGET</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * HTTP header value parser implementation. Parsing HTTP headers as per RFC2616</span></span><br><span class="line"><span class="comment"> * is not always as simple as it first appears. For headers that only use tokens</span></span><br><span class="line"><span class="comment"> * the simple approach will normally be sufficient. However, for the other</span></span><br><span class="line"><span class="comment"> * headers, while simple code meets 99.9% of cases, there are often some edge</span></span><br><span class="line"><span class="comment"> * cases that make things far more complicated.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * The purpose of this parser is to let the parser worry about the edge cases.</span></span><br><span class="line"><span class="comment"> * It provides tolerant (where safe to do so) parsing of HTTP header values</span></span><br><span class="line"><span class="comment"> * assuming that wrapped header lines have already been unwrapped. (The Tomcat</span></span><br><span class="line"><span class="comment"> * header processing code does the unwrapping.)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HttpParser</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> StringManager sm = StringManager.getManager(HttpParser.class);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Log log = LogFactory.getLog(HttpParser.class);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> ARRAY_SIZE = <span class="number">128</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] IS_CONTROL = <span class="keyword">new</span> <span class="keyword">boolean</span>[ARRAY_SIZE];</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] IS_SEPARATOR = <span class="keyword">new</span> <span class="keyword">boolean</span>[ARRAY_SIZE];</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] IS_TOKEN = <span class="keyword">new</span> <span class="keyword">boolean</span>[ARRAY_SIZE];</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] IS_HEX = <span class="keyword">new</span> <span class="keyword">boolean</span>[ARRAY_SIZE];</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] IS_NOT_REQUEST_TARGET = <span class="keyword">new</span> <span class="keyword">boolean</span>[ARRAY_SIZE];</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] IS_HTTP_PROTOCOL = <span class="keyword">new</span> <span class="keyword">boolean</span>[ARRAY_SIZE];</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] REQUEST_TARGET_ALLOW = <span class="keyword">new</span> <span class="keyword">boolean</span>[ARRAY_SIZE];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        String prop = System.getProperty(<span class="string">&quot;tomcat.util.http.parser.HttpParser.requestTargetAllow&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (prop != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; prop.length(); i++) &#123;</span><br><span class="line">                <span class="keyword">char</span> c = prop.charAt(i);</span><br><span class="line">                <span class="keyword">if</span> (c == <span class="string">&#x27;&#123;&#x27;</span> || c == <span class="string">&#x27;&#125;&#x27;</span> || c == <span class="string">&#x27;|&#x27;</span>) &#123;</span><br><span class="line">                    REQUEST_TARGET_ALLOW[c] = <span class="keyword">true</span>;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    log.warn(sm.getString(<span class="string">&quot;httpparser.invalidRequestTargetCharacter&quot;</span>,</span><br><span class="line">                            Character.valueOf(c)));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; ARRAY_SIZE; i++) &#123;</span><br><span class="line">            <span class="comment">// Control&gt; 0-31, 127</span></span><br><span class="line">            <span class="keyword">if</span> (i &lt; <span class="number">32</span> || i == <span class="number">127</span>) &#123;</span><br><span class="line">                IS_CONTROL[i] = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Separator</span></span><br><span class="line">            <span class="keyword">if</span> (    i == <span class="string">&#x27;(&#x27;</span> || i == <span class="string">&#x27;)&#x27;</span> || i == <span class="string">&#x27;&lt;&#x27;</span> || i == <span class="string">&#x27;&gt;&#x27;</span>  || i == <span class="string">&#x27;@&#x27;</span>  ||</span><br><span class="line">                    i == <span class="string">&#x27;,&#x27;</span> || i == <span class="string">&#x27;;&#x27;</span> || i == <span class="string">&#x27;:&#x27;</span> || i == <span class="string">&#x27;\\&#x27;</span> || i == <span class="string">&#x27;\&quot;&#x27;</span> ||</span><br><span class="line">                    i == <span class="string">&#x27;/&#x27;</span> || i == <span class="string">&#x27;[&#x27;</span> || i == <span class="string">&#x27;]&#x27;</span> || i == <span class="string">&#x27;?&#x27;</span>  || i == <span class="string">&#x27;=&#x27;</span>  ||</span><br><span class="line">                    i == <span class="string">&#x27;&#123;&#x27;</span> || i == <span class="string">&#x27;&#125;&#x27;</span> || i == <span class="string">&#x27; &#x27;</span> || i == <span class="string">&#x27;\t&#x27;</span>) &#123;</span><br><span class="line">                IS_SEPARATOR[i] = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Token: Anything 0-127 that is not a control and not a separator</span></span><br><span class="line">            <span class="keyword">if</span> (!IS_CONTROL[i] &amp;&amp; !IS_SEPARATOR[i] &amp;&amp; i &lt; <span class="number">128</span>) &#123;</span><br><span class="line">                IS_TOKEN[i] = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Hex: 0-9, a-f, A-F</span></span><br><span class="line">            <span class="keyword">if</span> ((i &gt;= <span class="string">&#x27;0&#x27;</span> &amp;&amp; i &lt;=<span class="string">&#x27;9&#x27;</span>) || (i &gt;= <span class="string">&#x27;a&#x27;</span> &amp;&amp; i &lt;= <span class="string">&#x27;f&#x27;</span>) || (i &gt;= <span class="string">&#x27;A&#x27;</span> &amp;&amp; i &lt;= <span class="string">&#x27;F&#x27;</span>)) &#123;</span><br><span class="line">                IS_HEX[i] = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Not valid for request target.</span></span><br><span class="line">            <span class="comment">// Combination of multiple rules from RFC7230 and RFC 3986. Must be</span></span><br><span class="line">            <span class="comment">// ASCII, no controls plus a few additional characters excluded</span></span><br><span class="line">            <span class="keyword">if</span> (IS_CONTROL[i] || i &gt; <span class="number">127</span> ||</span><br><span class="line">                    i == <span class="string">&#x27; &#x27;</span> || i == <span class="string">&#x27;\&quot;&#x27;</span> || i == <span class="string">&#x27;#&#x27;</span> || i == <span class="string">&#x27;&lt;&#x27;</span> || i == <span class="string">&#x27;&gt;&#x27;</span> || i == <span class="string">&#x27;\\&#x27;</span> ||</span><br><span class="line">                    i == <span class="string">&#x27;^&#x27;</span> || i == <span class="string">&#x27;`&#x27;</span>  || i == <span class="string">&#x27;&#123;&#x27;</span> || i == <span class="string">&#x27;|&#x27;</span> || i == <span class="string">&#x27;&#125;&#x27;</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!REQUEST_TARGET_ALLOW[i]) &#123;</span><br><span class="line">                    IS_NOT_REQUEST_TARGET[i] = <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Not valid for HTTP protocol</span></span><br><span class="line">            <span class="comment">// &quot;HTTP/&quot; DIGIT &quot;.&quot; DIGIT</span></span><br><span class="line">            <span class="keyword">if</span> (i == <span class="string">&#x27;H&#x27;</span> || i == <span class="string">&#x27;T&#x27;</span> || i == <span class="string">&#x27;P&#x27;</span> || i == <span class="string">&#x27;/&#x27;</span> || i == <span class="string">&#x27;.&#x27;</span> || (i &gt;= <span class="string">&#x27;0&#x27;</span> &amp;&amp; i &lt;= <span class="string">&#x27;9&#x27;</span>)) &#123;</span><br><span class="line">                IS_HTTP_PROTOCOL[i] = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>换成tomcat<code>7.0.69</code>可以成功运行。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://qzztf.com">水娃</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://qzztf.com/post/4e8e/">http://qzztf.com/post/4e8e/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://qzztf.com" target="_blank">水娃火娃石榴娃</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/encodeURIComponent/">encodeURIComponent</a><a class="post-meta__tags" href="/tags/encodeURI/">encodeURI</a></div><div class="post_share"><div class="social-share" data-image="/image/avatar.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/post/dbef/" title="dubbo学习3-启动时检查"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">dubbo学习3-启动时检查</div></div></a></div><div class="next-post pull-right"><a href="/post/53da/" title="windows 编绎spring-framework源代码遇到的问题"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">windows 编绎spring-framework源代码遇到的问题</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">水娃</div><div class="author-info__description">水娃的博客 | java</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/qzztf"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎光临</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/5441/" title="Spring Cloud Gateway整合Spring Doc">Spring Cloud Gateway整合Spring Doc</a><time datetime="2023-04-02T12:49:15.000Z" title="发表于 2023-04-02 20:49:15">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f507/" title="处理字典值反显问题.md">处理字典值反显问题.md</a><time datetime="2023-04-02T12:46:42.000Z" title="发表于 2023-04-02 20:46:42">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/9fa5/" title="Spring AOP 调用同一个对象的方法">Spring AOP 调用同一个对象的方法</a><time datetime="2020-12-05T14:55:47.000Z" title="发表于 2020-12-05 22:55:47">2020-12-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/39fc/" title="Spring AOP基本用法3">Spring AOP基本用法3</a><time datetime="2020-09-23T02:26:55.000Z" title="发表于 2020-09-23 10:26:55">2020-09-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f93d/" title="Spring AOP基本用法2">Spring AOP基本用法2</a><time datetime="2020-09-23T02:25:58.000Z" title="发表于 2020-09-23 10:25:58">2020-09-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 水娃</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '248e3cebde8537449dbb',
+      clientSecret: 'a9c539e71782374d81eb91ad932288cd41809575',
+      repo: 'blog-s-gitalk',
+      owner: 'qinzaizhen',
+      admin: ['qzztf'],
+      id: '524735303ee4176ee60d960b4244f47a',
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></body></html>

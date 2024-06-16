@@ -1,0 +1,326 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>Bean初始化 | 水娃火娃石榴娃</title><meta name="author" content="水娃"><meta name="copyright" content="水娃"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Bean初始化过程如果说配置文件好比菜谱，解析配置文件好比洗菜、切菜，那么Bean初始化过程就好比炒菜的过程。Spring的核心基础就建立在对Bean的管理功能上。如何定义一个Bean，如何获取一个Bean，如何初始化一个Bean，如何销毁一个Bean。 getBean方法 – 炒菜开始的信号想象一"><link rel="shortcut icon" href="/favicon.ico"><link rel="canonical" href="http://qzztf.com/post/72a3/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/image/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/image/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/image/pwa/16.png"/><link rel="mask-icon" href="/image/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?86553a0f289bcfb307062507dc247eb2";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Bean初始化',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-06-16 15:25:26'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="水娃火娃石榴娃"><span class="site-name">水娃火娃石榴娃</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Bean初始化</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-08-21T08:32:23.000Z" title="发表于 2019-08-21 16:32:23">2019-08-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-06-16T07:25:26.141Z" title="更新于 2024-06-16 15:25:26">2024-06-16</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Bean初始化"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Bean初始化过程"><a href="#Bean初始化过程" class="headerlink" title="Bean初始化过程"></a>Bean初始化过程</h1><p>如果说配置文件好比菜谱，解析配置文件好比洗菜、切菜，那么Bean初始化过程就好比炒菜的过程。Spring的核心基础就建立在对Bean的管理功能上。如何定义一个Bean，如何获取一个Bean，如何初始化一个Bean，如何销毁一个Bean。</p>
+<h2 id="getBean方法-–-炒菜开始的信号"><a href="#getBean方法-–-炒菜开始的信号" class="headerlink" title="getBean方法 – 炒菜开始的信号"></a><code>getBean</code>方法 – 炒菜开始的信号</h2><p>想象一下<code>getBean</code>的场景，好比是食客点了一道菜（或者说菜单是由食客提供的，厨房代加工），厨房根据菜单做菜。想象一下在这个过程中需要做哪些工作？</p>
+<ol>
+<li>按照菜谱准备菜 – 解析配置文件</li>
+<li>洗菜，切菜 - - 注册Bean定义</li>
+<li>炒菜 – Bean 初始化</li>
+<li>添加额外的佐料 – 动态注册Bean定义</li>
+</ol>
+<p>第1，2步可以看成是同时进行的，边准备菜，边洗菜切菜也就是边解析边注册。<code>getBean</code> 方法由<code>BeanFactory</code>接口提供。</p>
+<h2 id="BeanFactory"><a href="#BeanFactory" class="headerlink" title="BeanFactory"></a><code>BeanFactory</code></h2><p><code>BeanFactory</code>接口是整个Spring容器的核心接口。提供了多个获取 Bean 的方法。</p>
+<ul>
+<li>Object getBean(String name) throws BeansException;</li>
+<li><T> T getBean(String name, Class<T> requiredType) throws BeansException;</T></T></li>
+<li>Object getBean(String name, Object… args) throws BeansException;</li>
+<li><T> T getBean(Class<T> requiredType) throws BeansException;</T></T></li>
+<li><T> T getBean(Class<T> requiredType, Object… args) throws BeansException;</T></T></li>
+<li><T> ObjectProvider<T> getBeanProvider(Class<T> requiredType);</T></T></T></li>
+<li><T> ObjectProvider<T> getBeanProvider(ResolvableType requiredType);</T></T></li>
+</ul>
+<p>前三个是通过Bean的名字来获取，后面的是通过Bean的Class类型来获取。</p>
+<h3 id="通过名称获取Bean"><a href="#通过名称获取Bean" class="headerlink" title="通过名称获取Bean"></a>通过名称获取Bean</h3><p>在Spring容器中，Bean的名字(id )是唯一的。</p>
+<ol>
+<li><p>先处理名称，获取真正的Bean的名称。</p>
+<ol>
+<li><p>如果 name 以 <code>&amp;</code>开头，去掉<code>&amp;</code>。</p>
+</li>
+<li><p>处理别名。参数有可能是别名，得跟据别名找到实际注册的 Bean 名称。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//先看一下别名的结构</span></span><br><span class="line"><span class="comment">// aliasA ---&gt;  name</span></span><br><span class="line"><span class="comment">// aliasB ---&gt; name</span></span><br><span class="line"><span class="comment">// name ---&gt; realName</span></span><br><span class="line"><span class="comment">//name 也可以作为别名来注册，但是不能存在 name 和 alias正好相反的一对注册情况。也就是 alias --&gt; anme, name ---&gt; alias这样成对的出现。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">canonicalName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">		String canonicalName = name;</span><br><span class="line">		<span class="comment">// Handle aliasing...</span></span><br><span class="line">		String resolvedName;</span><br><span class="line">		<span class="keyword">do</span> &#123;</span><br><span class="line">			<span class="comment">// 把参数当作别名来取出name, 如果能取到，说明当前参数是别名。将取到的值当作别名，继续取，如果不能取到值，那么这个就是真正的bean的名字了;如果还能取到，那么这个也是别名，重复这个过程，直到不能取到值为止。</span></span><br><span class="line">            resolvedName = <span class="keyword">this</span>.aliasMap.get(canonicalName);</span><br><span class="line">            </span><br><span class="line">			<span class="keyword">if</span> (resolvedName != <span class="keyword">null</span>) &#123;</span><br><span class="line">				canonicalName = resolvedName;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">while</span> (resolvedName != <span class="keyword">null</span>);</span><br><span class="line">		<span class="keyword">return</span> canonicalName;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+<li><p>检查单例缓存中的单例。也就是说先看看有没有创建好的单例，有的就返回这个单例进一步处理。</p>
+</li>
+<li><p>没有在单例缓存中获取到Bean，那么就检查父容器中有没有这个Bean定义。当父容器中有这个Bean定义，并且当前容器中没有此Bean定义时，就从父容器中获取。如果父容器中没有，则从当前容器获取。</p>
+</li>
+<li><p>拿到Bean的定义，先对依赖Bean调用<code>getBean</code>方法。</p>
+</li>
+<li><p>如果Bean定义是单例<code>singleton</code>，则创建单例。如果是原型<code>prototype</code>，则创建Bean。如果是其他的scope作用域，则调用scope的<code>get</code>方法。这里可以看出，我们可以自已定义<code>scope</code>来扩展Spring提供的几种<code>scope</code>。具体的创建Bean的过程都会调用<code>createBean</code>方法。</p>
+</li>
+<li><p>拿到实例对象之后，如果获取时传了类型，那么将使用<code>TypeConverter</code>进行类型转换，如果转换成功，则返回这个Bean，否则将抛出异常。</p>
+</li>
+</ol>
+<h3 id="通过Class-类型获取Bean"><a href="#通过Class-类型获取Bean" class="headerlink" title="通过Class 类型获取Bean"></a>通过Class 类型获取Bean</h3><p>在Spring中Bean的名称才是唯一的标识，所以根据类型获取Bean，会先获取到所有该类型的Bean 的名称。</p>
+<ol>
+<li>获取符合类型的Bean名称。如果有泛型的话，调用<code>doGetBeanNamesForType(ResolvableType type, boolean includeNonSingletons, boolean allowEagerInit)</code>方法；没有泛型则调用<code>getBeanNamesForType(@Nullable Class&lt;?&gt; type, boolean includeNonSingletons, boolean allowEagerInit)</code>方法。找到一个那就恭喜了。</li>
+<li>如果获取的Bean名称多于1个，则需要根据优先权选择出一个名称，然后再跟据这个名称去获取Bean。</li>
+</ol>
+<h3 id="Bean-实例化"><a href="#Bean-实例化" class="headerlink" title="Bean 实例化"></a>Bean 实例化</h3><p>Bean的创建以及实例化</p>
+<p>作为一个可扩展的框架，Spring在Bean实例化的过程中预留了大量的扩展点用于对框架进行扩展。包括修改Bean定义，获取对象类型，实例化之前，实例化的方式，实例化之后，初始化之前，初始化，初始化之后等方面。具体在<code>org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBean(java.lang.String, org.springframework.beans.factory.support.RootBeanDefinition, java.lang.Object[])</code>方法中实现。</p>
+<p>参数： </p>
+<ul>
+<li><code>String beanName</code>: Bean的名称。</li>
+<li><code>RootBeanDefinition mbd</code>: Bean定义。就像菜谱。</li>
+<li><code>Object[] args</code>: 获取Bean时的参数</li>
+</ul>
+<p>大致过程如下：</p>
+<ol>
+<li><p>调用<code>InstantiationAwareBeanPostProcessor</code>接口方法。此接口继承自<code>BeanPostProcessor</code>，在实例化前和实例化后显式属性设置或自动装配发生之前调用。<br>通常用于禁止特定目标bean的默认实例化，例如创建具有特殊目标源的代理对象(池化目标、延迟初始化目标等)，或者实现额外的注入策略，如字段注入。注意: 此接口是一个专用接口，主要用于框架内部使用。建议尽可能实现简单的<code>BeanPostProcessor</code>接口，或者继承<code>InstantiationAwareBeanPostProcessorAdapter</code>，以便屏蔽对该接口的扩展。</p>
+<ul>
+<li><p><code>postProcessBeforeInstantiation</code> : 在实例化目标bean之前调用。默认实现返回null。返回的bean对象可以代替目标bean用作代理，从而有效地阻止了目标bean的默认实例化。<br>如果此方法返回非空对象，则bean创建过程将短路，不会再调用其他<code>InstantiationAwareBeanPostProcessor</code>的<code>postProcessBeforeInstantiation</code> 方法。进一步调用<code>BeanPostProcessor</code>的<code>postProcessAfterInitialization</code>方法， 如果某个<code>BeanPostProcessor</code>的<code>postProcessAfterInitialization</code>方法返回了<code>null</code>，则将返回上一个不为<code>null</code>的对象。<br>此方法仅应用于具有bean类的bean定义。尤其是不会应用于带有工厂方法的bean。后处理器可以实现<code>SmartInstantiationAwareBeanPostProcessor</code>接口，以便预测它们将在这里返回的bean对象的类型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Object <span class="title">applyBeanPostProcessorsBeforeInstantiation</span><span class="params">(Class&lt;?&gt; beanClass, String beanName)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">for</span> (BeanPostProcessor bp : getBeanPostProcessors()) &#123;</span><br><span class="line">			<span class="keyword">if</span> (bp <span class="keyword">instanceof</span> InstantiationAwareBeanPostProcessor) &#123;</span><br><span class="line">				InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;</span><br><span class="line">				Object result = ibp.postProcessBeforeInstantiation(beanClass, beanName);</span><br><span class="line">                <span class="comment">//任意一个返回了非null对象，将导致后续的不会执行</span></span><br><span class="line">				<span class="keyword">if</span> (result != <span class="keyword">null</span>) &#123;</span><br><span class="line">					<span class="keyword">return</span> result;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>postProcessAfterInitialization</code>: 当<code>postProcessBeforeInstantiation</code> 方法返回了非<code>null</code>对象时，则会调用此方法做进一步的处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);</span><br><span class="line">					<span class="keyword">if</span> (bean != <span class="keyword">null</span>) &#123;</span><br><span class="line">						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);</span><br><span class="line">					&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">applyBeanPostProcessorsAfterInitialization</span><span class="params">(Object existingBean, String beanName)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line"></span><br><span class="line">		Object result = existingBean;</span><br><span class="line">		<span class="keyword">for</span> (BeanPostProcessor processor : getBeanPostProcessors()) &#123;</span><br><span class="line">			Object current = processor.postProcessAfterInitialization(result, beanName);</span><br><span class="line">            <span class="comment">//如果当前postProcessAfterInitialization方法返回的为null,则直接返回上一个的结果</span></span><br><span class="line">			<span class="keyword">if</span> (current == <span class="keyword">null</span>) &#123;</span><br><span class="line">				<span class="keyword">return</span> result;</span><br><span class="line">			&#125;</span><br><span class="line">            <span class="comment">//否则继续调用下一个处理器</span></span><br><span class="line">			result = current;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> result;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+</li>
+<li><p>如果第1步中得到的Bean不为空，则直接会使用这个Bean，不会再调用后续的初始化过程。正如第一步中所说，<code>InstantiationAwareBeanPostProcessor</code>接口主要创建目标Bean的代理对象等。</p>
+</li>
+<li><p>如果第1步中得到的Bean为空，则走常规初始化过程。先创建Bean实例：</p>
+<ol>
+<li><p>从Spring 5.0开始加了<code>Supplier</code>方式来创建Bean。</p>
+</li>
+<li><p>工厂方法，可以是静态工厂，也可以是工厂Bean。找到对应的工厂方法过程有点儿复杂，主要是方法名和参数匹配。</p>
+</li>
+<li><p>从<code>SmartInstantiationAwareBeanPostProcessor</code>接口和Bean定义配置中的优先构造函数。再从获取到的构造函数中选出一个调用。</p>
+</li>
+<li><p>调用默认构造函数</p>
+</li>
+</ol>
+</li>
+<li><p>Bean已经创建出来了，接下来就是初始化这个Bean。先调用后处理器<code>MergedBeanDefinitionPostProcessor</code>接口的<code>postProcessMergedBeanDefinition</code>方法处理Bean定义。此接口用于在运行时对合并的bean定义（原始bean定义的已处理副本）进行后处理。</p>
+<p>例如，<code>postProcessMergedBeanDefinition</code>方法可以内省bean定义，以便实际在对bean实例进行后的处理操作之前准备一些缓存的元数据，并且这个接口还允许修改bean定义。</p>
+</li>
+<li><p>提前暴露Bean，用于解决循环依赖问题，这个时候的Bean基本是个空的Bean。关键代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">addSingletonFactory(beanName, () -&gt; getEarlyBeanReference(beanName, mbd, bean));</span><br></pre></td></tr></table></figure>
+
+<p>先将Bean添加到一个Map中，后面取依赖Bean的时候会先检查这个Map。</p>
+</li>
+<li><p>真正初始化的过程。包括<code>InstantiationAwareBeanPostProcessor</code>接口<code>postProcessBeforeInitialization</code>方法，属性填充，Aware接口，<code>BeanPostProcessor</code>接口<code>postProcessBeforeInitialization</code>方法，<code>InitializingBean</code>的<code>afterPropertiesSet</code>方法，自定义init方法调用，调用<code>BeanPostProcessor</code>接口<code>postProcessAfterInitialization</code>方法。</p>
+</li>
+<li><p>注册<code>DisposableBean</code>， 当Bean销毁时回调。</p>
+</li>
+</ol>
+<p>可以看一下下面的流程图，对实例化过程有个大概的了解。</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/post/72a3/Bean%E5%AE%9E%E4%BE%8B%E5%8C%96%E8%BF%87%E7%A8%8B.png" alt="Bean实例化过程"></p>
+<h3 id="初始化过程中的扩展点"><a href="#初始化过程中的扩展点" class="headerlink" title="初始化过程中的扩展点"></a>初始化过程中的扩展点</h3><p>这里只区分实例化和初始化两个阶段。可以看一下图：</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/post/72a3/Bean%E5%AE%9E%E4%BE%8B%E5%8C%96%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%BB%84%E4%BB%B6%E4%BD%9C%E7%94%A8%E8%8C%83%E5%9B%B4.png" alt="Bean实例化过程中组件作用范围"></p>
+<h4 id="实例化之前"><a href="#实例化之前" class="headerlink" title="实例化之前"></a>实例化之前</h4><p>在实例化之前<code>InstantiationAwareBeanPostProcessor</code>有机会去阻拦常规的初始化流程，可以创建我们的代理对象。主要涉及到<code>Object postProcessBeforeInstantiation(Class&lt;?&gt; beanClass, String beanName)</code>和<code>Object postProcessAfterInitialization(Object bean, String beanName)</code>方法。这里<code>Object postProcessAfterInitialization(Object bean, String beanName)</code>方法实际上是<code>BeanPostProcessor</code>接口的方法，主要用在Bean初始化后做一些自定义操作。<strong>这个方法其实应该归到初始化之后阶段</strong>。</p>
+<p>如果上面返回的是<code>null</code>，那么则走常规实例化流程。需要的话可以从<code>SmartInstantiationAwareBeanPostProcessor</code>接口的<code>Constructor&lt;?&gt;[] determineCandidateConstructors(Class&lt;?&gt; beanClass, String beanName)</code>方法中返回构造方法。</p>
+<h4 id="实例化之后"><a href="#实例化之后" class="headerlink" title="实例化之后"></a>实例化之后</h4><p>通过<code>MergedBeanDefinitionPostProcessor</code>接口<code>postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class&lt;?&gt; beanType, String beanName)</code>方法获得修改Bean定义的机会，也可以通过这个方法缓存一些数据，辅助后面的初始化过程。</p>
+<h4 id="初始化之前"><a href="#初始化之前" class="headerlink" title="初始化之前"></a>初始化之前</h4><p>通过<code>InstantiationAwareBeanPostProcessor</code>接口boolean postProcessAfterInstantiation(Object bean, String beanName)方法可以阻止(<code>return false</code>)接下来的属性设置过程。通过该接口<code>PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName)</code>方法处理需要设置的属性。</p>
+<p><code>TypeConverter</code> 接口进行属性值的类型转换。XML中配置的属性值是字符串形式的，需要转换成对应的属性类型。</p>
+<p>调用<code>BeanNameAware</code>、<code>BeanClassLoaderAware</code>、<code>BeanFactoryAware</code>的设置方法。</p>
+<h4 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h4><p>可以将上面的属性设置、Aware接口归到初始化阶段里。</p>
+<p>调用<code>BeanPostProcessor</code>的<code>Object postProcessBeforeInitialization(Object bean, String beanName)</code>方法。</p>
+<p>如果Bean实现了<code>InitializingBean</code>接口，则会调用<code>afterPropertiesSet</code>方法。或者调用自定义的初始化方法。</p>
+<p>调用<code>BeanPostProcessor</code>接口的<code>Object postProcessAfterInitialization(Object bean, String beanName)</code>方法。</p>
+<h4 id="销毁"><a href="#销毁" class="headerlink" title="销毁"></a>销毁</h4><p>如果Bean注册了销毁方法，则会注册为<code>DisposableBean</code>，当Bean销毁时会调用此方法。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://qzztf.com">水娃</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://qzztf.com/post/72a3/">http://qzztf.com/post/72a3/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://qzztf.com" target="_blank">水娃火娃石榴娃</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Spring/">Spring</a><a class="post-meta__tags" href="/tags/Bean/">Bean</a><a class="post-meta__tags" href="/tags/%E5%88%9D%E5%A7%8B%E5%8C%96/">初始化</a></div><div class="post_share"><div class="social-share" data-image="/image/avatar.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/post/504e/" title="BeanWrapper"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">BeanWrapper</div></div></a></div><div class="next-post pull-right"><a href="/post/e88/" title="错误: 未报告的异常错误X; 必须对其进行捕获或声明以便抛出"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">错误: 未报告的异常错误X; 必须对其进行捕获或声明以便抛出</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/post/9fa5/" title="Spring AOP 调用同一个对象的方法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-05</div><div class="title">Spring AOP 调用同一个对象的方法</div></div></a></div><div><a href="/post/b3b1/" title="Spring resource配置文件写法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2018-06-15</div><div class="title">Spring resource配置文件写法</div></div></a></div><div><a href="/post/dac1/" title="Spring 常用接口"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-03-18</div><div class="title">Spring 常用接口</div></div></a></div><div><a href="/post/53da/" title="windows 编绎spring-framework源代码遇到的问题"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2017-07-25</div><div class="title">windows 编绎spring-framework源代码遇到的问题</div></div></a></div><div><a href="/post/172b/" title="Spring bean定义文件解析"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-05-13</div><div class="title">Spring bean定义文件解析</div></div></a></div><div><a href="/post/736b/" title="Spring ApplicationContext初始化过程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-05-13</div><div class="title">Spring ApplicationContext初始化过程</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/image/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">水娃</div><div class="author-info__description">水娃的博客 | java</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">83</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">108</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/qzztf"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎光临</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Bean%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">Bean初始化过程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#getBean%E6%96%B9%E6%B3%95-%E2%80%93-%E7%82%92%E8%8F%9C%E5%BC%80%E5%A7%8B%E7%9A%84%E4%BF%A1%E5%8F%B7"><span class="toc-number">1.1.</span> <span class="toc-text">getBean方法 – 炒菜开始的信号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BeanFactory"><span class="toc-number">1.2.</span> <span class="toc-text">BeanFactory</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87%E5%90%8D%E7%A7%B0%E8%8E%B7%E5%8F%96Bean"><span class="toc-number">1.2.1.</span> <span class="toc-text">通过名称获取Bean</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87Class-%E7%B1%BB%E5%9E%8B%E8%8E%B7%E5%8F%96Bean"><span class="toc-number">1.2.2.</span> <span class="toc-text">通过Class 类型获取Bean</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bean-%E5%AE%9E%E4%BE%8B%E5%8C%96"><span class="toc-number">1.2.3.</span> <span class="toc-text">Bean 实例化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%9A%84%E6%89%A9%E5%B1%95%E7%82%B9"><span class="toc-number">1.2.4.</span> <span class="toc-text">初始化过程中的扩展点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E4%BE%8B%E5%8C%96%E4%B9%8B%E5%89%8D"><span class="toc-number">1.2.4.1.</span> <span class="toc-text">实例化之前</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E4%BE%8B%E5%8C%96%E4%B9%8B%E5%90%8E"><span class="toc-number">1.2.4.2.</span> <span class="toc-text">实例化之后</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B9%8B%E5%89%8D"><span class="toc-number">1.2.4.3.</span> <span class="toc-text">初始化之前</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">1.2.4.4.</span> <span class="toc-text">初始化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%94%80%E6%AF%81"><span class="toc-number">1.2.4.5.</span> <span class="toc-text">销毁</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/5441/" title="Spring Cloud Gateway整合Spring Doc">Spring Cloud Gateway整合Spring Doc</a><time datetime="2023-04-02T12:49:15.000Z" title="发表于 2023-04-02 20:49:15">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f507/" title="处理字典值反显问题.md">处理字典值反显问题.md</a><time datetime="2023-04-02T12:46:42.000Z" title="发表于 2023-04-02 20:46:42">2023-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/9fa5/" title="Spring AOP 调用同一个对象的方法">Spring AOP 调用同一个对象的方法</a><time datetime="2020-12-05T14:55:47.000Z" title="发表于 2020-12-05 22:55:47">2020-12-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/39fc/" title="Spring AOP基本用法3">Spring AOP基本用法3</a><time datetime="2020-09-23T02:26:55.000Z" title="发表于 2020-09-23 10:26:55">2020-09-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/post/f93d/" title="Spring AOP基本用法2">Spring AOP基本用法2</a><time datetime="2020-09-23T02:25:58.000Z" title="发表于 2020-09-23 10:25:58">2020-09-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By 水娃</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '248e3cebde8537449dbb',
+      clientSecret: 'a9c539e71782374d81eb91ad932288cd41809575',
+      repo: 'blog-s-gitalk',
+      owner: 'qinzaizhen',
+      admin: ['qzztf'],
+      id: '077683ba4b1ccc169fe4d448a0712057',
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></body></html>
